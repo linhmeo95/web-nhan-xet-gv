@@ -829,14 +829,17 @@
     });
   }
 
-  document.getElementById("btnSubmitReview").addEventListener("click", () => {
-    const lesson = getCurrentLesson();
-    const rev = getOrCreateReview(lesson.id, currentUser.id, currentUser.name);
-    rev.status = "submitted";
-    rev.updatedAt = new Date().toISOString();
-    triggerAutoSave(true);
-    renderCriteriaForm();
-  });
+  const btnSubmitReview = document.getElementById("btnSubmitReview");
+  if (btnSubmitReview) {
+    btnSubmitReview.addEventListener("click", () => {
+      const lesson = getCurrentLesson();
+      const rev = getOrCreateReview(lesson.id, currentUser.id, currentUser.name);
+      rev.status = "submitted";
+      rev.updatedAt = new Date().toISOString();
+      triggerAutoSave(true);
+      renderCriteriaForm();
+    });
+  }
 
   function renderAdminDashboard() {
     const matrixTable = document.getElementById("progressMatrixTable");
@@ -981,7 +984,10 @@
     });
   }
 
-  document.getElementById("adminTeacherFilter").addEventListener("change", renderAdminDashboard);
+  const adminFilter = document.getElementById("adminTeacherFilter");
+  if (adminFilter) {
+    adminFilter.addEventListener("change", renderAdminDashboard);
+  }
 
   const btnRefreshCloud = document.getElementById("btnRefreshCloud");
   if (btnRefreshCloud) {
@@ -994,14 +1000,17 @@
     });
   }
 
-  document.getElementById("btnToggleAdmin").addEventListener("click", async () => {
-    if (!currentUser || currentUser.role !== "admin") return;
-    isAdminView = !isAdminView;
-    renderAll();
-    if (isAdminView) {
-      await fetchCloudDb(true);
-    }
-  });
+  const btnToggleAdmin = document.getElementById("btnToggleAdmin");
+  if (btnToggleAdmin) {
+    btnToggleAdmin.addEventListener("click", async () => {
+      if (!currentUser || currentUser.role !== "admin") return;
+      isAdminView = !isAdminView;
+      renderAll();
+      if (isAdminView) {
+        await fetchCloudDb(true);
+      }
+    });
+  }
 
   function exportExcelFromBrowser() {
     // Pure client-side Excel (.xls HTML workbook compatible with Excel/Numbers/Google Sheets) fallback for static hosting
@@ -1075,24 +1084,27 @@
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
 
-  document.getElementById("btnExportExcel").addEventListener("click", async () => {
-    try {
-      const res = await fetch(`/api/export-excel?lessonId=${encodeURIComponent(currentLessonId)}`);
-      if (res.ok && (res.headers.get("content-type") || "").includes("spreadsheetml")) {
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "TONG_HOP_NHAN_XET_GIAO_VIEN.xlsx";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        return;
-      }
-    } catch (e) {}
-    exportExcelFromBrowser();
-  });
+  const btnExportExcel = document.getElementById("btnExportExcel");
+  if (btnExportExcel) {
+    btnExportExcel.addEventListener("click", async () => {
+      try {
+        const res = await fetch(`/api/export-excel?lessonId=${encodeURIComponent(currentLessonId)}`);
+        if (res.ok && (res.headers.get("content-type") || "").includes("spreadsheetml")) {
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "TONG_HOP_NHAN_XET_GIAO_VIEN.xlsx";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 2000);
+          return;
+        }
+      } catch (e) {}
+      exportExcelFromBrowser();
+    });
+  }
 
   function setupDialogs() {
     document.querySelectorAll("dialog").forEach(dialog => {
@@ -1266,29 +1278,36 @@
     tabPanelLessons.classList.toggle("hidden", isTeachers);
   }
 
-  tabBtnTeachers.addEventListener("click", () => switchManageTab("teachers"));
-  tabBtnLessons.addEventListener("click", () => switchManageTab("lessons"));
+  if (tabBtnTeachers) tabBtnTeachers.addEventListener("click", () => switchManageTab("teachers"));
+  if (tabBtnLessons) tabBtnLessons.addEventListener("click", () => switchManageTab("lessons"));
 
-  document.getElementById("btnOpenManageModal").addEventListener("click", () => {
-    editingTeacherId = null;
-    editingLessonId = null;
-    switchManageTab("teachers");
-    renderManageLists();
-    document.getElementById("manageDialog").showModal();
-  });
+  const btnOpenManageModal = document.getElementById("btnOpenManageModal");
+  if (btnOpenManageModal) {
+    btnOpenManageModal.addEventListener("click", () => {
+      editingTeacherId = null;
+      editingLessonId = null;
+      switchManageTab("teachers");
+      renderManageLists();
+      const manageDlg = document.getElementById("manageDialog");
+      if (manageDlg) manageDlg.showModal();
+    });
+  }
 
   function getSharedAppUrl() {
     return window.location.origin + window.location.pathname;
   }
 
-  document.getElementById("btnCopySharedUrl").addEventListener("click", async e => {
-    const btn = e.currentTarget;
-    try {
-      await navigator.clipboard.writeText(getSharedAppUrl());
-      btn.textContent = "✓ Đã copy Link!";
-      setTimeout(() => { btn.textContent = "🔗 Copy Link Web chung"; }, 2000);
-    } catch (err) {}
-  });
+  const btnCopySharedUrl = document.getElementById("btnCopySharedUrl");
+  if (btnCopySharedUrl) {
+    btnCopySharedUrl.addEventListener("click", async e => {
+      const btn = e.currentTarget;
+      try {
+        await navigator.clipboard.writeText(getSharedAppUrl());
+        btn.textContent = "✓ Đã copy Link!";
+        setTimeout(() => { btn.textContent = "🔗 Copy Link Web chung"; }, 2000);
+      } catch (err) {}
+    });
+  }
 
   function buildTeacherPinCardCanvas() {
     const teachers = db.teachers || [];
@@ -1386,27 +1405,33 @@
     return canvas;
   }
 
-  document.getElementById("btnCopyTeacherCardImg").addEventListener("click", async e => {
-    const btn = e.currentTarget;
-    const origText = btn.textContent;
-    const canvas = buildTeacherPinCardCanvas();
+  const btnCopyCard = document.getElementById("btnCopyTeacherCardImg");
+  if (btnCopyCard) {
+    btnCopyCard.addEventListener("click", async e => {
+      const btn = e.currentTarget;
+      const origText = btn.textContent;
+      const canvas = buildTeacherPinCardCanvas();
 
-    canvas.toBlob(async blob => {
-      if (!blob) return;
-      try {
-        if (navigator.clipboard && window.ClipboardItem) {
-          await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-          btn.textContent = "✓ Đã copy Ảnh! Hãy nhấn Ctrl+V vào ô chat";
-          setTimeout(() => { btn.textContent = origText; }, 3000);
-          return;
-        }
-      } catch (err) {}
-      // Fallback: show in lightbox so user can right-click copy image
-      document.getElementById("lightboxTitle").textContent = "Bảng Tên & Mã PIN (Click chuột phải chọn Sao chép hình ảnh)";
-      document.getElementById("lightboxImg").src = canvas.toDataURL("image/png");
-      document.getElementById("lightboxDialog").showModal();
-    }, "image/png");
-  });
+      canvas.toBlob(async blob => {
+        if (!blob) return;
+        try {
+          if (navigator.clipboard && window.ClipboardItem) {
+            await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+            btn.textContent = "✓ Đã copy Ảnh! Hãy nhấn Ctrl+V vào ô chat";
+            setTimeout(() => { btn.textContent = origText; }, 3000);
+            return;
+          }
+        } catch (err) {}
+        // Fallback: show in lightbox so user can right-click copy image
+        const titleEl = document.getElementById("lightboxTitle");
+        if (titleEl) titleEl.textContent = "Bảng Tên & Mã PIN (Click chuột phải chọn Sao chép hình ảnh)";
+        const imgEl = document.getElementById("lightboxImg");
+        if (imgEl) imgEl.src = canvas.toDataURL("image/png");
+        const dlg = document.getElementById("lightboxDialog");
+        if (dlg) dlg.showModal();
+      }, "image/png");
+    });
+  }
 
   function renderManageLists() {
     const tBox = document.getElementById("manageTeacherList");
@@ -1550,46 +1575,53 @@
     });
   }
 
-  document.getElementById("btnAddTeacher").addEventListener("click", () => {
-    const nameInp = document.getElementById("newTeacherName");
-    const pinInp = document.getElementById("newTeacherPin");
-    const name = nameInp.value.trim();
-    const pin = pinInp.value.trim() || "6666";
-    if (!name) return;
-    const id = "gv-" + Date.now().toString(36);
-    db.teachers.push({ id, name, pin, role: "teacher" });
-    nameInp.value = "";
-    pinInp.value = "";
-    triggerAutoSave(true, true);
-    renderManageLists();
-    renderAdminDashboard();
-  });
-
-  document.getElementById("btnAddLesson").addEventListener("click", () => {
-    const codeInp = document.getElementById("newLessonCode");
-    const titleInp = document.getElementById("newLessonTitle");
-    const urlInp = document.getElementById("newLessonUrl");
-    const code = codeInp.value.trim();
-    const title = titleInp.value.trim();
-    if (!code || !title) return;
-    const slug = "ai-" + code.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    const editorUrl = urlInp.value.trim() || `https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/${slug}`;
-    db.lessons.push({
-      id: slug,
-      code,
-      grade: "Khối mới",
-      title,
-      editorUrl,
-      totalSlides: 18,
-      slides: []
+  const btnAddTeacher = document.getElementById("btnAddTeacher");
+  if (btnAddTeacher) {
+    btnAddTeacher.addEventListener("click", () => {
+      const nameInp = document.getElementById("newTeacherName");
+      const pinInp = document.getElementById("newTeacherPin");
+      const name = nameInp ? nameInp.value.trim() : "";
+      const pin = (pinInp ? pinInp.value.trim() : "") || "6666";
+      if (!name) return;
+      const id = "gv-" + Date.now().toString(36);
+      db.teachers.push({ id, name, pin, role: "teacher" });
+      if (nameInp) nameInp.value = "";
+      if (pinInp) pinInp.value = "";
+      triggerAutoSave(true, true);
+      renderManageLists();
+      renderAdminDashboard();
+      populateAuthTeacherSelect();
     });
-    codeInp.value = "";
-    titleInp.value = "";
-    urlInp.value = "";
-    triggerAutoSave(true, true);
-    renderManageLists();
-    renderAll();
-  });
+  }
+
+  const btnAddLesson = document.getElementById("btnAddLesson");
+  if (btnAddLesson) {
+    btnAddLesson.addEventListener("click", () => {
+      const codeInp = document.getElementById("newLessonCode");
+      const titleInp = document.getElementById("newLessonTitle");
+      const urlInp = document.getElementById("newLessonUrl");
+      const code = codeInp ? codeInp.value.trim() : "";
+      const title = titleInp ? titleInp.value.trim() : "";
+      if (!code || !title) return;
+      const slug = "ai-" + code.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const editorUrl = (urlInp ? urlInp.value.trim() : "") || `https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/${slug}`;
+      db.lessons.push({
+        id: slug,
+        code,
+        grade: "Khối mới",
+        title,
+        editorUrl,
+        totalSlides: 18,
+        slides: []
+      });
+      if (codeInp) codeInp.value = "";
+      if (titleInp) titleInp.value = "";
+      if (urlInp) urlInp.value = "";
+      triggerAutoSave(true, true);
+      renderManageLists();
+      renderAll();
+    });
+  }
 
   function renderAll() {
     const authPortal = document.getElementById("authPortal");
