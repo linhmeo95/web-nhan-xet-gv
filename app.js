@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V9";
-  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V9";
+  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V10";
+  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V10";
   const SUPABASE_URL = "https://altabwyuskgvxtcnzlbw.supabase.co";
   const SUPABASE_KEY = "sb_publishable_LxTa5ODn1kObt_BBAwvLxw_2E3OXZUd";
   const SUPABASE_TABLE = "novastars_app_state";
@@ -42,21 +42,60 @@
       if (window.INITIAL_APP_DATA && Array.isArray(window.INITIAL_APP_DATA.lessons)) {
         targetDb.lessons = JSON.parse(JSON.stringify(window.INITIAL_APP_DATA.lessons));
       }
+    } else if (window.INITIAL_APP_DATA && Array.isArray(window.INITIAL_APP_DATA.lessons)) {
+      window.INITIAL_APP_DATA.lessons.forEach(sl => {
+        if (!targetDb.lessons.some(l => l.id === sl.id || l.code === sl.code)) {
+          targetDb.lessons.push(sl);
+        }
+      });
     }
     return targetDb;
   }
 
   function loadInitialDb() {
+    let resultDb = null;
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.lessons && parsed.lessons.length > 0) {
-          return syncLatestLessons(parsed);
+          resultDb = syncLatestLessons(parsed);
         }
       } catch (e) {}
     }
-    return JSON.parse(JSON.stringify(window.INITIAL_APP_DATA));
+    if (!resultDb) {
+      resultDb = JSON.parse(JSON.stringify(window.INITIAL_APP_DATA));
+    }
+
+    // Auto-recover any lessons or custom teachers added in previous storage versions (V8, V7, V6, V5...)
+    let recoveredCount = 0;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith("NOVASTARS_REVIEW_APP_DB") && k !== STORAGE_KEY) {
+          const prevRaw = localStorage.getItem(k);
+          if (!prevRaw) continue;
+          const prevData = JSON.parse(prevRaw);
+          if (prevData && Array.isArray(prevData.lessons)) {
+            prevData.lessons.forEach(pl => {
+              if (pl && (pl.code || pl.id)) {
+                const exists = resultDb.lessons.some(l => (pl.id && l.id === pl.id) || (pl.code && l.code === pl.code));
+                if (!exists) {
+                  resultDb.lessons.push(pl);
+                  recoveredCount++;
+                }
+              }
+            });
+          }
+        }
+      }
+    } catch (e) {}
+
+    if (recoveredCount > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(resultDb));
+    }
+
+    return resultDb;
   }
 
   function loadInitialUser() {
@@ -136,7 +175,26 @@
           populateAuthTeacherSelect();
         }
         if (Array.isArray(cloudConfig.lessons) && cloudConfig.lessons.length > 0) {
-          db.lessons = cloudConfig.lessons;
+          const lessonMap = new Map();
+          // Keep current lessons (including any recovered or user-added lessons)
+          (db.lessons || []).forEach(l => {
+            const k = l.id || l.code;
+            if (k) lessonMap.set(k, l);
+          });
+          // Merge / update with cloud lessons
+          cloudConfig.lessons.forEach(l => {
+            const k = l.id || l.code;
+            if (k) {
+              const existing = lessonMap.get(k);
+              lessonMap.set(k, existing ? { ...existing, ...l } : l);
+            }
+          });
+          const mergedLessons = Array.from(lessonMap.values());
+          const hasNewLocalLessons = mergedLessons.length > cloudConfig.lessons.length;
+          db.lessons = mergedLessons;
+          if (hasNewLocalLessons) {
+            triggerAutoSave(true, true);
+          }
         }
         if (cloudConfig.meta) {
           db.meta = cloudConfig.meta;
