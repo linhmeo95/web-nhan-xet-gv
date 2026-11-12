@@ -28,7 +28,7 @@
       </div>
 
       <button type="button" class="btn-admin-toggle" id="btnToggleAdmin">
-        📊 Quản lý (Admin)
+        📊 Quản lý
       </button>
     </div>
   </header>
@@ -36,7 +36,7 @@
   <!-- MAIN WORKSPACE: SINGLE CLEAN SCREEN -->
   <main class="single-workspace" id="teacherWorkspace">
     <div class="workspace-container">
-      <!-- LESSON HEADER + OPTIONAL REAL HD-TUONGTAC OPENERS -->
+      <!-- LESSON HEADER -->
       <section class="editor-header" aria-label="Thông tin bài giảng và nút mở Slide thật">
         <div class="editor-lesson-info">
           <span class="lesson-code-tag" id="lblCurrentLessonCode">4.23.CL</span>
@@ -63,7 +63,7 @@
       <!-- QUICK SLIDE TAGGER STRIP -->
       <section class="quick-slide-bar" aria-label="Gắn nhanh số Slide">
         <span class="quick-bar-label" id="lblQuickBarTarget">
-          📌 Bấm số Slide để chèn nhanh vào mục <strong>1. Điểm ưng ý</strong>:
+          📌 Bấm số Slide để gán cho <strong>Ý 1</strong>:
         </span>
         <div class="slide-num-strip" id="slideNumStrip"></div>
       </section>
@@ -73,17 +73,16 @@
     </div>
   </main>
 
-  <!-- ADMIN / MANAGER VIEW -->
+  <!-- ADMIN / MANAGER VIEW (STREAMLINED) -->
   <section class="admin-dashboard hidden" id="adminWorkspace" aria-label="Trang Quản lý">
     <div class="admin-container">
       <div class="admin-top-bar">
         <div>
           <h2 class="admin-title">Tổng hợp Nhận xét của Giáo viên</h2>
-          <p class="admin-subtitle">Bấm vào từng ô để xem nhận xét hoặc xuất ra file Excel.</p>
+          <p class="admin-subtitle">Bấm vào từng ô trạng thái để xem bài của giáo viên đó hoặc xuất ra Excel.</p>
         </div>
         <div class="admin-btns">
-          <button type="button" class="btn-secondary" id="btnOpenManageModal">⚙️ Danh sách GV &amp; Bài giảng</button>
-          <button type="button" class="btn-secondary" id="btnExportJsonForAi">🤖 Copy cho AI</button>
+          <button type="button" class="btn-secondary" id="btnOpenManageModal">⚙️ Quản lý GV &amp; Bài giảng</button>
           <button type="button" class="btn-primary-export" id="btnExportExcel">📊 Xuất file Excel (.xlsx)</button>
         </div>
       </div>
@@ -109,7 +108,7 @@
     </div>
   </section>
 
-  <!-- MODAL 1: SWITCH TEACHER / ADMIN -->
+  <!-- MODAL 1: SWITCH TEACHER -->
   <dialog id="loginDialog" closedby="any" aria-labelledby="loginDialogTitle">
     <div class="dialog-inner">
       <div class="dialog-header">
@@ -135,37 +134,58 @@
     </div>
   </dialog>
 
-  <!-- MODAL 2: MANAGE TEACHERS & LESSONS -->
+  <!-- MODAL 2: MANAGE TEACHERS & LESSONS (2 SEPARATE TABS, STREAMLINED) -->
   <dialog id="manageDialog" closedby="any" aria-labelledby="manageDialogTitle">
-    <div class="dialog-inner dialog-wide">
+    <div class="dialog-inner dialog-manage">
       <div class="dialog-header">
         <h2 id="manageDialogTitle">Quản lý Giáo viên &amp; Bài giảng</h2>
         <button type="button" class="btn-close-dialog" data-close-dialog="manageDialog" aria-label="Đóng">✕</button>
       </div>
-      <div class="manage-tabs">
-        <div class="manage-col">
-          <h3>👩‍🏫 Danh sách Giáo viên (Copy link gửi từng cô)</h3>
-          <div class="teacher-list-box" id="manageTeacherList"></div>
-          <div class="add-row-form">
-            <input type="text" id="newTeacherName" class="input-control" placeholder="Tên GV mới (VD: Cô Lan)">
-            <input type="text" id="newTeacherPin" class="input-control mono-input" placeholder="PIN (6666)" style="max-width: 110px;">
-            <button type="button" class="btn-primary" id="btnAddTeacher">+ Thêm</button>
-          </div>
+
+      <!-- 2 TABS SWITCHER -->
+      <div class="modal-tab-bar" role="tablist">
+        <button type="button" class="modal-tab-btn active" id="tabBtnTeachers" role="tab" aria-selected="true">
+          👩‍🏫 Danh sách Giáo viên
+        </button>
+        <button type="button" class="modal-tab-btn" id="tabBtnLessons" role="tab" aria-selected="false">
+          📚 Danh sách Bài giảng
+        </button>
+      </div>
+
+      <!-- TAB 1: TEACHERS -->
+      <div class="modal-tab-panel" id="tabPanelTeachers" role="tabpanel">
+        <div class="share-banner">
+          <button type="button" class="btn-copy-card-img" id="btnCopyTeacherCardImg">
+            📸 Copy ảnh Bảng Tên + Mã PIN (Paste vào ô chat)
+          </button>
+          <button type="button" class="btn-secondary" id="btnCopySharedUrl">
+            🔗 Copy Link Web chung
+          </button>
         </div>
 
-        <div class="manage-col">
-          <h3>📚 Danh sách Bài giảng (Link HD Tương tác)</h3>
-          <div class="lesson-list-box" id="manageLessonList"></div>
-          <div class="add-row-form">
-            <input type="text" id="newLessonCode" class="input-control" placeholder="Mã (VD: 3.15.CL)" style="max-width: 120px;">
-            <input type="text" id="newLessonTitle" class="input-control" placeholder="Tên bài giảng...">
-            <input type="text" id="newLessonUrl" class="input-control" placeholder="Link hd-tuongtac (tùy chọn)">
-            <button type="button" class="btn-primary" id="btnAddLesson">+ Thêm bài</button>
-          </div>
+        <div class="teacher-list-box" id="manageTeacherList"></div>
+
+        <div class="add-row-form">
+          <input type="text" id="newTeacherName" class="input-control" placeholder="Tên GV mới (VD: Cô Lan)">
+          <input type="text" id="newTeacherPin" class="input-control mono-input" placeholder="Mã PIN (VD: 6666)" style="max-width: 150px;">
+          <button type="button" class="btn-primary" id="btnAddTeacher">+ Thêm GV</button>
         </div>
       </div>
+
+      <!-- TAB 2: LESSONS -->
+      <div class="modal-tab-panel hidden" id="tabPanelLessons" role="tabpanel">
+        <div class="lesson-list-box" id="manageLessonList"></div>
+
+        <div class="add-row-form">
+          <input type="text" id="newLessonCode" class="input-control" placeholder="Mã (VD: 3.15.CL)" style="max-width: 130px;">
+          <input type="text" id="newLessonTitle" class="input-control" placeholder="Tên bài giảng...">
+          <input type="text" id="newLessonUrl" class="input-control" placeholder="Link HD Tương tác (tùy chọn)">
+          <button type="button" class="btn-primary" id="btnAddLesson">+ Thêm bài</button>
+        </div>
+      </div>
+
       <div class="dialog-footer">
-        <button type="button" class="btn-primary" data-close-dialog="manageDialog">Xong</button>
+        <button type="button" class="btn-primary" data-close-dialog="manageDialog">Đóng</button>
       </div>
     </div>
   </dialog>
@@ -174,7 +194,7 @@
   <dialog id="lightboxDialog" closedby="any" aria-labelledby="lightboxTitle">
     <div class="dialog-inner dialog-lightbox">
       <div class="dialog-header">
-        <h2 id="lightboxTitle">Ảnh chụp màn hình đính kèm</h2>
+        <h2 id="lightboxTitle">Ảnh đính kèm</h2>
         <button type="button" class="btn-close-dialog" data-close-dialog="lightboxDialog" aria-label="Đóng">✕</button>
       </div>
       <div class="lightbox-body">

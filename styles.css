@@ -889,7 +889,66 @@ dialog::backdrop {
 }
 
 #manageDialog {
-  max-width: 880px;
+  max-width: 620px;
+}
+
+.modal-tab-bar {
+  display: flex;
+  gap: 8px;
+  background: #F1F5F9;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.modal-tab-btn {
+  flex: 1;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink-secondary);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--brand-cobalt);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+.modal-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.share-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-copy-card-img {
+  flex: 1;
+  background: #2563EB;
+  color: #FFFFFF;
+  border: none;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-copy-card-img:hover {
+  background: #1D4ED8;
 }
 
 #lightboxDialog {
@@ -962,27 +1021,11 @@ dialog::backdrop {
   border-top: 1px solid var(--border-light);
 }
 
-.manage-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.manage-col {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.manage-col h3 {
-  font-size: 14px;
-}
-
 .teacher-list-box,
 .lesson-list-box {
   border: 1px solid var(--border-light);
-  border-radius: 7px;
-  max-height: 260px;
+  border-radius: 8px;
+  max-height: 280px;
   overflow-y: auto;
 }
 

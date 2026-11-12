@@ -256,7 +256,7 @@
 
     document.getElementById("currentUserName").textContent = currentUser.name;
     document.getElementById("btnToggleAdmin").textContent =
-      isAdminView ? "← Quay lại Phiếu nhận xét" : "📊 Quản lý (Admin)";
+      isAdminView ? "← Quay lại Phiếu" : "📊 Quản lý";
   }
 
   function updateQuickBarTargetLabel() {
@@ -794,20 +794,95 @@
     renderAll();
   });
 
-  document.getElementById("btnExportExcel").addEventListener("click", () => {
-    window.location.href = `/api/export-excel?lessonId=${encodeURIComponent(currentLessonId)}`;
-  });
+  function exportExcelFromBrowser() {
+    // Pure client-side Excel (.xls HTML workbook compatible with Excel/Numbers/Google Sheets) fallback for static hosting
+    let sheetsHtml = "";
+    const critMeta = [
+      { stt: "1", label: "1. Điểm ưng ý", key: "ung_y", bg: "#DCFCE7", fg: "#065F46" },
+      { stt: "2", label: "2. Điểm cần làm rõ", key: "chua_hieu", bg: "#FEF3C7", fg: "#92400E" },
+      { stt: "3", label: "3. Đề xuất cải tiến", key: "cai_tien", bg: "#DBEAFE", fg: "#1E40AF" },
+      { stt: "4", label: "4. Khó khăn khi dạy", key: "kho_khan", bg: "#FFE4E6", fg: "#9F1239" }
+    ];
 
-  document.getElementById("btnExportJsonForAi").addEventListener("click", async () => {
-    const jsonStr = JSON.stringify(db, null, 2);
+    db.lessons.forEach(lesson => {
+      const lessonRevs = (db.reviews || []).filter(r => r.lessonId === lesson.id);
+      let rowsHtml = "";
+      critMeta.forEach(cm => {
+        const texts = [];
+        const slideSet = new Set();
+        lessonRevs.forEach(r => {
+          const cObj = (r.criteria && r.criteria[cm.key]) || {};
+          ensureCriterionPoints(cObj);
+          const txt = (cObj.text || "").trim();
+          if (txt) {
+            texts.push(`<b>[${escapeHtml(r.teacherName)}]:</b><br>${escapeHtml(txt).replace(/\n/g, "<br>")}`);
+          }
+          (cObj.slides || []).forEach(s => slideSet.add(s));
+        });
+        const finalTxt = texts.length ? texts.join("<br><br>") : "(Chưa có nhận xét)";
+        const finalSlides = slideSet.size ? Array.from(slideSet).sort((a, b) => a - b).map(s => `Slide ${s}`).join(", ") : "—";
+        rowsHtml += `
+          <tr>
+            <td style="border:1px solid #CBD5E1;padding:10px;text-align:center;font-weight:bold;background:${cm.bg};color:${cm.fg};">${cm.stt}</td>
+            <td style="border:1px solid #CBD5E1;padding:10px;font-weight:bold;background:${cm.bg};color:${cm.fg};">${escapeHtml(cm.label)}</td>
+            <td style="border:1px solid #CBD5E1;padding:10px;vertical-align:top;">${finalTxt}</td>
+            <td style="border:1px solid #CBD5E1;padding:10px;vertical-align:top;">${escapeHtml(finalSlides)}</td>
+          </tr>
+        `;
+      });
+
+      sheetsHtml += `
+        <table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;margin-bottom:28px;">
+          <tr>
+            <td colspan="4" style="background:#1E293B;color:#FFFFFF;font-size:14pt;font-weight:bold;padding:12px;">
+              TỔNG HỢP NHẬN XÉT BÀI ${escapeHtml(lesson.code)}: ${escapeHtml(lesson.title.toUpperCase())} (${escapeHtml(lesson.grade || "")})
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4" style="background:#EFF6FF;color:#1E3A8A;font-weight:bold;padding:8px;">
+              Link bài giảng: ${escapeHtml(lesson.editorUrl || "")}
+            </td>
+          </tr>
+          <tr>
+            <th style="background:#1E3A8A;color:#FFFFFF;border:1px solid #CBD5E1;padding:10px;width:50px;">STT</th>
+            <th style="background:#1E3A8A;color:#FFFFFF;border:1px solid #CBD5E1;padding:10px;width:180px;">Tiêu chí đánh giá</th>
+            <th style="background:#1E3A8A;color:#FFFFFF;border:1px solid #CBD5E1;padding:10px;width:520px;">Nội dung nhận xét tổng hợp từ Giáo viên</th>
+            <th style="background:#1E3A8A;color:#FFFFFF;border:1px solid #CBD5E1;padding:10px;width:180px;">Slide dẫn chứng</th>
+          </tr>
+          ${rowsHtml}
+        </table>
+      `;
+    });
+
+    const docHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"></head><body>${sheetsHtml}</body></html>`;
+    const blob = new Blob(["\ufeff", docHtml], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "TONG_HOP_NHAN_XET_GIAO_VIEN.xls";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  document.getElementById("btnExportExcel").addEventListener("click", async () => {
     try {
-      await navigator.clipboard.writeText(jsonStr);
-      const btn = document.getElementById("btnExportJsonForAi");
-      const orig = btn.textContent;
-      btn.textContent = "✓ Đã copy!";
-      setTimeout(() => { btn.textContent = orig; }, 2000);
+      const res = await fetch(`/api/export-excel?lessonId=${encodeURIComponent(currentLessonId)}`);
+      if (res.ok && (res.headers.get("content-type") || "").includes("spreadsheetml")) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "TONG_HOP_NHAN_XET_GIAO_VIEN.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        return;
+      }
     } catch (e) {}
-    triggerAutoSave(true);
+    exportExcelFromBrowser();
   });
 
   function setupDialogs() {
@@ -883,22 +958,171 @@
     renderAll();
   });
 
-  // Manage modal
+  // Manage modal (2 separate tabs + Copy Teacher Table as Image)
   let editingTeacherId = null;
   let editingLessonId = null;
+
+  const tabBtnTeachers = document.getElementById("tabBtnTeachers");
+  const tabBtnLessons = document.getElementById("tabBtnLessons");
+  const tabPanelTeachers = document.getElementById("tabPanelTeachers");
+  const tabPanelLessons = document.getElementById("tabPanelLessons");
+
+  function switchManageTab(tabName) {
+    const isTeachers = tabName === "teachers";
+    tabBtnTeachers.classList.toggle("active", isTeachers);
+    tabBtnTeachers.setAttribute("aria-selected", String(isTeachers));
+    tabBtnLessons.classList.toggle("active", !isTeachers);
+    tabBtnLessons.setAttribute("aria-selected", String(!isTeachers));
+    tabPanelTeachers.classList.toggle("hidden", !isTeachers);
+    tabPanelLessons.classList.toggle("hidden", isTeachers);
+  }
+
+  tabBtnTeachers.addEventListener("click", () => switchManageTab("teachers"));
+  tabBtnLessons.addEventListener("click", () => switchManageTab("lessons"));
 
   document.getElementById("btnOpenManageModal").addEventListener("click", () => {
     editingTeacherId = null;
     editingLessonId = null;
+    switchManageTab("teachers");
     renderManageLists();
     document.getElementById("manageDialog").showModal();
+  });
+
+  function getSharedAppUrl() {
+    return window.location.origin + window.location.pathname;
+  }
+
+  document.getElementById("btnCopySharedUrl").addEventListener("click", async e => {
+    const btn = e.currentTarget;
+    try {
+      await navigator.clipboard.writeText(getSharedAppUrl());
+      btn.textContent = "✓ Đã copy Link!";
+      setTimeout(() => { btn.textContent = "🔗 Copy Link Web chung"; }, 2000);
+    } catch (err) {}
+  });
+
+  function buildTeacherPinCardCanvas() {
+    const teachers = db.teachers || [];
+    const scale = 2;
+    const width = 680;
+    const rowH = 46;
+    const headerH = 128;
+    const tableHeadH = 44;
+    const footerH = 54;
+    const height = headerH + tableHeadH + teachers.length * rowH + footerH;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+
+    // Background
+    ctx.fillStyle = "#F8FAFC";
+    ctx.fillRect(0, 0, width, height);
+
+    // Top Banner
+    ctx.fillStyle = "#0F172A";
+    ctx.fillRect(0, 0, width, headerH);
+
+    ctx.fillStyle = "#38BDF8";
+    ctx.font = "bold 13px 'Be Vietnam Pro', sans-serif";
+    ctx.fillText("NOVASTARS · HỆ THỐNG NHẬN XÉT BÀI GIẢNG", 28, 34);
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "bold 22px 'Plus Jakarta Sans', 'Be Vietnam Pro', sans-serif";
+    ctx.fillText("BẢNG TÊN & MÃ PIN GIÁO VIÊN", 28, 68);
+
+    ctx.fillStyle = "#93C5FD";
+    ctx.font = "600 14px 'JetBrains Mono', monospace";
+    ctx.fillText("🔗 Link web: " + getSharedAppUrl(), 28, 102);
+
+    // Table Header
+    const tableX = 24;
+    const tableW = width - 48;
+    const col1W = 64;
+    const col3W = 160;
+    const col2W = tableW - col1W - col3W;
+    let curY = headerH + 12;
+
+    ctx.fillStyle = "#2563EB";
+    ctx.fillRect(tableX, curY, tableW, tableHeadH);
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "bold 14px 'Be Vietnam Pro', sans-serif";
+    ctx.fillText("STT", tableX + 18, curY + 27);
+    ctx.fillText("Họ và tên Giáo viên", tableX + col1W + 16, curY + 27);
+    ctx.fillText("Mã PIN đăng nhập", tableX + col1W + col2W + 16, curY + 27);
+
+    curY += tableHeadH;
+
+    // Rows
+    teachers.forEach((t, idx) => {
+      ctx.fillStyle = idx % 2 === 0 ? "#FFFFFF" : "#F1F5F9";
+      ctx.fillRect(tableX, curY, tableW, rowH);
+
+      ctx.strokeStyle = "#CBD5E1";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(tableX, curY, tableW, rowH);
+
+      // STT
+      ctx.fillStyle = "#64748B";
+      ctx.font = "bold 14px 'JetBrains Mono', monospace";
+      ctx.fillText(String(idx + 1), tableX + 24, curY + 29);
+
+      // Teacher Name
+      ctx.fillStyle = "#0F172A";
+      ctx.font = "bold 15px 'Be Vietnam Pro', sans-serif";
+      ctx.fillText(t.name, tableX + col1W + 16, curY + 29);
+
+      // PIN Pill
+      const pinX = tableX + col1W + col2W + 16;
+      ctx.fillStyle = "#EFF6FF";
+      ctx.fillRect(pinX, curY + 9, 96, 28);
+      ctx.strokeStyle = "#93C5FD";
+      ctx.strokeRect(pinX, curY + 9, 96, 28);
+
+      ctx.fillStyle = "#1D4ED8";
+      ctx.font = "bold 16px 'JetBrains Mono', monospace";
+      ctx.fillText(t.pin, pinX + 24, curY + 29);
+
+      curY += rowH;
+    });
+
+    // Footer hint
+    ctx.fillStyle = "#475569";
+    ctx.font = "500 13px 'Be Vietnam Pro', sans-serif";
+    ctx.fillText("💡 Hướng dẫn: Mở link web → Bấm 'Đổi GV' ở góc phải trên cùng → Chọn tên & nhập mã PIN.", 28, curY + 28);
+
+    return canvas;
+  }
+
+  document.getElementById("btnCopyTeacherCardImg").addEventListener("click", async e => {
+    const btn = e.currentTarget;
+    const origText = btn.textContent;
+    const canvas = buildTeacherPinCardCanvas();
+
+    canvas.toBlob(async blob => {
+      if (!blob) return;
+      try {
+        if (navigator.clipboard && window.ClipboardItem) {
+          await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+          btn.textContent = "✓ Đã copy Ảnh! Hãy nhấn Ctrl+V vào ô chat";
+          setTimeout(() => { btn.textContent = origText; }, 3000);
+          return;
+        }
+      } catch (err) {}
+      // Fallback: show in lightbox so user can right-click copy image
+      document.getElementById("lightboxTitle").textContent = "Bảng Tên & Mã PIN (Click chuột phải chọn Sao chép hình ảnh)";
+      document.getElementById("lightboxImg").src = canvas.toDataURL("image/png");
+      document.getElementById("lightboxDialog").showModal();
+    }, "image/png");
   });
 
   function renderManageLists() {
     const tBox = document.getElementById("manageTeacherList");
     tBox.innerHTML = "";
     db.teachers.forEach((t, tIdx) => {
-      const shareUrl = `${window.location.origin}/?gv=${encodeURIComponent(t.id)}&pin=${encodeURIComponent(t.pin)}`;
       const row = document.createElement("div");
       row.className = "manage-item-row";
 
@@ -919,7 +1143,6 @@
           if (!newName) return;
           t.name = newName;
           t.pin = newPin;
-          // Update teacherName across existing reviews
           (db.reviews || []).forEach(r => {
             if (r.teacherId === t.id) r.teacherName = newName;
           });
@@ -945,24 +1168,15 @@
         });
       } else {
         row.innerHTML = `
-          <div><strong>${escapeHtml(t.name)}</strong> (PIN: <code>${escapeHtml(t.pin)}</code>)</div>
+          <div><strong>${escapeHtml(t.name)}</strong> — PIN: <code>${escapeHtml(t.pin)}</code></div>
           <div class="manage-row-actions">
-            <button type="button" class="btn-row-act" data-rename-t="${escapeHtml(t.id)}" title="Đổi tên hoặc mã PIN của giáo viên này">✏️ Đổi tên</button>
-            <button type="button" class="btn-row-act" data-copy-link="${escapeHtml(shareUrl)}" title="Copy đường dẫn gửi cho cô">🔗 Copy link</button>
-            <button type="button" class="btn-row-act danger" data-delete-t="${escapeHtml(t.id)}" title="Xóa giáo viên này">🗑️ Xóa</button>
+            <button type="button" class="btn-row-act" data-rename-t="${escapeHtml(t.id)}">✏️ Đổi tên</button>
+            <button type="button" class="btn-row-act danger" data-delete-t="${escapeHtml(t.id)}">🗑️ Xóa</button>
           </div>
         `;
         row.querySelector("[data-rename-t]").addEventListener("click", () => {
           editingTeacherId = t.id;
           renderManageLists();
-        });
-        row.querySelector("[data-copy-link]").addEventListener("click", async e => {
-          const btn = e.currentTarget;
-          try {
-            await navigator.clipboard.writeText(btn.dataset.copyLink);
-            btn.textContent = "✓ Đã copy!";
-            setTimeout(() => { btn.textContent = "🔗 Copy link"; }, 1800);
-          } catch (err) {}
         });
         row.querySelector("[data-delete-t]").addEventListener("click", () => {
           if (db.teachers.length <= 1) {
