@@ -6,6 +6,36 @@
   },
   "lessons": [
     {
+      "id": "ai-1-02-cl",
+      "code": "1.02.CL",
+      "grade": "Khối 1",
+      "themeId": "nova-academy",
+      "version": 1,
+      "title": "Nụ cười của Robot do con người tạo ra",
+      "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-1-nu-cuoi-robot-minh-hoa-rev03",
+      "totalSlides": 18
+    },
+    {
+      "id": "ai-2-22-cl",
+      "code": "2.22.CL",
+      "grade": "Khối 2",
+      "themeId": "nova-academy",
+      "version": 39,
+      "title": "Vì sao máy chia nhóm bị nhầm?",
+      "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-2-22-cl",
+      "totalSlides": 15
+    },
+    {
+      "id": "ai-3-28-cl",
+      "code": "3.28.CL",
+      "grade": "Khối 3",
+      "themeId": "nova-ailab",
+      "version": 1,
+      "title": "Ảnh sai nhãn khiến máy dễ đoán nhầm",
+      "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-3-anh-sai-nhan",
+      "totalSlides": 18
+    },
+    {
       "id": "ai-4-23-cl",
       "code": "4.23.CL",
       "grade": "Khối 4",
@@ -24,16 +54,6 @@
       "title": "Thêm ảnh mẫu và so sánh kết quả",
       "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-5-24-cl",
       "totalSlides": 18
-    },
-    {
-      "id": "ai-2-22-cl",
-      "code": "2.22.CL",
-      "grade": "Khối 2",
-      "themeId": "nova-academy",
-      "version": 39,
-      "title": "Vì sao máy chia nhóm bị nhầm?",
-      "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-2-22-cl",
-      "totalSlides": 15
     }
   ],
   "teachers": [

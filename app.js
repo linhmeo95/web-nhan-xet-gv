@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V11";
-  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V11";
+  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V12";
+  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V12";
   const SUPABASE_URL = "https://altabwyuskgvxtcnzlbw.supabase.co";
   const SUPABASE_KEY = "sb_publishable_LxTa5ODn1kObt_BBAwvLxw_2E3OXZUd";
   const SUPABASE_TABLE = "novastars_app_state";
