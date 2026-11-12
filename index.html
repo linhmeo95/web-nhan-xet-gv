@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phiếu Nhận Xét Bài Giảng — NovaStars</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- COMPACT TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand-mark" aria-hidden="true">NS</div>
+      <h1 class="brand-title">Phiếu Nhận Xét Bài Giảng</h1>
+      <nav class="lesson-nav" id="lessonNav" aria-label="Chọn bài giảng"></nav>
+    </div>
+
+    <div class="topbar-right">
+      <span class="save-badge" id="saveText">✓ Tự động lưu</span>
+
+      <div class="user-switcher">
+        <span class="user-dot"></span>
+        <strong id="currentUserName">Cô Ngân</strong>
+        <button type="button" class="btn-switch-user" id="btnSwitchUser">Đổi GV</button>
+      </div>
+
+      <button type="button" class="btn-admin-toggle" id="btnToggleAdmin">
+        📊 Quản lý (Admin)
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE: SINGLE CLEAN SCREEN -->
+  <main class="single-workspace" id="teacherWorkspace">
+    <div class="workspace-container">
+      <!-- LESSON HEADER + OPTIONAL REAL HD-TUONGTAC OPENERS -->
+      <section class="editor-header" aria-label="Thông tin bài giảng và nút mở Slide thật">
+        <div class="editor-lesson-info">
+          <span class="lesson-code-tag" id="lblCurrentLessonCode">4.23.CL</span>
+          <div>
+            <h2 class="editor-lesson-title" id="lblCurrentLessonTitle">Ý tưởng chiếc máy thông minh giúp ích trường em</h2>
+            <p class="editor-lesson-sub" id="lblCurrentLessonMeta">Khối 4 · 19 slides trên HD Tương tác</p>
+          </div>
+        </div>
+
+        <div class="editor-actions">
+          <a href="#" target="_blank" rel="noopener" class="btn-open-tab" id="linkOpenHdTab" title="Mở Slide thật trên 1 tab mới">
+            ↗ Mở Slide bài giảng trên HD Tương tác
+          </a>
+
+          <span class="divider-v" aria-hidden="true"></span>
+
+          <span class="status-pill" id="reviewStatusPill">Đang soạn</span>
+          <button type="button" class="btn-submit-review" id="btnSubmitReview">
+            ✓ Nộp nhận xét
+          </button>
+        </div>
+      </section>
+
+      <!-- QUICK SLIDE TAGGER STRIP -->
+      <section class="quick-slide-bar" aria-label="Gắn nhanh số Slide">
+        <span class="quick-bar-label" id="lblQuickBarTarget">
+          📌 Bấm số Slide để chèn nhanh vào mục <strong>1. Điểm ưng ý</strong>:
+        </span>
+        <div class="slide-num-strip" id="slideNumStrip"></div>
+      </section>
+
+      <!-- 4 CLEAN CRITERIA CARDS (2x2 GRID) -->
+      <section class="criteria-grid" id="criteriaStack" aria-label="4 mục nhận xét"></section>
+    </div>
+  </main>
+
+  <!-- ADMIN / MANAGER VIEW -->
+  <section class="admin-dashboard hidden" id="adminWorkspace" aria-label="Trang Quản lý">
+    <div class="admin-container">
+      <div class="admin-top-bar">
+        <div>
+          <h2 class="admin-title">Tổng hợp Nhận xét của Giáo viên</h2>
+          <p class="admin-subtitle">Bấm vào từng ô để xem nhận xét hoặc xuất ra file Excel.</p>
+        </div>
+        <div class="admin-btns">
+          <button type="button" class="btn-secondary" id="btnOpenManageModal">⚙️ Danh sách GV &amp; Bài giảng</button>
+          <button type="button" class="btn-secondary" id="btnExportJsonForAi">🤖 Copy cho AI</button>
+          <button type="button" class="btn-primary-export" id="btnExportExcel">📊 Xuất file Excel (.xlsx)</button>
+        </div>
+      </div>
+
+      <!-- PROGRESS MATRIX -->
+      <div class="admin-card">
+        <h3>1. Tiến độ nộp nhận xét</h3>
+        <div class="table-responsive">
+          <table class="progress-matrix-table" id="progressMatrixTable"></table>
+        </div>
+      </div>
+
+      <!-- ALL TEACHER REVIEWS FOR SELECTED LESSON -->
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <h3 id="adminComparisonTitle">2. Chi tiết nhận xét — Bài 4.23.CL</h3>
+          <select id="adminTeacherFilter" class="select-control">
+            <option value="ALL">Tất cả Giáo viên</option>
+          </select>
+        </div>
+        <div class="admin-comparison-grid" id="adminComparisonGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL 1: SWITCH TEACHER / ADMIN -->
+  <dialog id="loginDialog" closedby="any" aria-labelledby="loginDialogTitle">
+    <div class="dialog-inner">
+      <div class="dialog-header">
+        <h2 id="loginDialogTitle">Chọn Giáo viên nhận xét</h2>
+        <button type="button" class="btn-close-dialog" data-close-dialog="loginDialog" aria-label="Đóng">✕</button>
+      </div>
+      <form id="loginForm" method="dialog">
+        <div class="form-group">
+          <label for="selectLoginUser">Giáo viên:</label>
+          <select id="selectLoginUser" class="input-control" autofocus></select>
+        </div>
+        <div class="form-group">
+          <label for="inputLoginPin">Mã PIN (4 số):</label>
+          <input type="password" id="inputLoginPin" class="input-control mono-input" maxlength="8">
+          <div class="quick-pin-hint" id="quickPinHint"></div>
+        </div>
+        <p class="form-error" id="loginErrorMsg" style="visibility: hidden;">Mã PIN chưa đúng.</p>
+        <div class="dialog-footer">
+          <button type="button" class="btn-secondary" data-close-dialog="loginDialog">Đóng</button>
+          <button type="submit" class="btn-primary" value="confirm">Chọn</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- MODAL 2: MANAGE TEACHERS & LESSONS -->
+  <dialog id="manageDialog" closedby="any" aria-labelledby="manageDialogTitle">
+    <div class="dialog-inner dialog-wide">
+      <div class="dialog-header">
+        <h2 id="manageDialogTitle">Quản lý Giáo viên &amp; Bài giảng</h2>
+        <button type="button" class="btn-close-dialog" data-close-dialog="manageDialog" aria-label="Đóng">✕</button>
+      </div>
+      <div class="manage-tabs">
+        <div class="manage-col">
+          <h3>👩‍🏫 Danh sách Giáo viên (Copy link gửi từng cô)</h3>
+          <div class="teacher-list-box" id="manageTeacherList"></div>
+          <div class="add-row-form">
+            <input type="text" id="newTeacherName" class="input-control" placeholder="Tên GV mới (VD: Cô Lan)">
+            <input type="text" id="newTeacherPin" class="input-control mono-input" placeholder="PIN (6666)" style="max-width: 110px;">
+            <button type="button" class="btn-primary" id="btnAddTeacher">+ Thêm</button>
+          </div>
+        </div>
+
+        <div class="manage-col">
+          <h3>📚 Danh sách Bài giảng (Link HD Tương tác)</h3>
+          <div class="lesson-list-box" id="manageLessonList"></div>
+          <div class="add-row-form">
+            <input type="text" id="newLessonCode" class="input-control" placeholder="Mã (VD: 3.15.CL)" style="max-width: 120px;">
+            <input type="text" id="newLessonTitle" class="input-control" placeholder="Tên bài giảng...">
+            <input type="text" id="newLessonUrl" class="input-control" placeholder="Link hd-tuongtac (tùy chọn)">
+            <button type="button" class="btn-primary" id="btnAddLesson">+ Thêm bài</button>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn-primary" data-close-dialog="manageDialog">Xong</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL 3: LIGHTBOX -->
+  <dialog id="lightboxDialog" closedby="any" aria-labelledby="lightboxTitle">
+    <div class="dialog-inner dialog-lightbox">
+      <div class="dialog-header">
+        <h2 id="lightboxTitle">Ảnh chụp màn hình đính kèm</h2>
+        <button type="button" class="btn-close-dialog" data-close-dialog="lightboxDialog" aria-label="Đóng">✕</button>
+      </div>
+      <div class="lightbox-body">
+        <img id="lightboxImg" src="" alt="Ảnh đính kèm">
+      </div>
+    </div>
+  </dialog>
+
+  <script src="data/initial_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
