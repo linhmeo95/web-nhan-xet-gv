@@ -2,7 +2,7 @@
   "meta": {
     "appTitle": "Nhận xét Bài giảng — NovaStars",
     "adminPin": "8888",
-    "updatedAt": "2026-11-12T07:15:05.394Z"
+    "updatedAt": "2026-11-12T16:15:00+07:00"
   },
   "lessons": [
     {
@@ -38,86 +38,807 @@
   ],
   "teachers": [
     {
-      "id": "gv-ngan",
-      "name": "Đinh Thi Hương",
-      "pin": "3333",
-      "role": "teacher"
-    },
-    {
-      "id": "gv-mai",
-      "name": "Phạm Mỹ Linh",
-      "pin": "4444",
-      "role": "teacher"
-    },
-    {
-      "id": "gv-huong",
-      "name": "Nguyễn Minh Tú",
-      "pin": "5555",
-      "role": "teacher"
-    },
-    {
       "id": "gv-tientt",
       "name": "Triệu Thị Tiên",
       "pin": "1111",
       "role": "teacher"
     },
     {
-      "id": "gv-tunm",
-      "name": "Tô Phương Diễm",
+      "id": "gv-minhtu",
+      "name": "Nguyễn Minh Tú",
       "pin": "2222",
+      "role": "teacher"
+    },
+    {
+      "id": "gv-lananh",
+      "name": "Lan Anh",
+      "pin": "3333",
       "role": "teacher"
     }
   ],
   "reviews": [
     {
-      "id": "rev-tientt-423",
+      "id": "rev__ai-4-23-cl__gv-tientt",
       "lessonId": "ai-4-23-cl",
       "teacherId": "gv-tientt",
       "teacherName": "Triệu Thị Tiên",
       "status": "submitted",
-      "updatedAt": "2026-11-10T15:30:00+07:00",
+      "updatedAt": "2026-11-12T16:00:00+07:00",
       "criteria": {
         "ung_y": {
           "slides": [
-            2
+            2,
+            10,
+            17,
+            14,
+            3,
+            6,
+            11
           ],
-          "text": "• [Slide 2]: Ý tưởng sáng tạo 1 công cụ thông minh giúp ích cho trường học thu hút trẻ hào hứng tham gia.",
+          "text": "• [Slide 2]: Chủ đề gần gũi với môi trường học đường: phân loại rác, nhầm lẫn thùng rác, thất lạc đồ dùng; học sinh lớp 4 dễ liên hệ thực tế.\n• Tiến trình tương đối logic: nhận diện vấn đề → tìm cách hỗ trợ → đề xuất ý tưởng → nhận góp ý → chỉnh sửa.\n• [Slide 10]: Hoạt động so sánh hai cách giúp học sinh cân nhắc phương án và hiểu một vấn đề có thể có nhiều cách giải quyết.\n• [Slide 17]: Hoạt động góp ý, tự sửa bài rèn lắng nghe, phản hồi và cải thiện ý tưởng.\n• [Slide 14]: Phiếu cá nhân và tiêu chí kiểm phiếu tạo căn cứ để giáo viên quan sát, đánh giá.\n• [Slide 3]: Game “Thám tử ở điểm bỏ rác” có 8 câu hỏi trắc nghiệm, hiển thị tiến trình và điểm số; tình huống gắn với việc học sinh gặp khó khi chọn thùng rác.\n• [Slide 6]: Game “Mở ô góp ý” có 2 hướng phản hồi cụ thể: máy giúp ai/giúp việc gì và người dùng có dễ làm theo không. Câu dẫn gợi ý cách diễn đạt góp ý, hỗ trợ học sinh phản hồi có trọng tâm.\n• [Slide 11]: Game “Xếp ba bước giúp bạn” yêu cầu sắp xếp mạch việc đang khó → cách máy hỗ trợ → việc con người làm tiếp, giúp củng cố vai trò hỗ trợ của AI và vai trò quyết định của con người.\n• Các game có giao diện nổi bật, thao tác tương tác và nội dung bám khá sát mục tiêu bài học.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd7ng3c-542a",
+              "id": "pt-8db11f579778",
               "slide": "2",
-              "text": "Ý tưởng sáng tạo 1 công cụ thông minh giúp ích cho trường học thu hút trẻ hào hứng tham gia.",
+              "text": "Chủ đề gần gũi với môi trường học đường: phân loại rác, nhầm lẫn thùng rác, thất lạc đồ dùng; học sinh lớp 4 dễ liên hệ thực tế.",
+              "images": []
+            },
+            {
+              "id": "pt-9ff8212e1e5f",
+              "slide": "",
+              "text": "Tiến trình tương đối logic: nhận diện vấn đề → tìm cách hỗ trợ → đề xuất ý tưởng → nhận góp ý → chỉnh sửa.",
+              "images": []
+            },
+            {
+              "id": "pt-37ea89d54ca2",
+              "slide": "10",
+              "text": "Hoạt động so sánh hai cách giúp học sinh cân nhắc phương án và hiểu một vấn đề có thể có nhiều cách giải quyết.",
+              "images": []
+            },
+            {
+              "id": "pt-f2ea26630d10",
+              "slide": "17",
+              "text": "Hoạt động góp ý, tự sửa bài rèn lắng nghe, phản hồi và cải thiện ý tưởng.",
+              "images": []
+            },
+            {
+              "id": "pt-52d80887d48a",
+              "slide": "14",
+              "text": "Phiếu cá nhân và tiêu chí kiểm phiếu tạo căn cứ để giáo viên quan sát, đánh giá.",
+              "images": []
+            },
+            {
+              "id": "pt-c5886f6a111a",
+              "slide": "3",
+              "text": "Game “Thám tử ở điểm bỏ rác” có 8 câu hỏi trắc nghiệm, hiển thị tiến trình và điểm số; tình huống gắn với việc học sinh gặp khó khi chọn thùng rác.",
+              "images": []
+            },
+            {
+              "id": "pt-2a229869f934",
+              "slide": "6",
+              "text": "Game “Mở ô góp ý” có 2 hướng phản hồi cụ thể: máy giúp ai/giúp việc gì và người dùng có dễ làm theo không. Câu dẫn gợi ý cách diễn đạt góp ý, hỗ trợ học sinh phản hồi có trọng tâm.",
+              "images": []
+            },
+            {
+              "id": "pt-925019957d65",
+              "slide": "11",
+              "text": "Game “Xếp ba bước giúp bạn” yêu cầu sắp xếp mạch việc đang khó → cách máy hỗ trợ → việc con người làm tiếp, giúp củng cố vai trò hỗ trợ của AI và vai trò quyết định của con người.",
+              "images": []
+            },
+            {
+              "id": "pt-6f775c12ec61",
+              "slide": "",
+              "text": "Các game có giao diện nổi bật, thao tác tương tác và nội dung bám khá sát mục tiêu bài học.",
               "images": []
             }
           ]
         },
         "chua_hieu": {
           "slides": [
-            5
+            2,
+            10,
+            3,
+            6,
+            11,
+            16
           ],
-          "text": "• [Slide 5]: Một số câu lệnh khá cô đọng, cần tường minh hơn để GV dễ hướng dẫn trẻ thao tác.",
+          "text": "• [Slide 2]: Chưa rõ máy nhận diện rác dựa trên thông tin nào: hình ảnh, ký hiệu, màu sắc hay dữ liệu được cung cấp trước.\n• Chưa rõ mức độ kiến thức AI học sinh cần nắm: chỉ nêu ý tưởng hay cần giải thích quy trình máy nhận thông tin, xử lý và đưa ra gợi ý.\n• [Slide 10]: Chưa thấy tình huống cụ thể để học sinh so sánh ưu, nhược điểm của biển hướng dẫn và máy gợi ý từ ảnh.\n• [Slide 3]: Với game 8 câu hỏi, ảnh mới vẫn chưa thể hiện toàn bộ câu hỏi và phản hồi; cần kiểm tra đủ 8 câu để đánh giá độ bao phủ, độ khó và tính chính xác của đáp án.\n• [Slide 6]: Ở game “Mở ô góp ý”, chưa rõ sau khi mở ô học sinh có ghi/nhập ý kiến trực tiếp hay chỉ đọc câu hỏi rồi trao đổi miệng; sản phẩm góp ý được lưu lại và đánh giá như thế nào.\n• [Slide 11]: Ở game “Xếp ba bước”, chưa rõ hệ thống có báo đúng/sai và giải thích thứ tự sau khi học sinh sắp xếp hay không.\n• [Slide 16]: Chưa rõ tiêu chí đánh giá một ý tưởng AI tốt ngoài việc xác định người cần giúp, thông tin máy dùng và lợi ích.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd7ng3c-qgh9",
-              "slide": "5",
-              "text": "Một số câu lệnh khá cô đọng, cần tường minh hơn để GV dễ hướng dẫn trẻ thao tác.",
+              "id": "pt-394521d8ff3b",
+              "slide": "2",
+              "text": "Chưa rõ máy nhận diện rác dựa trên thông tin nào: hình ảnh, ký hiệu, màu sắc hay dữ liệu được cung cấp trước.",
+              "images": []
+            },
+            {
+              "id": "pt-68a040dcbc2b",
+              "slide": "",
+              "text": "Chưa rõ mức độ kiến thức AI học sinh cần nắm: chỉ nêu ý tưởng hay cần giải thích quy trình máy nhận thông tin, xử lý và đưa ra gợi ý.",
+              "images": []
+            },
+            {
+              "id": "pt-5af17269426a",
+              "slide": "10",
+              "text": "Chưa thấy tình huống cụ thể để học sinh so sánh ưu, nhược điểm của biển hướng dẫn và máy gợi ý từ ảnh.",
+              "images": []
+            },
+            {
+              "id": "pt-50b66aa28015",
+              "slide": "3",
+              "text": "Với game 8 câu hỏi, ảnh mới vẫn chưa thể hiện toàn bộ câu hỏi và phản hồi; cần kiểm tra đủ 8 câu để đánh giá độ bao phủ, độ khó và tính chính xác của đáp án.",
+              "images": []
+            },
+            {
+              "id": "pt-f1476c4a7d9e",
+              "slide": "6",
+              "text": "Ở game “Mở ô góp ý”, chưa rõ sau khi mở ô học sinh có ghi/nhập ý kiến trực tiếp hay chỉ đọc câu hỏi rồi trao đổi miệng; sản phẩm góp ý được lưu lại và đánh giá như thế nào.",
+              "images": []
+            },
+            {
+              "id": "pt-23a586747563",
+              "slide": "11",
+              "text": "Ở game “Xếp ba bước”, chưa rõ hệ thống có báo đúng/sai và giải thích thứ tự sau khi học sinh sắp xếp hay không.",
+              "images": []
+            },
+            {
+              "id": "pt-aab524bf3d98",
+              "slide": "16",
+              "text": "Chưa rõ tiêu chí đánh giá một ý tưởng AI tốt ngoài việc xác định người cần giúp, thông tin máy dùng và lợi ích.",
               "images": []
             }
           ]
         },
         "cai_tien": {
           "slides": [
-            2
+            2,
+            9,
+            3,
+            6,
+            11,
+            14,
+            16
           ],
-          "text": "• [Slide 2]: Thêm hình ảnh mô phỏng bối cảnh hoặc vật dụng cụ thể trên slide.",
+          "text": "• [Slide 2]: Bổ sung tình huống khởi động có trải nghiệm thực tế, ví dụ học sinh cầm vỏ chai và lựa chọn thùng rác.\n• [Slide 9]: Làm rõ quy trình bằng sơ đồ: Nhận thông tin → Phân tích → Đưa ra gợi ý → Con người kiểm tra và quyết định.\n• Bổ sung ví dụ AI có thể nhầm khi ảnh mờ, đồ vật bị che khuất hoặc có hình dạng giống nhau.\n• [Slide 3]: Với game trắc nghiệm, nên có phản hồi giải thích ngắn sau mỗi câu và màn hình tổng kết sau 8 câu, nêu câu cần xem lại và kiến thức rút ra.\n• [Slide 6]: Với “Mở ô góp ý”, nên có phiếu/công cụ ghi lại một góp ý cụ thể để học sinh mang phản hồi đó về chỉnh sửa bản phác thảo; có thể bổ sung câu mẫu “Máy giúp… khi…” và “Nhóm nên làm rõ… vì…”.\n• [Slide 11]: Với “Xếp ba bước”, nên có phản hồi giải thích vì sao thứ tự đúng là việc đang khó → máy hỗ trợ → con người kiểm tra/quyết định; cho phép học sinh thử lại khi sai.\n• [Slide 14]: Thiết kế phiếu ý tưởng gồm: Vấn đề – Người cần giúp – Thông tin máy cần nhận – Cách máy hỗ trợ – Lợi ích – Việc con người cần kiểm tra.\n• [Slide 16]: Bổ sung tiêu chí đánh giá về tính hữu ích, khả thi, an toàn và phù hợp với người dùng.\n• [Slide 14]: Làm rõ sản phẩm đầu ra, chẳng hạn bản phác thảo máy thông minh kèm thuyết trình ngắn.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd7ng3c-9cnx",
+              "id": "pt-a450f8a6456c",
               "slide": "2",
-              "text": "Thêm hình ảnh mô phỏng bối cảnh hoặc vật dụng cụ thể trên slide.",
+              "text": "Bổ sung tình huống khởi động có trải nghiệm thực tế, ví dụ học sinh cầm vỏ chai và lựa chọn thùng rác.",
+              "images": []
+            },
+            {
+              "id": "pt-b9e3a15d1ac1",
+              "slide": "9",
+              "text": "Làm rõ quy trình bằng sơ đồ: Nhận thông tin → Phân tích → Đưa ra gợi ý → Con người kiểm tra và quyết định.",
+              "images": []
+            },
+            {
+              "id": "pt-bc10a100a198",
+              "slide": "",
+              "text": "Bổ sung ví dụ AI có thể nhầm khi ảnh mờ, đồ vật bị che khuất hoặc có hình dạng giống nhau.",
+              "images": []
+            },
+            {
+              "id": "pt-1b08fd15ceb0",
+              "slide": "3",
+              "text": "Với game trắc nghiệm, nên có phản hồi giải thích ngắn sau mỗi câu và màn hình tổng kết sau 8 câu, nêu câu cần xem lại và kiến thức rút ra.",
+              "images": []
+            },
+            {
+              "id": "pt-537113d8c0be",
+              "slide": "6",
+              "text": "Với “Mở ô góp ý”, nên có phiếu/công cụ ghi lại một góp ý cụ thể để học sinh mang phản hồi đó về chỉnh sửa bản phác thảo; có thể bổ sung câu mẫu “Máy giúp… khi…” và “Nhóm nên làm rõ… vì…”.",
+              "images": []
+            },
+            {
+              "id": "pt-f1c11600b5e9",
+              "slide": "11",
+              "text": "Với “Xếp ba bước”, nên có phản hồi giải thích vì sao thứ tự đúng là việc đang khó → máy hỗ trợ → con người kiểm tra/quyết định; cho phép học sinh thử lại khi sai.",
+              "images": []
+            },
+            {
+              "id": "pt-3c6bd38fd791",
+              "slide": "14",
+              "text": "Thiết kế phiếu ý tưởng gồm: Vấn đề – Người cần giúp – Thông tin máy cần nhận – Cách máy hỗ trợ – Lợi ích – Việc con người cần kiểm tra.",
+              "images": []
+            },
+            {
+              "id": "pt-ae815792178f",
+              "slide": "16",
+              "text": "Bổ sung tiêu chí đánh giá về tính hữu ích, khả thi, an toàn và phù hợp với người dùng.",
+              "images": []
+            },
+            {
+              "id": "pt-f8e36c917a9c",
+              "slide": "14",
+              "text": "Làm rõ sản phẩm đầu ra, chẳng hạn bản phác thảo máy thông minh kèm thuyết trình ngắn.",
+              "images": []
+            }
+          ]
+        },
+        "kho_khan": {
+          "slides": [
+            7,
+            3,
+            6,
+            11
+          ],
+          "text": "• Giáo viên có thể khó giải thích khái niệm trừu tượng như AI nhận diện hình ảnh, dữ liệu đầu vào và cách máy đưa ra gợi ý.\n• Học sinh có mức độ hiểu biết công nghệ khác nhau; một số em có thể nghĩ máy luôn đúng hoặc tự quyết định mọi việc.\n• Giáo viên cần kiến thức nền để phân biệt máy nhận diện, máy gợi ý và vai trò quyết định của con người.\n• [Slide 7]: Hoạt động góp ý chéo có thể khó với học sinh chưa quen nhận xét cụ thể, có căn cứ; các em dễ nhận xét chung chung như “hay”, “đẹp” thay vì chỉ ra lợi ích hoặc điểm cần sửa.\n• [Slide 3]: Khi tổ chức game 8 câu hỏi, giáo viên cần cân đối thời gian để học sinh đọc tình huống, suy nghĩ và giải thích lựa chọn; tránh để hoạt động chỉ tập trung vào tốc độ và điểm số.\n• [Slide 6]: Với “Mở ô góp ý”, giáo viên cần hướng dẫn học sinh đọc bản phác thảo của nhóm bạn và đưa ra phản hồi mang tính xây dựng, tránh góp ý cảm tính hoặc làm bạn mất tự tin.\n• [Slide 11]: Với “Xếp ba bước”, học sinh có thể nhầm thứ tự giữa việc máy gợi ý và việc con người kiểm tra/quyết định nếu chưa hiểu rõ vai trò của mỗi bên.\n• Cần chuẩn bị phương án thay thế nếu thiết bị, đường truyền hoặc thao tác game gặp trục trặc.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-32eaaea02629",
+              "slide": "",
+              "text": "Giáo viên có thể khó giải thích khái niệm trừu tượng như AI nhận diện hình ảnh, dữ liệu đầu vào và cách máy đưa ra gợi ý.",
+              "images": []
+            },
+            {
+              "id": "pt-79ad01c81bfa",
+              "slide": "",
+              "text": "Học sinh có mức độ hiểu biết công nghệ khác nhau; một số em có thể nghĩ máy luôn đúng hoặc tự quyết định mọi việc.",
+              "images": []
+            },
+            {
+              "id": "pt-7c1b8f08f05d",
+              "slide": "",
+              "text": "Giáo viên cần kiến thức nền để phân biệt máy nhận diện, máy gợi ý và vai trò quyết định của con người.",
+              "images": []
+            },
+            {
+              "id": "pt-07a1a1b322df",
+              "slide": "7",
+              "text": "Hoạt động góp ý chéo có thể khó với học sinh chưa quen nhận xét cụ thể, có căn cứ; các em dễ nhận xét chung chung như “hay”, “đẹp” thay vì chỉ ra lợi ích hoặc điểm cần sửa.",
+              "images": []
+            },
+            {
+              "id": "pt-ed341c028c1f",
+              "slide": "3",
+              "text": "Khi tổ chức game 8 câu hỏi, giáo viên cần cân đối thời gian để học sinh đọc tình huống, suy nghĩ và giải thích lựa chọn; tránh để hoạt động chỉ tập trung vào tốc độ và điểm số.",
+              "images": []
+            },
+            {
+              "id": "pt-55f6d89b3ec7",
+              "slide": "6",
+              "text": "Với “Mở ô góp ý”, giáo viên cần hướng dẫn học sinh đọc bản phác thảo của nhóm bạn và đưa ra phản hồi mang tính xây dựng, tránh góp ý cảm tính hoặc làm bạn mất tự tin.",
+              "images": []
+            },
+            {
+              "id": "pt-8c7ec3de409b",
+              "slide": "11",
+              "text": "Với “Xếp ba bước”, học sinh có thể nhầm thứ tự giữa việc máy gợi ý và việc con người kiểm tra/quyết định nếu chưa hiểu rõ vai trò của mỗi bên.",
+              "images": []
+            },
+            {
+              "id": "pt-27b8a05491ac",
+              "slide": "",
+              "text": "Cần chuẩn bị phương án thay thế nếu thiết bị, đường truyền hoặc thao tác game gặp trục trặc.",
+              "images": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rev__ai-5-24-cl__gv-tientt",
+      "lessonId": "ai-5-24-cl",
+      "teacherId": "gv-tientt",
+      "teacherName": "Triệu Thị Tiên",
+      "status": "submitted",
+      "updatedAt": "2026-11-12T16:00:00+07:00",
+      "criteria": {
+        "ung_y": {
+          "slides": [
+            2,
+            8
+          ],
+          "text": "• [Slide 2]: Chủ đề có tính thực tế, giúp học sinh hiểu AI cần có ảnh mẫu để nhận diện đồ vật.\n• Các hoạt động được sắp xếp theo trình tự: kiểm tra lần đầu, bổ sung ảnh, kiểm tra lại rồi so sánh kết quả.\n• [Slide 2]: Hình ảnh táo – lê khá trực quan, học sinh dễ quan sát và nhận ra sự thay đổi.\n• [Slide 8]: Game “Hai lần kiểm, em thấy gì?” có câu hỏi ngắn, giúp học sinh củng cố việc so sánh kết quả trước và sau khi bổ sung ảnh.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-45d5343d689e",
+              "slide": "2",
+              "text": "Chủ đề có tính thực tế, giúp học sinh hiểu AI cần có ảnh mẫu để nhận diện đồ vật.",
+              "images": []
+            },
+            {
+              "id": "pt-dbe0aa03cb5c",
+              "slide": "",
+              "text": "Các hoạt động được sắp xếp theo trình tự: kiểm tra lần đầu, bổ sung ảnh, kiểm tra lại rồi so sánh kết quả.",
+              "images": []
+            },
+            {
+              "id": "pt-689f8136e80b",
+              "slide": "2",
+              "text": "Hình ảnh táo – lê khá trực quan, học sinh dễ quan sát và nhận ra sự thay đổi.",
+              "images": []
+            },
+            {
+              "id": "pt-f88a4b473b31",
+              "slide": "8",
+              "text": "Game “Hai lần kiểm, em thấy gì?” có câu hỏi ngắn, giúp học sinh củng cố việc so sánh kết quả trước và sau khi bổ sung ảnh.",
+              "images": []
+            }
+          ]
+        },
+        "chua_hieu": {
+          "slides": [
+            9,
+            6,
+            8
+          ],
+          "text": "• [Slide 9]: Mình chưa hiểu rõ vì sao E3 được AI nhận diện đúng sau lần kiểm tra thứ hai, trong khi E4 vẫn bị nhận diện sai.\n• [Slide 6]: Chưa rõ các ảnh mẫu được bổ sung khác nhau ở điểm nào và dựa vào đâu để biết ảnh nào phù hợp.\n• Mình chưa nắm rõ học sinh cần hiểu đến mức nào về cách AI học từ ảnh mẫu.\n• [Slide 8]: Game có 2 câu hỏi; mình chưa rõ sau khi chọn đáp án, học sinh có được giải thích vì sao đúng hoặc sai không.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-a0aede3e2fda",
+              "slide": "9",
+              "text": "Mình chưa hiểu rõ vì sao E3 được AI nhận diện đúng sau lần kiểm tra thứ hai, trong khi E4 vẫn bị nhận diện sai.",
+              "images": []
+            },
+            {
+              "id": "pt-6882582912d0",
+              "slide": "6",
+              "text": "Chưa rõ các ảnh mẫu được bổ sung khác nhau ở điểm nào và dựa vào đâu để biết ảnh nào phù hợp.",
+              "images": []
+            },
+            {
+              "id": "pt-f1d52fa89f35",
+              "slide": "",
+              "text": "Mình chưa nắm rõ học sinh cần hiểu đến mức nào về cách AI học từ ảnh mẫu.",
+              "images": []
+            },
+            {
+              "id": "pt-ed4c7859f3b4",
+              "slide": "8",
+              "text": "Game có 2 câu hỏi; mình chưa rõ sau khi chọn đáp án, học sinh có được giải thích vì sao đúng hoặc sai không.",
+              "images": []
+            }
+          ]
+        },
+        "cai_tien": {
+          "slides": [
+            6,
+            8,
+            14
+          ],
+          "text": "• [Slide 6]: Nên có phần giải thích đơn giản, rõ hơn về việc AI học từ ảnh mẫu và vì sao thêm ảnh nhưng kết quả vẫn có thể sai.\n• [Slide 6]: Có thể cho học sinh quan sát hai bộ ảnh mẫu khác nhau để nhận ra ảnh cần rõ nét, đa dạng và thể hiện đúng đặc điểm.\n• [Slide 8]: Nên bổ sung phản hồi giải thích sau mỗi câu game để học sinh hiểu bài, không chỉ biết đáp án.\n• [Slide 14]: Phần vận dụng với chai, cốc nên hướng dẫn rõ học sinh cần đề xuất thêm ảnh nào và giải thích lựa chọn của mình.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-8861bab21ac4",
+              "slide": "6",
+              "text": "Nên có phần giải thích đơn giản, rõ hơn về việc AI học từ ảnh mẫu và vì sao thêm ảnh nhưng kết quả vẫn có thể sai.",
+              "images": []
+            },
+            {
+              "id": "pt-3cb61aeebb6e",
+              "slide": "6",
+              "text": "Có thể cho học sinh quan sát hai bộ ảnh mẫu khác nhau để nhận ra ảnh cần rõ nét, đa dạng và thể hiện đúng đặc điểm.",
+              "images": []
+            },
+            {
+              "id": "pt-947c5976a47d",
+              "slide": "8",
+              "text": "Nên bổ sung phản hồi giải thích sau mỗi câu game để học sinh hiểu bài, không chỉ biết đáp án.",
+              "images": []
+            },
+            {
+              "id": "pt-d9c2947f0f40",
+              "slide": "14",
+              "text": "Phần vận dụng với chai, cốc nên hướng dẫn rõ học sinh cần đề xuất thêm ảnh nào và giải thích lựa chọn của mình.",
+              "images": []
+            }
+          ]
+        },
+        "kho_khan": {
+          "slides": [
+            9
+          ],
+          "text": "• Với giáo viên mới tiếp cận nội dung AI, phần giải thích về ảnh mẫu và cách AI nhận diện có thể còn khó hiểu nếu chỉ đọc slide.\n• Học sinh có thể nghĩ cứ thêm nhiều ảnh thì AI sẽ luôn nhận diện đúng; giáo viên cần ví dụ cụ thể để điều chỉnh cách hiểu này.\n• [Slide 9]: Phần so sánh kết quả và yêu cầu giải thích có thể khó với học sinh chưa quen quan sát, nêu lý do.\n• [Slide 9]: Nếu không có đáp án và hướng dẫn rõ cho từng tình huống, giáo viên sẽ khó giải thích khi học sinh hỏi vì sao AI vẫn nhận diện sai.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-bb31b6f238e3",
+              "slide": "",
+              "text": "Với giáo viên mới tiếp cận nội dung AI, phần giải thích về ảnh mẫu và cách AI nhận diện có thể còn khó hiểu nếu chỉ đọc slide.",
+              "images": []
+            },
+            {
+              "id": "pt-bb824e9e5863",
+              "slide": "",
+              "text": "Học sinh có thể nghĩ cứ thêm nhiều ảnh thì AI sẽ luôn nhận diện đúng; giáo viên cần ví dụ cụ thể để điều chỉnh cách hiểu này.",
+              "images": []
+            },
+            {
+              "id": "pt-22748693f4e7",
+              "slide": "9",
+              "text": "Phần so sánh kết quả và yêu cầu giải thích có thể khó với học sinh chưa quen quan sát, nêu lý do.",
+              "images": []
+            },
+            {
+              "id": "pt-2ebaa1b6793e",
+              "slide": "9",
+              "text": "Nếu không có đáp án và hướng dẫn rõ cho từng tình huống, giáo viên sẽ khó giải thích khi học sinh hỏi vì sao AI vẫn nhận diện sai.",
+              "images": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rev__ai-2-22-cl__gv-tientt",
+      "lessonId": "ai-2-22-cl",
+      "teacherId": "gv-tientt",
+      "teacherName": "Triệu Thị Tiên",
+      "status": "submitted",
+      "updatedAt": "2026-11-12T16:00:00+07:00",
+      "criteria": {
+        "ung_y": {
+          "slides": [
+            3,
+            15
+          ],
+          "text": "• [Slide 3]: Tình huống máy chia nhóm nhầm đồ vật gần gũi, dễ quan sát và phù hợp để học sinh lớp 2 tìm hiểu vì sao AI có thể mắc lỗi.\n• [Slide 3]: Học sinh được kiểm tra kết quả phân nhóm, quan sát vật và nhãn, tìm chi tiết cần xem lại rồi giải thích nguyên nhân máy nhầm.\n• Tiến trình từ phát hiện lỗi → quan sát kỹ → trao đổi theo lượt → nêu điều rút ra → kiểm tra trường hợp mới khá rõ ràng.\n• [Slide 3]: Các ví dụ bút chì, thước kẻ, chai, cốc tạo cơ hội cho học sinh so sánh hình dạng, góc nhìn, nhãn và đặc điểm dễ gây nhầm.\n• [Slide 15]: Bài có thông điệp quan trọng: AI có thể phân loại sai; con người cần quan sát, kiểm tra và sửa lại khi cần.\n• Slide có màu sắc phân biệt hoạt động, hình ảnh đồ vật đơn giản, ít chi tiết thừa nên học sinh dễ tập trung vào nhiệm vụ.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-00a9ba57f77a",
+              "slide": "3",
+              "text": "Tình huống máy chia nhóm nhầm đồ vật gần gũi, dễ quan sát và phù hợp để học sinh lớp 2 tìm hiểu vì sao AI có thể mắc lỗi.",
+              "images": []
+            },
+            {
+              "id": "pt-c9831d9e6614",
+              "slide": "3",
+              "text": "Học sinh được kiểm tra kết quả phân nhóm, quan sát vật và nhãn, tìm chi tiết cần xem lại rồi giải thích nguyên nhân máy nhầm.",
+              "images": []
+            },
+            {
+              "id": "pt-693065577254",
+              "slide": "",
+              "text": "Tiến trình từ phát hiện lỗi → quan sát kỹ → trao đổi theo lượt → nêu điều rút ra → kiểm tra trường hợp mới khá rõ ràng.",
+              "images": []
+            },
+            {
+              "id": "pt-2b5d87423de1",
+              "slide": "3",
+              "text": "Các ví dụ bút chì, thước kẻ, chai, cốc tạo cơ hội cho học sinh so sánh hình dạng, góc nhìn, nhãn và đặc điểm dễ gây nhầm.",
+              "images": []
+            },
+            {
+              "id": "pt-54a3f31fae23",
+              "slide": "15",
+              "text": "Bài có thông điệp quan trọng: AI có thể phân loại sai; con người cần quan sát, kiểm tra và sửa lại khi cần.",
+              "images": []
+            },
+            {
+              "id": "pt-5c731f1facc0",
+              "slide": "",
+              "text": "Slide có màu sắc phân biệt hoạt động, hình ảnh đồ vật đơn giản, ít chi tiết thừa nên học sinh dễ tập trung vào nhiệm vụ.",
+              "images": []
+            }
+          ]
+        },
+        "chua_hieu": {
+          "slides": [
+            5,
+            11,
+            7
+          ],
+          "text": "• [Slide 5]: Chưa rõ nguyên nhân chính của từng trường hợp AI nhầm: do hình dạng tương tự, góc chụp, nhãn/chi tiết gắn trên vật hay dữ liệu mẫu chưa đủ.\n• Chưa rõ học sinh cần phân biệt “máy nhìn nhầm” với “máy được cung cấp dữ liệu/nhãn chưa phù hợp” ở mức độ nào.\n• [Slide 5]: Cần làm rõ tiêu chí để xác định một vật có khớp với nhãn phân nhóm hay không, nhất là khi hình ảnh có thêm chi tiết như giấy nhãn.\n• [Slide 11]: Chưa rõ hoạt động kiểm tra trường hợp mới nhằm đánh giá học sinh đã hiểu nguyên nhân lỗi hay chỉ kiểm tra khả năng chọn nhãn đúng.\n• [Slide 7]: Chưa rõ cách giáo viên xử lý nếu học sinh đưa ra nhiều giả thuyết khác nhau về lý do máy nhầm.\n• Chưa thấy phần trò chơi tương tác riêng trong các hình đã gửi nên chưa có cơ sở nhận xét về game (nếu bài có game).",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-af70b96f54ac",
+              "slide": "5",
+              "text": "Chưa rõ nguyên nhân chính của từng trường hợp AI nhầm: do hình dạng tương tự, góc chụp, nhãn/chi tiết gắn trên vật hay dữ liệu mẫu chưa đủ.",
+              "images": []
+            },
+            {
+              "id": "pt-3cb7bcc8e237",
+              "slide": "",
+              "text": "Chưa rõ học sinh cần phân biệt “máy nhìn nhầm” với “máy được cung cấp dữ liệu/nhãn chưa phù hợp” ở mức độ nào.",
+              "images": []
+            },
+            {
+              "id": "pt-bdfb7d4b9cda",
+              "slide": "5",
+              "text": "Cần làm rõ tiêu chí để xác định một vật có khớp với nhãn phân nhóm hay không, nhất là khi hình ảnh có thêm chi tiết như giấy nhãn.",
+              "images": []
+            },
+            {
+              "id": "pt-157ee6d1f8a0",
+              "slide": "11",
+              "text": "Chưa rõ hoạt động kiểm tra trường hợp mới nhằm đánh giá học sinh đã hiểu nguyên nhân lỗi hay chỉ kiểm tra khả năng chọn nhãn đúng.",
+              "images": []
+            },
+            {
+              "id": "pt-3030864530f8",
+              "slide": "7",
+              "text": "Chưa rõ cách giáo viên xử lý nếu học sinh đưa ra nhiều giả thuyết khác nhau về lý do máy nhầm.",
+              "images": []
+            },
+            {
+              "id": "pt-67d2565c4fcd",
+              "slide": "",
+              "text": "Chưa thấy phần trò chơi tương tác riêng trong các hình đã gửi nên chưa có cơ sở nhận xét về game (nếu bài có game).",
+              "images": []
+            }
+          ]
+        },
+        "cai_tien": {
+          "slides": [
+            5,
+            6,
+            9,
+            11,
+            12,
+            15
+          ],
+          "text": "• [Slide 5]: Bổ sung bảng phân tích lỗi gồm: hình ảnh đầu vào – kết quả AI đưa ra – điểm dễ gây nhầm – cách kiểm tra lại.\n• [Slide 6]: Đưa ra các cặp hình đối chứng chỉ thay đổi một yếu tố (góc chụp, nhãn, độ rõ nét hoặc vật bị che khuất) để học sinh nhận ra yếu tố ảnh hưởng.\n• [Slide 9]: Làm rõ quy trình kiểm tra: Quan sát vật → Đọc nhãn → So sánh đặc điểm → Đối chiếu kết quả AI → Quyết định có cần sửa hay không.\n• [Slide 5]: Bổ sung tình huống AI phân loại sai nhưng học sinh cần dùng bằng chứng để giải thích, tránh đoán nguyên nhân chung chung.\n• [Slide 11]: Với hoạt động trường hợp mới, nên yêu cầu học sinh dự đoán máy có thể nhầm ở điểm nào và đề xuất cách kiểm tra trước khi xem kết quả.\n• [Slide 12]: Có thể cho nhóm tự tạo một ví dụ “dễ gây nhầm” bằng thẻ hình, sau đó nhóm khác thử phân loại và giải thích.\n• [Slide 15]: Bổ sung tiêu chí đánh giá: nhận ra lỗi, nêu được bằng chứng, giải thích hợp lý và đề xuất được cách kiểm tra/sửa.\n• Cần có đáp án giải thích cho từng tình huống để giáo viên thống nhất nội dung chuyển giao.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-adcd1a009d7f",
+              "slide": "5",
+              "text": "Bổ sung bảng phân tích lỗi gồm: hình ảnh đầu vào – kết quả AI đưa ra – điểm dễ gây nhầm – cách kiểm tra lại.",
+              "images": []
+            },
+            {
+              "id": "pt-7aae8b8fa044",
+              "slide": "6",
+              "text": "Đưa ra các cặp hình đối chứng chỉ thay đổi một yếu tố (góc chụp, nhãn, độ rõ nét hoặc vật bị che khuất) để học sinh nhận ra yếu tố ảnh hưởng.",
+              "images": []
+            },
+            {
+              "id": "pt-a796534fcef7",
+              "slide": "9",
+              "text": "Làm rõ quy trình kiểm tra: Quan sát vật → Đọc nhãn → So sánh đặc điểm → Đối chiếu kết quả AI → Quyết định có cần sửa hay không.",
+              "images": []
+            },
+            {
+              "id": "pt-e52be8350d70",
+              "slide": "5",
+              "text": "Bổ sung tình huống AI phân loại sai nhưng học sinh cần dùng bằng chứng để giải thích, tránh đoán nguyên nhân chung chung.",
+              "images": []
+            },
+            {
+              "id": "pt-1599e7a4b717",
+              "slide": "11",
+              "text": "Với hoạt động trường hợp mới, nên yêu cầu học sinh dự đoán máy có thể nhầm ở điểm nào và đề xuất cách kiểm tra trước khi xem kết quả.",
+              "images": []
+            },
+            {
+              "id": "pt-5e370d63cc80",
+              "slide": "12",
+              "text": "Có thể cho nhóm tự tạo một ví dụ “dễ gây nhầm” bằng thẻ hình, sau đó nhóm khác thử phân loại và giải thích.",
+              "images": []
+            },
+            {
+              "id": "pt-744c215bc84c",
+              "slide": "15",
+              "text": "Bổ sung tiêu chí đánh giá: nhận ra lỗi, nêu được bằng chứng, giải thích hợp lý và đề xuất được cách kiểm tra/sửa.",
+              "images": []
+            },
+            {
+              "id": "pt-203a20227825",
+              "slide": "",
+              "text": "Cần có đáp án giải thích cho từng tình huống để giáo viên thống nhất nội dung chuyển giao.",
+              "images": []
+            }
+          ]
+        },
+        "kho_khan": {
+          "slides": [
+            7
+          ],
+          "text": "• Giáo viên cần hiểu tương đối chắc vì sao AI có thể phân loại nhầm để tránh giải thích theo cảm tính hoặc quy kết máy chỉ “không thông minh”.\n• Học sinh có thể chỉ nhìn hình dạng tổng thể mà bỏ qua nhãn, góc chụp hoặc chi tiết nhỏ; giáo viên cần hướng dẫn quan sát có mục đích.\n• Một số em có thể cho rằng máy sai hoàn toàn hoặc con người luôn đúng; cần làm rõ cả máy và con người đều cần kiểm tra bằng bằng chứng.\n• [Slide 7]: Hoạt động trao đổi theo lượt và giải thích lý do có thể kéo dài nếu học sinh chưa quen nêu nhận xét ngắn gọn, có căn cứ.\n• Học sinh có vốn từ và khả năng diễn đạt khác nhau; giáo viên cần câu hỏi gợi mở để các em nói rõ “máy nhầm vì…”.\n• Nếu hình ảnh trình chiếu nhỏ hoặc thiếu độ nét, học sinh khó quan sát các chi tiết làm căn cứ xác định lỗi.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-0e17e403d6cc",
+              "slide": "",
+              "text": "Giáo viên cần hiểu tương đối chắc vì sao AI có thể phân loại nhầm để tránh giải thích theo cảm tính hoặc quy kết máy chỉ “không thông minh”.",
+              "images": []
+            },
+            {
+              "id": "pt-ce4d5ea03fdc",
+              "slide": "",
+              "text": "Học sinh có thể chỉ nhìn hình dạng tổng thể mà bỏ qua nhãn, góc chụp hoặc chi tiết nhỏ; giáo viên cần hướng dẫn quan sát có mục đích.",
+              "images": []
+            },
+            {
+              "id": "pt-af7fc1522f3e",
+              "slide": "",
+              "text": "Một số em có thể cho rằng máy sai hoàn toàn hoặc con người luôn đúng; cần làm rõ cả máy và con người đều cần kiểm tra bằng bằng chứng.",
+              "images": []
+            },
+            {
+              "id": "pt-c2aa02d729db",
+              "slide": "7",
+              "text": "Hoạt động trao đổi theo lượt và giải thích lý do có thể kéo dài nếu học sinh chưa quen nêu nhận xét ngắn gọn, có căn cứ.",
+              "images": []
+            },
+            {
+              "id": "pt-e1b3dba92b42",
+              "slide": "",
+              "text": "Học sinh có vốn từ và khả năng diễn đạt khác nhau; giáo viên cần câu hỏi gợi mở để các em nói rõ “máy nhầm vì…”.",
+              "images": []
+            },
+            {
+              "id": "pt-f61ec57ec7a9",
+              "slide": "",
+              "text": "Nếu hình ảnh trình chiếu nhỏ hoặc thiếu độ nét, học sinh khó quan sát các chi tiết làm căn cứ xác định lỗi.",
+              "images": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rev__ai-4-23-cl__gv-minhtu",
+      "lessonId": "ai-4-23-cl",
+      "teacherId": "gv-minhtu",
+      "teacherName": "Nguyễn Minh Tú",
+      "status": "submitted",
+      "updatedAt": "2026-11-12T16:00:00+07:00",
+      "criteria": {
+        "ung_y": {
+          "slides": [
+            2
+          ],
+          "text": "• [Slide 2]: Bài học có chủ đề gần gũi với học sinh, tạo cơ hội để các con đưa ra những ý tưởng sáng tạo. Hình thức cho học sinh tự suy nghĩ, thiết kế và chia sẻ sản phẩm sẽ tạo hứng thú tham gia của học sinh.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-f3c085e90812",
+              "slide": "2",
+              "text": "Bài học có chủ đề gần gũi với học sinh, tạo cơ hội để các con đưa ra những ý tưởng sáng tạo. Hình thức cho học sinh tự suy nghĩ, thiết kế và chia sẻ sản phẩm sẽ tạo hứng thú tham gia của học sinh.",
+              "images": []
+            }
+          ]
+        },
+        "chua_hieu": {
+          "slides": [
+            5,
+            7
+          ],
+          "text": "• [Slide 5]: Ở hoạt động 2 – Phác hai cách giúp: Tên tiêu đề khó hiểu. Chưa rõ học sinh cần vẽ bản phác thảo chiếc máy hay chỉ ghi ý tưởng bằng chữ. Nếu yêu cầu cả vẽ và viết, giáo viên cần hướng dẫn cụ thể để học sinh thực hiện đúng.\n• [Slide 7]: Ở hoạt động Góp ý cho nhóm bên: Phần hướng dẫn yêu cầu học sinh đánh dấu một phương án cần góp ý, nhưng chưa có mẫu phiếu hoặc tiêu chí nhận xét cụ thể. Học sinh có thể chưa biết cần góp ý như thế nào.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-952b3056d6c0",
+              "slide": "5",
+              "text": "Ở hoạt động 2 – Phác hai cách giúp: Tên tiêu đề khó hiểu. Chưa rõ học sinh cần vẽ bản phác thảo chiếc máy hay chỉ ghi ý tưởng bằng chữ. Nếu yêu cầu cả vẽ và viết, giáo viên cần hướng dẫn cụ thể để học sinh thực hiện đúng.",
+              "images": []
+            },
+            {
+              "id": "pt-7c2856faa8c7",
+              "slide": "7",
+              "text": "Ở hoạt động Góp ý cho nhóm bên: Phần hướng dẫn yêu cầu học sinh đánh dấu một phương án cần góp ý, nhưng chưa có mẫu phiếu hoặc tiêu chí nhận xét cụ thể. Học sinh có thể chưa biết cần góp ý như thế nào.",
+              "images": []
+            }
+          ]
+        },
+        "cai_tien": {
+          "slides": [
+            5,
+            7
+          ],
+          "text": "• [Slide 5]: Hoạt động 2. Phác hai cách giúp: Có thể sử dụng phiếu học tập chia thành hai ô rõ ràng để nhóm phác thảo hai phương án, giúp việc thực hiện và so sánh thuận tiện hơn.\n• [Slide 7]: Hoạt động Góp ý cho nhóm bên: Nên thiết kế phiếu góp ý ngắn gọn với hai nội dung: Điểm nhóm bạn làm tốt và Điểm nhóm bạn có thể cải thiện. Cách này sẽ giúp học sinh lớp 4 dễ đưa ra nhận xét hơn.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-d514106970ac",
+              "slide": "5",
+              "text": "Hoạt động 2. Phác hai cách giúp: Có thể sử dụng phiếu học tập chia thành hai ô rõ ràng để nhóm phác thảo hai phương án, giúp việc thực hiện và so sánh thuận tiện hơn.",
+              "images": []
+            },
+            {
+              "id": "pt-d1d736a062c2",
+              "slide": "7",
+              "text": "Hoạt động Góp ý cho nhóm bên: Nên thiết kế phiếu góp ý ngắn gọn với hai nội dung: Điểm nhóm bạn làm tốt và Điểm nhóm bạn có thể cải thiện. Cách này sẽ giúp học sinh lớp 4 dễ đưa ra nhận xét hơn.",
+              "images": []
+            }
+          ]
+        },
+        "kho_khan": {
+          "slides": [
+            5,
+            7,
+            14
+          ],
+          "text": "• [Slide 5]: Hoạt động 2 – Phác hai cách giúp: Thời gian 3 phút để cả nhóm thống nhất và phác thảo hai phương án có thể hơi ngắn, đặc biệt với những nhóm có nhiều ý kiến khác nhau.\n• [Slide 7]: Hoạt động Góp ý cho nhóm bên: Thời gian 2 phút để đọc, đánh giá và góp ý sản phẩm của nhóm khác có thể chưa đủ. Việc di chuyển, đổi bài cũng dễ khiến lớp mất trật tự nếu giáo viên không quy định cách thực hiện rõ ràng.\n• [Slide 14]: Hoạt động 4 – Viết hai ý tưởng của em: Học sinh phải viết hai ý tưởng, giải thích cách máy hỗ trợ, sau đó lựa chọn và nêu lí do. Với thời gian 7 phút, những học sinh có tốc độ viết chậm có thể không hoàn thành.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-cd1b07b37c83",
+              "slide": "5",
+              "text": "Hoạt động 2 – Phác hai cách giúp: Thời gian 3 phút để cả nhóm thống nhất và phác thảo hai phương án có thể hơi ngắn, đặc biệt với những nhóm có nhiều ý kiến khác nhau.",
+              "images": []
+            },
+            {
+              "id": "pt-7dcc0ee6805d",
+              "slide": "7",
+              "text": "Hoạt động Góp ý cho nhóm bên: Thời gian 2 phút để đọc, đánh giá và góp ý sản phẩm của nhóm khác có thể chưa đủ. Việc di chuyển, đổi bài cũng dễ khiến lớp mất trật tự nếu giáo viên không quy định cách thực hiện rõ ràng.",
+              "images": []
+            },
+            {
+              "id": "pt-85016f820171",
+              "slide": "14",
+              "text": "Hoạt động 4 – Viết hai ý tưởng của em: Học sinh phải viết hai ý tưởng, giải thích cách máy hỗ trợ, sau đó lựa chọn và nêu lí do. Với thời gian 7 phút, những học sinh có tốc độ viết chậm có thể không hoàn thành.",
+              "images": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rev__ai-5-24-cl__gv-minhtu",
+      "lessonId": "ai-5-24-cl",
+      "teacherId": "gv-minhtu",
+      "teacherName": "Nguyễn Minh Tú",
+      "status": "submitted",
+      "updatedAt": "2026-11-12T16:00:00+07:00",
+      "criteria": {
+        "ung_y": {
+          "slides": [
+            2
+          ],
+          "text": "• [Slide 2]: Chủ đề có tính thực hành, giúp học sinh nhận thấy vai trò của dữ liệu mẫu đối với kết quả nhận diện của máy. Hoạt động so sánh trước và sau có thể giúp học sinh hình thành tư duy phân tích và kiểm chứng.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-3e5511e65675",
+              "slide": "2",
+              "text": "Chủ đề có tính thực hành, giúp học sinh nhận thấy vai trò của dữ liệu mẫu đối với kết quả nhận diện của máy. Hoạt động so sánh trước và sau có thể giúp học sinh hình thành tư duy phân tích và kiểm chứng.",
+              "images": []
+            }
+          ]
+        },
+        "chua_hieu": {
+          "slides": [
+            5,
+            7
+          ],
+          "text": "• [Slide 5]: Ở hoạt động 2. Thêm mẫu và so sánh: Học sinh được lựa chọn thêm T3, T4 hoặc cả hai, nhưng slide tiếp theo lại sử dụng sẵn phương án thêm cả T3 và T4. Như vậy, mình chưa rõ việc lựa chọn của học sinh có ảnh hưởng đến kết quả hoạt động hay không.\n• [Slide 7]: Ở phần Lần kiểm thứ hai: Chưa rõ học sinh có được tự thao tác kiểm tra trên phần mềm hay chỉ quan sát kết quả mô phỏng mà giáo viên trình chiếu.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-e4d47aeeb136",
+              "slide": "5",
+              "text": "Ở hoạt động 2. Thêm mẫu và so sánh: Học sinh được lựa chọn thêm T3, T4 hoặc cả hai, nhưng slide tiếp theo lại sử dụng sẵn phương án thêm cả T3 và T4. Như vậy, mình chưa rõ việc lựa chọn của học sinh có ảnh hưởng đến kết quả hoạt động hay không.",
+              "images": []
+            },
+            {
+              "id": "pt-be112436ece3",
+              "slide": "7",
+              "text": "Ở phần Lần kiểm thứ hai: Chưa rõ học sinh có được tự thao tác kiểm tra trên phần mềm hay chỉ quan sát kết quả mô phỏng mà giáo viên trình chiếu.",
+              "images": []
+            }
+          ]
+        },
+        "cai_tien": {
+          "slides": [
+            4,
+            11
+          ],
+          "text": "• [Slide 4]: Phần Đối chiếu lần 1: Có thể tổ chức cho học sinh đổi phiếu với bạn để kiểm tra chéo, sau đó tự sửa kết quả. Hình thức này giúp tăng tương tác giữa học sinh với nhau.\n• [Slide 11]: Phần Em giải thích bằng ví dụ: Nên cung cấp mẫu câu ngắn để học sinh dễ diễn đạt, chẳng hạn: “Sau khi thêm ảnh mẫu..., kết quả của ảnh... đã thay đổi từ... thành...”. Cách này sẽ giúp các bạn còn hạn chế về diễn đạt hoàn thành nhiệm vụ thuận lợi hơn.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-c95e6b6348bd",
+              "slide": "4",
+              "text": "Phần Đối chiếu lần 1: Có thể tổ chức cho học sinh đổi phiếu với bạn để kiểm tra chéo, sau đó tự sửa kết quả. Hình thức này giúp tăng tương tác giữa học sinh với nhau.",
+              "images": []
+            },
+            {
+              "id": "pt-920e2752bd20",
+              "slide": "11",
+              "text": "Phần Em giải thích bằng ví dụ: Nên cung cấp mẫu câu ngắn để học sinh dễ diễn đạt, chẳng hạn: “Sau khi thêm ảnh mẫu..., kết quả của ảnh... đã thay đổi từ... thành...”. Cách này sẽ giúp các bạn còn hạn chế về diễn đạt hoàn thành nhiệm vụ thuận lợi hơn.",
               "images": []
             }
           ]
@@ -126,13 +847,13 @@
           "slides": [
             3
           ],
-          "text": "• [Slide 3]: Hoạt động nhóm phác thảo cách giúp trong thời gian ngắn cần hướng dẫn kỹ để kịp giờ.",
+          "text": "• [Slide 3]: Các hình ảnh E1–E4 và bảng kết quả được sử dụng lặp lại khá nhiều. Nếu giáo viên chỉ trình chiếu và yêu cầu học sinh ghi phiếu, tiết học có thể thiếu sự sôi nổi.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd7ng3c-v0df",
+              "id": "pt-8a3a97c463fa",
               "slide": "3",
-              "text": "Hoạt động nhóm phác thảo cách giúp trong thời gian ngắn cần hướng dẫn kỹ để kịp giờ.",
+              "text": "Các hình ảnh E1–E4 và bảng kết quả được sử dụng lặp lại khá nhiều. Nếu giáo viên chỉ trình chiếu và yêu cầu học sinh ghi phiếu, tiết học có thể thiếu sự sôi nổi.",
               "images": []
             }
           ]
@@ -140,76 +861,237 @@
       }
     },
     {
-      "id": "rev-tunm-423",
-      "lessonId": "ai-4-23-cl",
-      "teacherId": "gv-tunm",
-      "teacherName": "Tô Phương Diễm",
+      "id": "rev__ai-2-22-cl__gv-minhtu",
+      "lessonId": "ai-2-22-cl",
+      "teacherId": "gv-minhtu",
+      "teacherName": "Nguyễn Minh Tú",
       "status": "submitted",
-      "updatedAt": "2026-11-10T15:45:00+07:00",
+      "updatedAt": "2026-11-12T16:00:00+07:00",
+      "criteria": {
+        "ung_y": {
+          "slides": [
+            2
+          ],
+          "text": "• [Slide 2]: Nội dung tạo được sự tò mò, giúp học sinh hiểu máy thông minh cũng có thể mắc lỗi. Hoạt động phân loại gần gũi với khả năng nhận thức của học sinh lớp 2 và có thể tổ chức dưới hình thức trò chơi.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-b52efb9b8368",
+              "slide": "2",
+              "text": "Nội dung tạo được sự tò mò, giúp học sinh hiểu máy thông minh cũng có thể mắc lỗi. Hoạt động phân loại gần gũi với khả năng nhận thức của học sinh lớp 2 và có thể tổ chức dưới hình thức trò chơi.",
+              "images": []
+            }
+          ]
+        },
+        "chua_hieu": {
+          "slides": [
+            3,
+            6
+          ],
+          "text": "• [Slide 3]: Ở hoạt động 1: Học sinh được yêu cầu tự làm trên phiếu riêng, nhưng chưa rõ giáo viên sẽ hướng dẫn cách đánh dấu như thế nào để các con thực hiện thống nhất.\n• [Slide 6]: Ở HĐ 2: Chưa rõ học sinh chỉ cần đánh dấu phần bị che trên phiếu hay phải giải thích bằng lời sau khi quan sát.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-f402cc49b513",
+              "slide": "3",
+              "text": "Ở hoạt động 1: Học sinh được yêu cầu tự làm trên phiếu riêng, nhưng chưa rõ giáo viên sẽ hướng dẫn cách đánh dấu như thế nào để các con thực hiện thống nhất.",
+              "images": []
+            },
+            {
+              "id": "pt-1b70d45ae612",
+              "slide": "6",
+              "text": "Ở HĐ 2: Chưa rõ học sinh chỉ cần đánh dấu phần bị che trên phiếu hay phải giải thích bằng lời sau khi quan sát.",
+              "images": []
+            }
+          ]
+        },
+        "cai_tien": {
+          "slides": [
+            3
+          ],
+          "text": "• [Slide 3]: HĐ 1: Có thể tổ chức trò chơi “Nhìn nhanh – Nói đúng”, giáo viên lần lượt hiện hình và học sinh đồng thanh gọi tên hoặc giơ thẻ đáp án. Hình thức này giúp nhiều học sinh được tham gia thay vì chỉ một vài bạn phát biểu.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-9fbd5a6b6d4e",
+              "slide": "3",
+              "text": "HĐ 1: Có thể tổ chức trò chơi “Nhìn nhanh – Nói đúng”, giáo viên lần lượt hiện hình và học sinh đồng thanh gọi tên hoặc giơ thẻ đáp án. Hình thức này giúp nhiều học sinh được tham gia thay vì chỉ một vài bạn phát biểu.",
+              "images": []
+            }
+          ]
+        },
+        "kho_khan": {
+          "slides": [
+            3,
+            6
+          ],
+          "text": "• [Slide 3]: HĐ 1: Thời gian 2 phút tương đối ngắn nếu học sinh vừa phải quan sát, đọc nhãn vừa đánh dấu vào phiếu. Một số bạn có thể cần giáo viên giải thích lại yêu cầu.\n• [Slide 6]: Học sinh lớp 2 có khả năng tập trung và diễn đạt nguyên nhân còn hạn chế. Nếu tình huống chưa đủ trực quan, học sinh có thể chỉ nhận biết máy làm sai mà chưa hiểu vì sao.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-db03dc896492",
+              "slide": "3",
+              "text": "HĐ 1: Thời gian 2 phút tương đối ngắn nếu học sinh vừa phải quan sát, đọc nhãn vừa đánh dấu vào phiếu. Một số bạn có thể cần giáo viên giải thích lại yêu cầu.",
+              "images": []
+            },
+            {
+              "id": "pt-9d903ed5b7d8",
+              "slide": "6",
+              "text": "Học sinh lớp 2 có khả năng tập trung và diễn đạt nguyên nhân còn hạn chế. Nếu tình huống chưa đủ trực quan, học sinh có thể chỉ nhận biết máy làm sai mà chưa hiểu vì sao.",
+              "images": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rev__ai-4-23-cl__gv-lananh",
+      "lessonId": "ai-4-23-cl",
+      "teacherId": "gv-lananh",
+      "teacherName": "Lan Anh",
+      "status": "submitted",
+      "updatedAt": "2026-11-12T16:00:00+07:00",
+      "criteria": {
+        "ung_y": {
+          "slides": [
+            2
+          ],
+          "text": "• [Slide 2]: Ý tưởng sáng tạo 1 công cụ thu hút trẻ hào hứng tham gia vào các hoạt động.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-844af505f184",
+              "slide": "2",
+              "text": "Ý tưởng sáng tạo 1 công cụ thu hút trẻ hào hứng tham gia vào các hoạt động.",
+              "images": []
+            }
+          ]
+        },
+        "chua_hieu": {
+          "slides": [
+            14
+          ],
+          "text": "• [Slide 14]: Ngôn từ sử dụng trong bài nhiều từ tối nghĩa, hoặc nghĩa khó hiểu. Giáo viên khó hướng dẫn trẻ thao tác cần làm. Ví dụ: \"Nhận phiếu và viết riêng · 7 phút. Đọc tình huống A và B ngay trên phiếu. Hai ô, hai ý khác nhau. Ít nhất một ý dành cho tình huống B hoặc một việc mới chưa dùng trong bản nhóm.\"",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-b7bd60e730eb",
+              "slide": "14",
+              "text": "Ngôn từ sử dụng trong bài nhiều từ tối nghĩa, hoặc nghĩa khó hiểu. Giáo viên khó hướng dẫn trẻ thao tác cần làm. Ví dụ: \"Nhận phiếu và viết riêng · 7 phút. Đọc tình huống A và B ngay trên phiếu. Hai ô, hai ý khác nhau. Ít nhất một ý dành cho tình huống B hoặc một việc mới chưa dùng trong bản nhóm.\"",
+              "images": []
+            }
+          ]
+        },
+        "cai_tien": {
+          "slides": [
+            2
+          ],
+          "text": "• [Slide 2]: Thêm hình ảnh mô phỏng bối cảnh hoặc vật dụng để hình dung.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-113d9c352648",
+              "slide": "2",
+              "text": "Thêm hình ảnh mô phỏng bối cảnh hoặc vật dụng để hình dung.",
+              "images": []
+            }
+          ]
+        },
+        "kho_khan": {
+          "slides": [
+            3,
+            5
+          ],
+          "text": "• [Slide 3]: Hoạt động 1: Các câu hỏi đang khó hiểu ngữ nghĩa với trẻ, thường phải liên kết việc loại trừ đáp án để tìm ra đáp án đúng.\n• [Slide 5]: Hoạt động 2: Hoạt động này nhóm trẻ phác thảo ra cách giúp, trả lời những câu hỏi đó thì khó có thể tổ chức trong 3 phút.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-effa059ea456",
+              "slide": "3",
+              "text": "Hoạt động 1: Các câu hỏi đang khó hiểu ngữ nghĩa với trẻ, thường phải liên kết việc loại trừ đáp án để tìm ra đáp án đúng.",
+              "images": []
+            },
+            {
+              "id": "pt-c475d95c14da",
+              "slide": "5",
+              "text": "Hoạt động 2: Hoạt động này nhóm trẻ phác thảo ra cách giúp, trả lời những câu hỏi đó thì khó có thể tổ chức trong 3 phút.",
+              "images": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rev__ai-5-24-cl__gv-lananh",
+      "lessonId": "ai-5-24-cl",
+      "teacherId": "gv-lananh",
+      "teacherName": "Lan Anh",
+      "status": "submitted",
+      "updatedAt": "2026-11-12T16:00:00+07:00",
       "criteria": {
         "ung_y": {
           "slides": [
             2,
-            6
+            1
           ],
-          "text": "• [Slide 2]: Chủ đề gắn với thực tế trường học gần gũi với HS lớp 4.\n• [Slide 6]: Hệ thống 4 Game đa dạng.",
+          "text": "• [Slide 2]: Nội dung bài về kiểu mẫu, so sánh và cải tiến AI thú vị với trẻ.\n• [Slide 1]: Màu sắc slide tươi sáng.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd7ng3c-3bw8",
+              "id": "pt-b7c5d818142e",
               "slide": "2",
-              "text": "Chủ đề gắn với thực tế trường học gần gũi với HS lớp 4.",
+              "text": "Nội dung bài về kiểu mẫu, so sánh và cải tiến AI thú vị với trẻ.",
               "images": []
             },
             {
-              "id": "pt-mwd7ng3c-okfc",
-              "slide": "6",
-              "text": "Hệ thống 4 Game đa dạng.",
+              "id": "pt-27715e71cfdd",
+              "slide": "1",
+              "text": "Màu sắc slide tươi sáng.",
               "images": []
             }
           ]
         },
         "chua_hieu": {
           "slides": [
-            5
+            2
           ],
-          "text": "• [Slide 5]: Cần làm rõ hơn yêu cầu vẽ hay viết ở HĐ 2 và cách ghi nhận xét chéo.",
+          "text": "• [Slide 2]: Bài này chỉ có hoạt động cá nhân rất đơn giản, chưa có các hoạt động khác cho trẻ thực hành, luyện tập.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd7ng3c-7mp2",
-              "slide": "5",
-              "text": "Cần làm rõ hơn yêu cầu vẽ hay viết ở HĐ 2 và cách ghi nhận xét chéo.",
+              "id": "pt-9ee33cc55bc6",
+              "slide": "2",
+              "text": "Bài này chỉ có hoạt động cá nhân rất đơn giản, chưa có các hoạt động khác cho trẻ thực hành, luyện tập.",
               "images": []
             }
           ]
         },
         "cai_tien": {
           "slides": [
-            5
+            14
           ],
-          "text": "• [Slide 5]: Chiếu trực quan Mẫu phiếu học tập và Phiếu góp ý 2 mục lên slide.",
+          "text": "• [Slide 14]: Cần bổ sung thêm hoạt động tương tác nhóm và phiếu thực hành mở rộng để học sinh vận dụng so sánh ảnh mẫu.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd7ng3c-jvgw",
-              "slide": "5",
-              "text": "Chiếu trực quan Mẫu phiếu học tập và Phiếu góp ý 2 mục lên slide.",
+              "id": "pt-cea4d2d95556",
+              "slide": "14",
+              "text": "Cần bổ sung thêm hoạt động tương tác nhóm và phiếu thực hành mở rộng để học sinh vận dụng so sánh ảnh mẫu.",
               "images": []
             }
           ]
         },
         "kho_khan": {
           "slides": [
-            5
+            2
           ],
-          "text": "• [Slide 5]: Thời gian đổi bài góp ý chéo (2–3 phút) khá ngắn.",
+          "text": "• [Slide 2]: Giáo viên hướng dẫn triển khai nhiều nội dung, phần làm việc của trẻ bị ít, nội dung kiến thức chưa rõ ràng là trẻ sẽ làm được gì sau tiết này.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd7ng3c-hofn",
-              "slide": "5",
-              "text": "Thời gian đổi bài góp ý chéo (2–3 phút) khá ngắn.",
+              "id": "pt-10a4ed4666c6",
+              "slide": "2",
+              "text": "Giáo viên hướng dẫn triển khai nhiều nội dung, phần làm việc của trẻ bị ít, nội dung kiến thức chưa rõ ràng là trẻ sẽ làm được gì sau tiết này.",
               "images": []
             }
           ]
@@ -217,123 +1099,76 @@
       }
     },
     {
-      "id": "rev-gv-ngan-ai-4-23-cl-1794465849932",
-      "lessonId": "ai-4-23-cl",
-      "teacherId": "gv-ngan",
-      "teacherName": "Đinh Thi Hương",
-      "status": "draft",
-      "updatedAt": "2026-11-12T07:06:42.064Z",
+      "id": "rev__ai-2-22-cl__gv-lananh",
+      "lessonId": "ai-2-22-cl",
+      "teacherId": "gv-lananh",
+      "teacherName": "Lan Anh",
+      "status": "submitted",
+      "updatedAt": "2026-11-12T16:00:00+07:00",
       "criteria": {
         "ung_y": {
-          "slides": [],
-          "text": "",
+          "slides": [
+            2
+          ],
+          "text": "• [Slide 2]: Các ví dụ đồ vật quen thuộc (bút chì, thước kẻ) trực quan, gần gũi với trẻ lớp 2.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd77pwq-6nlw",
-              "slide": "",
-              "text": "",
+              "id": "pt-f05673aecc13",
+              "slide": "2",
+              "text": "Các ví dụ đồ vật quen thuộc (bút chì, thước kẻ) trực quan, gần gũi với trẻ lớp 2.",
               "images": []
             }
           ]
         },
         "chua_hieu": {
-          "slides": [],
-          "text": "",
+          "slides": [
+            4,
+            7
+          ],
+          "text": "• [Slide 4]: Hoạt động 1: chưa hiểu rõ nhiệm vụ trong câu \"Em đánh dấu ở ô CE trên phiếu riêng. Không xóa dấu ban đầu.\"\n• [Slide 7]: Một số từ ngữ có thể khó hiểu cho trẻ \"lát khế\".",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd77pwq-udju",
-              "slide": "",
-              "text": "",
+              "id": "pt-c875d22afbc2",
+              "slide": "4",
+              "text": "Hoạt động 1: chưa hiểu rõ nhiệm vụ trong câu \"Em đánh dấu ở ô CE trên phiếu riêng. Không xóa dấu ban đầu.\"",
+              "images": []
+            },
+            {
+              "id": "pt-f06795c2621b",
+              "slide": "7",
+              "text": "Một số từ ngữ có thể khó hiểu cho trẻ \"lát khế\".",
               "images": []
             }
           ]
         },
         "cai_tien": {
-          "slides": [],
-          "text": "",
+          "slides": [
+            7
+          ],
+          "text": "• [Slide 7]: Cần đồng bộ hình ảnh quả khế/lát khế trên slide khớp với câu hỏi hoặc đổi sang đồ vật quen thuộc hơn.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd77pwq-c2ib",
-              "slide": "",
-              "text": "",
+              "id": "pt-150aed6197a2",
+              "slide": "7",
+              "text": "Cần đồng bộ hình ảnh quả khế/lát khế trên slide khớp với câu hỏi hoặc đổi sang đồ vật quen thuộc hơn.",
               "images": []
             }
           ]
         },
         "kho_khan": {
-          "slides": [],
-          "text": "",
+          "slides": [
+            4
+          ],
+          "text": "• [Slide 4]: Thời gian 2 phút khá ngắn đối với học sinh lớp 2 khi vừa phải nhìn tranh vừa tìm đúng ô ký hiệu viết tắt trên phiếu.",
           "images": [],
           "points": [
             {
-              "id": "pt-mwd77pwq-d0lw",
-              "slide": "",
-              "text": "",
-              "images": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "rev-gv-ngan-ai-5-24-cl-1794465937262",
-      "lessonId": "ai-5-24-cl",
-      "teacherId": "gv-ngan",
-      "teacherName": "Đinh Thi Hương",
-      "status": "draft",
-      "updatedAt": "2026-11-12T06:45:37.262Z",
-      "criteria": {
-        "ung_y": {
-          "slides": [],
-          "text": "",
-          "images": [],
-          "points": [
-            {
-              "id": "pt-mwd7ng3b-empn",
-              "slide": "",
-              "text": "",
-              "images": []
-            }
-          ]
-        },
-        "chua_hieu": {
-          "slides": [],
-          "text": "",
-          "images": [],
-          "points": [
-            {
-              "id": "pt-mwd7ng3c-q123",
-              "slide": "",
-              "text": "",
-              "images": []
-            }
-          ]
-        },
-        "cai_tien": {
-          "slides": [],
-          "text": "",
-          "images": [],
-          "points": [
-            {
-              "id": "pt-mwd7ng3c-i5px",
-              "slide": "",
-              "text": "",
-              "images": []
-            }
-          ]
-        },
-        "kho_khan": {
-          "slides": [],
-          "text": "",
-          "images": [],
-          "points": [
-            {
-              "id": "pt-mwd7ng3c-bfll",
-              "slide": "",
-              "text": "",
+              "id": "pt-0c1cc7331b3c",
+              "slide": "4",
+              "text": "Thời gian 2 phút khá ngắn đối với học sinh lớp 2 khi vừa phải nhìn tranh vừa tìm đúng ô ký hiệu viết tắt trên phiếu.",
               "images": []
             }
           ]

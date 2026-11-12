@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V8";
-  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V8";
+  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V9";
+  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V9";
   const SUPABASE_URL = "https://altabwyuskgvxtcnzlbw.supabase.co";
   const SUPABASE_KEY = "sb_publishable_LxTa5ODn1kObt_BBAwvLxw_2E3OXZUd";
   const SUPABASE_TABLE = "novastars_app_state";
@@ -146,8 +146,13 @@
       if (cloudReviews.length > 0) {
         // Merge reviews: preserve active user's unsaved typing if currently editing
         const mergedMap = new Map();
-        (db.reviews || []).forEach(r => mergedMap.set(`${r.lessonId}__${r.teacherId}`, r));
+        (db.reviews || []).forEach(r => {
+          if (db.teachers.some(t => t.id === r.teacherId)) {
+            mergedMap.set(`${r.lessonId}__${r.teacherId}`, r);
+          }
+        });
         cloudReviews.forEach(cr => {
+          if (!db.teachers.some(t => t.id === cr.teacherId)) return;
           const key = `${cr.lessonId}__${cr.teacherId}`;
           const isCurrentEditing = !forceRender && !isAdminView && isUserTyping() &&
             cr.lessonId === currentLessonId && currentUser && cr.teacherId === currentUser.id;
