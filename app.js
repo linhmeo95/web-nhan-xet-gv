@@ -1,8 +1,11 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V5";
-  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V5";
+  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V6";
+  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V6";
+  const SUPABASE_URL = "https://altabwyuskgvxtcnzlbw.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_LxTa5ODn1kObt_BBAwvLxw_2E3OXZUd";
+  const SUPABASE_TABLE = "novastars_app_state";
 
   const CRITERIA_META = [
     {
@@ -76,7 +79,78 @@
     return { id: emptyT.id, name: emptyT.name, role: "teacher" };
   }
 
+  function isUserTyping() {
+    const active = document.activeElement;
+    return active && (active.tagName === "TEXTAREA" || active.tagName === "INPUT" || active.tagName === "SELECT");
+  }
+
+  async function fetchCloudDb(forceRender = false) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=id,payload,updated_at`, {
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`
+        },
+        cache: "no-store"
+      });
+      if (!res.ok) return false;
+      const rows = await res.json();
+      if (!Array.isArray(rows) || rows.length === 0) return false;
+
+      let cloudConfig = null;
+      const cloudReviews = [];
+
+      rows.forEach(row => {
+        if (row.id === "config" && row.payload) {
+          cloudConfig = row.payload;
+        } else if (row.id && row.id.startsWith("rev__") && row.payload) {
+          cloudReviews.push(row.payload);
+        }
+      });
+
+      if (cloudConfig) {
+        if (Array.isArray(cloudConfig.teachers) && cloudConfig.teachers.length > 0) {
+          db.teachers = cloudConfig.teachers;
+        }
+        if (Array.isArray(cloudConfig.lessons) && cloudConfig.lessons.length > 0) {
+          db.lessons = cloudConfig.lessons;
+        }
+        if (cloudConfig.meta) {
+          db.meta = cloudConfig.meta;
+        }
+      }
+
+      if (cloudReviews.length > 0) {
+        // Merge reviews: preserve active user's unsaved typing if currently editing
+        const mergedMap = new Map();
+        (db.reviews || []).forEach(r => mergedMap.set(`${r.lessonId}__${r.teacherId}`, r));
+        cloudReviews.forEach(cr => {
+          const key = `${cr.lessonId}__${cr.teacherId}`;
+          const isCurrentEditing = !forceRender && !isAdminView && isUserTyping() &&
+            cr.lessonId === currentLessonId && currentUser && cr.teacherId === currentUser.id;
+          if (!isCurrentEditing) {
+            mergedMap.set(key, cr);
+          }
+        });
+        db.reviews = Array.from(mergedMap.values());
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+
+      if (forceRender || isAdminView || !isUserTyping()) {
+        renderAll();
+      } else {
+        renderTopBar();
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   async function fetchServerDb() {
+    const cloudOk = await fetchCloudDb(true);
+    if (cloudOk) return;
     try {
       const res = await fetch("/api/data", { cache: "no-store" });
       if (res.ok) {
@@ -90,17 +164,99 @@
     } catch (e) {}
   }
 
+  async function saveRowsToSupabase(rowsToUpsert) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?on_conflict=id`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "resolution=merge-duplicates,return=minimal"
+        },
+        body: JSON.stringify(rowsToUpsert)
+      });
+      return res.ok;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function deleteSupabaseRowPrefix(prefix) {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=like.${encodeURIComponent(prefix)}*`, {
+        method: "DELETE",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`
+        }
+      });
+    } catch (e) {}
+  }
+
   let saveTimer = null;
-  function triggerAutoSave(immediate = false) {
+  function triggerAutoSave(immediate = false, saveConfig = false) {
     db.meta.updatedAt = new Date().toISOString();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
 
     const saveText = document.getElementById("saveText");
     const nowStr = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
-    if (saveText) saveText.textContent = "Đang lưu...";
+    if (saveText) saveText.textContent = "☁️ Đang đồng bộ...";
 
     if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(async () => {
+      const rows = [];
+      if (saveConfig) {
+        const slimLessons = (db.lessons || []).map(l => ({
+          id: l.id,
+          code: l.code,
+          grade: l.grade,
+          themeId: l.themeId,
+          version: l.version,
+          title: l.title,
+          editorUrl: l.editorUrl,
+          totalSlides: l.totalSlides || 18
+        }));
+        rows.push({
+          id: "config",
+          payload: {
+            meta: db.meta,
+            teachers: db.teachers,
+            lessons: slimLessons
+          },
+          updated_at: new Date().toISOString()
+        });
+      }
+
+      if (currentUser && currentLessonId) {
+        const curRev = (db.reviews || []).find(r => r.lessonId === currentLessonId && r.teacherId === currentUser.id);
+        if (curRev) {
+          curRev.updatedAt = new Date().toISOString();
+          rows.push({
+            id: `rev__${curRev.lessonId}__${curRev.teacherId}`,
+            payload: curRev,
+            updated_at: new Date().toISOString()
+          });
+        }
+      }
+
+      if (saveConfig) {
+        (db.reviews || []).forEach(r => {
+          rows.push({
+            id: `rev__${r.lessonId}__${r.teacherId}`,
+            payload: r,
+            updated_at: new Date().toISOString()
+          });
+        });
+      }
+
+      let cloudSaved = false;
+      if (rows.length > 0) {
+        // Deduplicate by id
+        const uniqueRows = Array.from(new Map(rows.map(item => [item.id, item])).values());
+        cloudSaved = await saveRowsToSupabase(uniqueRows);
+      }
+
       try {
         await fetch("/api/save", {
           method: "POST",
@@ -108,8 +264,11 @@
           body: JSON.stringify(db)
         });
       } catch (e) {}
-      if (saveText) saveText.textContent = `✓ Đã lưu ${nowStr}`;
-    }, immediate ? 50 : 300);
+
+      if (saveText) {
+        saveText.textContent = cloudSaved ? `☁️ Đã lưu Cloud ${nowStr}` : `✓ Đã lưu ${nowStr}`;
+      }
+    }, immediate ? 50 : 350);
   }
 
   function escapeHtml(str) {
@@ -787,11 +946,25 @@
 
   document.getElementById("adminTeacherFilter").addEventListener("change", renderAdminDashboard);
 
-  document.getElementById("btnToggleAdmin").addEventListener("click", () => {
+  const btnRefreshCloud = document.getElementById("btnRefreshCloud");
+  if (btnRefreshCloud) {
+    btnRefreshCloud.addEventListener("click", async () => {
+      const orig = btnRefreshCloud.textContent;
+      btnRefreshCloud.textContent = "⏳ Đang tải...";
+      await fetchCloudDb(true);
+      btnRefreshCloud.textContent = "✓ Đã cập nhật mới nhất";
+      setTimeout(() => { btnRefreshCloud.textContent = orig; }, 1800);
+    });
+  }
+
+  document.getElementById("btnToggleAdmin").addEventListener("click", async () => {
     isAdminView = !isAdminView;
     document.getElementById("teacherWorkspace").classList.toggle("hidden", isAdminView);
     document.getElementById("adminWorkspace").classList.toggle("hidden", !isAdminView);
     renderAll();
+    if (isAdminView) {
+      await fetchCloudDb(true);
+    }
   });
 
   function exportExcelFromBrowser() {
@@ -1151,7 +1324,7 @@
             localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
           }
           editingTeacherId = null;
-          triggerAutoSave(true);
+          triggerAutoSave(true, true);
           renderManageLists();
           renderAll();
         };
@@ -1190,7 +1363,7 @@
             currentUser = { id: firstT.id, name: firstT.name, role: "teacher" };
             localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
           }
-          triggerAutoSave(true);
+          triggerAutoSave(true, true);
           renderManageLists();
           renderAll();
         });
@@ -1222,7 +1395,7 @@
           l.code = newCode;
           l.title = newTitle;
           editingLessonId = null;
-          triggerAutoSave(true);
+          triggerAutoSave(true, true);
           renderManageLists();
           renderAll();
         };
@@ -1252,7 +1425,7 @@
           if (currentLessonId === l.id) {
             currentLessonId = db.lessons[0].id;
           }
-          triggerAutoSave(true);
+          triggerAutoSave(true, true);
           renderManageLists();
           renderAll();
         });
@@ -1271,7 +1444,7 @@
     db.teachers.push({ id, name, pin, role: "teacher" });
     nameInp.value = "";
     pinInp.value = "";
-    triggerAutoSave(true);
+    triggerAutoSave(true, true);
     renderManageLists();
     renderAdminDashboard();
   });
@@ -1297,7 +1470,7 @@
     codeInp.value = "";
     titleInp.value = "";
     urlInp.value = "";
-    triggerAutoSave(true);
+    triggerAutoSave(true, true);
     renderManageLists();
     renderAll();
   });
@@ -1315,4 +1488,16 @@
   setupDialogs();
   renderAll();
   fetchServerDb();
+
+  // Auto-sync from Cloud when window regains focus or every 10s in Admin view
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      fetchCloudDb(false);
+    }
+  });
+  setInterval(() => {
+    if (isAdminView && document.visibilityState === "visible") {
+      fetchCloudDb(false);
+    }
+  }, 10000);
 })();
