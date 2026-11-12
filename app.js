@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V7";
-  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V7";
+  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V8";
+  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V8";
   const SUPABASE_URL = "https://altabwyuskgvxtcnzlbw.supabase.co";
   const SUPABASE_KEY = "sb_publishable_LxTa5ODn1kObt_BBAwvLxw_2E3OXZUd";
   const SUPABASE_TABLE = "novastars_app_state";
@@ -31,11 +31,11 @@
   ];
 
   let db = loadInitialDb();
+  let isAdminView = false;
   let currentUser = loadInitialUser();
   let currentLessonId = db.lessons[0] ? db.lessons[0].id : "";
   let activeCritKey = "ung_y";
   let activePointIdxByCrit = { ung_y: 0, chua_hieu: 0, cai_tien: 0, kho_khan: 0 };
-  let isAdminView = false;
 
   function syncLatestLessons(targetDb) {
     if (!targetDb.lessons || targetDb.lessons.length === 0) {
