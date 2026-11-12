@@ -44,15 +44,33 @@
       "role": "teacher"
     },
     {
-      "id": "gv-minhtu",
-      "name": "Nguyễn Minh Tú",
+      "id": "gv-tunm",
+      "name": "Tô Phương Diễm",
       "pin": "2222",
       "role": "teacher"
     },
     {
-      "id": "gv-lananh",
-      "name": "Lan Anh",
+      "id": "gv-ngan",
+      "name": "Đinh Thi Hương",
       "pin": "3333",
+      "role": "teacher"
+    },
+    {
+      "id": "gv-mai",
+      "name": "Phạm Mỹ Linh",
+      "pin": "4444",
+      "role": "teacher"
+    },
+    {
+      "id": "gv-huong",
+      "name": "Nguyễn Minh Tú",
+      "pin": "5555",
+      "role": "teacher"
+    },
+    {
+      "id": "gv-lananh",
+      "name": "Lê Thị Lan Anh",
+      "pin": "6666",
       "role": "teacher"
     }
   ],
@@ -679,9 +697,9 @@
       }
     },
     {
-      "id": "rev__ai-4-23-cl__gv-minhtu",
+      "id": "rev__ai-4-23-cl__gv-huong",
       "lessonId": "ai-4-23-cl",
-      "teacherId": "gv-minhtu",
+      "teacherId": "gv-huong",
       "teacherName": "Nguyễn Minh Tú",
       "status": "submitted",
       "updatedAt": "2026-11-12T16:00:00+07:00",
@@ -777,9 +795,9 @@
       }
     },
     {
-      "id": "rev__ai-5-24-cl__gv-minhtu",
+      "id": "rev__ai-5-24-cl__gv-huong",
       "lessonId": "ai-5-24-cl",
-      "teacherId": "gv-minhtu",
+      "teacherId": "gv-huong",
       "teacherName": "Nguyễn Minh Tú",
       "status": "submitted",
       "updatedAt": "2026-11-12T16:00:00+07:00",
@@ -861,9 +879,9 @@
       }
     },
     {
-      "id": "rev__ai-2-22-cl__gv-minhtu",
+      "id": "rev__ai-2-22-cl__gv-huong",
       "lessonId": "ai-2-22-cl",
-      "teacherId": "gv-minhtu",
+      "teacherId": "gv-huong",
       "teacherName": "Nguyễn Minh Tú",
       "status": "submitted",
       "updatedAt": "2026-11-12T16:00:00+07:00",
@@ -948,7 +966,7 @@
       "id": "rev__ai-4-23-cl__gv-lananh",
       "lessonId": "ai-4-23-cl",
       "teacherId": "gv-lananh",
-      "teacherName": "Lan Anh",
+      "teacherName": "Lê Thị Lan Anh",
       "status": "submitted",
       "updatedAt": "2026-11-12T16:00:00+07:00",
       "criteria": {
@@ -1025,7 +1043,7 @@
       "id": "rev__ai-5-24-cl__gv-lananh",
       "lessonId": "ai-5-24-cl",
       "teacherId": "gv-lananh",
-      "teacherName": "Lan Anh",
+      "teacherName": "Lê Thị Lan Anh",
       "status": "submitted",
       "updatedAt": "2026-11-12T16:00:00+07:00",
       "criteria": {
@@ -1102,7 +1120,7 @@
       "id": "rev__ai-2-22-cl__gv-lananh",
       "lessonId": "ai-2-22-cl",
       "teacherId": "gv-lananh",
-      "teacherName": "Lan Anh",
+      "teacherName": "Lê Thị Lan Anh",
       "status": "submitted",
       "updatedAt": "2026-11-12T16:00:00+07:00",
       "criteria": {
@@ -1169,6 +1187,207 @@
               "id": "pt-0c1cc7331b3c",
               "slide": "4",
               "text": "Thời gian 2 phút khá ngắn đối với học sinh lớp 2 khi vừa phải nhìn tranh vừa tìm đúng ô ký hiệu viết tắt trên phiếu.",
+              "images": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rev__ai-4-23-cl__gv-tunm",
+      "lessonId": "ai-4-23-cl",
+      "teacherId": "gv-tunm",
+      "teacherName": "Tô Phương Diễm",
+      "status": "submitted",
+      "updatedAt": "2026-11-10T15:45:00+07:00",
+      "criteria": {
+        "ung_y": {
+          "slides": [
+            2,
+            6
+          ],
+          "text": "• [Slide 2]: Chủ đề gắn với thực tế trường học gần gũi với HS lớp 4.\n• [Slide 6]: Hệ thống 4 Game đa dạng.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd7ng3c-3bw8",
+              "slide": "2",
+              "text": "Chủ đề gắn với thực tế trường học gần gũi với HS lớp 4.",
+              "images": []
+            },
+            {
+              "id": "pt-mwd7ng3c-okfc",
+              "slide": "6",
+              "text": "Hệ thống 4 Game đa dạng.",
+              "images": []
+            }
+          ]
+        },
+        "chua_hieu": {
+          "slides": [
+            5
+          ],
+          "text": "• [Slide 5]: Cần làm rõ hơn yêu cầu vẽ hay viết ở HĐ 2 và cách ghi nhận xét chéo.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd7ng3c-7mp2",
+              "slide": "5",
+              "text": "Cần làm rõ hơn yêu cầu vẽ hay viết ở HĐ 2 và cách ghi nhận xét chéo.",
+              "images": []
+            }
+          ]
+        },
+        "cai_tien": {
+          "slides": [
+            5
+          ],
+          "text": "• [Slide 5]: Chiếu trực quan Mẫu phiếu học tập và Phiếu góp ý 2 mục lên slide.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd7ng3c-jvgw",
+              "slide": "5",
+              "text": "Chiếu trực quan Mẫu phiếu học tập và Phiếu góp ý 2 mục lên slide.",
+              "images": []
+            }
+          ]
+        },
+        "kho_khan": {
+          "slides": [
+            5
+          ],
+          "text": "• [Slide 5]: Thời gian đổi bài góp ý chéo (2–3 phút) khá ngắn.",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd7ng3c-hofn",
+              "slide": "5",
+              "text": "Thời gian đổi bài góp ý chéo (2–3 phút) khá ngắn.",
+              "images": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rev__ai-4-23-cl__gv-ngan",
+      "lessonId": "ai-4-23-cl",
+      "teacherId": "gv-ngan",
+      "teacherName": "Đinh Thi Hương",
+      "status": "draft",
+      "updatedAt": "2026-11-12T07:06:42.064Z",
+      "criteria": {
+        "ung_y": {
+          "slides": [],
+          "text": "",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd77pwq-6nlw",
+              "slide": "",
+              "text": "",
+              "images": []
+            }
+          ]
+        },
+        "chua_hieu": {
+          "slides": [],
+          "text": "",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd77pwq-udju",
+              "slide": "",
+              "text": "",
+              "images": []
+            }
+          ]
+        },
+        "cai_tien": {
+          "slides": [],
+          "text": "",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd77pwq-c2ib",
+              "slide": "",
+              "text": "",
+              "images": []
+            }
+          ]
+        },
+        "kho_khan": {
+          "slides": [],
+          "text": "",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd77pwq-d0lw",
+              "slide": "",
+              "text": "",
+              "images": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rev__ai-5-24-cl__gv-ngan",
+      "lessonId": "ai-5-24-cl",
+      "teacherId": "gv-ngan",
+      "teacherName": "Đinh Thi Hương",
+      "status": "draft",
+      "updatedAt": "2026-11-12T06:45:37.262Z",
+      "criteria": {
+        "ung_y": {
+          "slides": [],
+          "text": "",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd7ng3b-empn",
+              "slide": "",
+              "text": "",
+              "images": []
+            }
+          ]
+        },
+        "chua_hieu": {
+          "slides": [],
+          "text": "",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd7ng3c-q123",
+              "slide": "",
+              "text": "",
+              "images": []
+            }
+          ]
+        },
+        "cai_tien": {
+          "slides": [],
+          "text": "",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd7ng3c-i5px",
+              "slide": "",
+              "text": "",
+              "images": []
+            }
+          ]
+        },
+        "kho_khan": {
+          "slides": [],
+          "text": "",
+          "images": [],
+          "points": [
+            {
+              "id": "pt-mwd7ng3c-bfll",
+              "slide": "",
+              "text": "",
               "images": []
             }
           ]
