@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V6";
-  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V6";
+  const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V7";
+  const SESSION_KEY = "NOVASTARS_CURRENT_USER_V7";
   const SUPABASE_URL = "https://altabwyuskgvxtcnzlbw.supabase.co";
   const SUPABASE_KEY = "sb_publishable_LxTa5ODn1kObt_BBAwvLxw_2E3OXZUd";
   const SUPABASE_TABLE = "novastars_app_state";
@@ -63,20 +63,42 @@
     const params = new URLSearchParams(window.location.search);
     const gvParam = params.get("gv");
     const pinParam = params.get("pin");
+    const adminPin = (db.meta && db.meta.adminPin) ? String(db.meta.adminPin).trim() : "8888";
+
+    // Direct URL login for admin: ?gv=admin&pin=8888
+    if (gvParam === "admin" && pinParam === adminPin) {
+      isAdminView = true;
+      return { id: "admin", name: "Ban Quản lý", role: "admin" };
+    }
+
+    // Direct URL login for teacher: ?gv=gv-thoa&pin=1111
     if (gvParam) {
       const found = db.teachers.find(t => t.id === gvParam);
       if (found && (!pinParam || found.pin === pinParam)) {
+        isAdminView = false;
         return { id: found.id, name: found.name, role: "teacher" };
       }
     }
+
+    // Check existing stored session
     const saved = localStorage.getItem(SESSION_KEY);
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.id) {
+          if (parsed.role === "admin") {
+            isAdminView = true;
+          } else {
+            isAdminView = false;
+          }
+          return parsed;
+        }
       } catch (e) {}
     }
-    const emptyT = db.teachers.find(t => t.id === "gv-ngan") || db.teachers[0];
-    return { id: emptyT.id, name: emptyT.name, role: "teacher" };
+
+    // Default to null -> MUST SHOW LOGIN SCREEN
+    isAdminView = false;
+    return null;
   }
 
   function isUserTyping() {
@@ -111,6 +133,7 @@
       if (cloudConfig) {
         if (Array.isArray(cloudConfig.teachers) && cloudConfig.teachers.length > 0) {
           db.teachers = cloudConfig.teachers;
+          populateAuthTeacherSelect();
         }
         if (Array.isArray(cloudConfig.lessons) && cloudConfig.lessons.length > 0) {
           db.lessons = cloudConfig.lessons;
@@ -398,6 +421,7 @@
   }
 
   function renderTopBar() {
+    if (!currentUser) return;
     const nav = document.getElementById("lessonNav");
     nav.innerHTML = "";
     db.lessons.forEach(lesson => {
@@ -413,9 +437,22 @@
       nav.appendChild(btn);
     });
 
-    document.getElementById("currentUserName").textContent = currentUser.name;
-    document.getElementById("btnToggleAdmin").textContent =
-      isAdminView ? "← Quay lại Phiếu" : "📊 Quản lý";
+    const nameEl = document.getElementById("currentUserName");
+    const dotEl = document.querySelector(".user-dot");
+    const btnToggleAdmin = document.getElementById("btnToggleAdmin");
+
+    if (currentUser.role === "admin") {
+      nameEl.textContent = "🛡️ Ban Quản lý";
+      if (dotEl) dotEl.style.background = "#F59E0B";
+      // Allow admin to toggle between viewing the admin panel and previewing the teacher form
+      btnToggleAdmin.classList.remove("hidden");
+      btnToggleAdmin.textContent = isAdminView ? "👁️ Xem phiếu GV" : "📊 Về Quản lý";
+    } else {
+      nameEl.textContent = "👩‍🏫 " + currentUser.name;
+      if (dotEl) dotEl.style.background = "#38BDF8";
+      // CRITICAL: HIDE ADMIN BUTTON COMPLETELY FOR TEACHERS
+      btnToggleAdmin.classList.add("hidden");
+    }
   }
 
   function updateQuickBarTargetLabel() {
@@ -958,9 +995,8 @@
   }
 
   document.getElementById("btnToggleAdmin").addEventListener("click", async () => {
+    if (!currentUser || currentUser.role !== "admin") return;
     isAdminView = !isAdminView;
-    document.getElementById("teacherWorkspace").classList.toggle("hidden", isAdminView);
-    document.getElementById("adminWorkspace").classList.toggle("hidden", !isAdminView);
     renderAll();
     if (isAdminView) {
       await fetchCloudDb(true);
@@ -1086,50 +1122,130 @@
     });
   }
 
-  document.getElementById("btnSwitchUser").addEventListener("click", () => {
-    const sel = document.getElementById("selectLoginUser");
-    sel.innerHTML = "";
-    db.teachers.forEach(t => {
-      const opt = document.createElement("option");
-      opt.value = t.id;
-      opt.textContent = t.name;
-      if (t.id === currentUser.id) opt.selected = true;
-      sel.appendChild(opt);
-    });
-    document.getElementById("loginErrorMsg").style.visibility = "hidden";
-    updateQuickPinHint();
-    document.getElementById("loginDialog").showModal();
-  });
+  function setupAuthPortal() {
+    const tabTeacher = document.getElementById("authTabTeacher");
+    const tabAdmin = document.getElementById("authTabAdmin");
+    const formTeacher = document.getElementById("formTeacherLogin");
+    const formAdmin = document.getElementById("formAdminLogin");
+    const errTeacher = document.getElementById("authTeacherError");
+    const errAdmin = document.getElementById("authAdminError");
 
-  function updateQuickPinHint() {
-    const selVal = document.getElementById("selectLoginUser").value;
-    const hintBox = document.getElementById("quickPinHint");
-    const pinInput = document.getElementById("inputLoginPin");
-    const t = db.teachers.find(x => x.id === selVal);
-    if (t) {
-      pinInput.value = t.pin;
-      hintBox.innerHTML = `Mã PIN: <code>${escapeHtml(t.pin)}</code> (đã điền sẵn)`;
+    if (tabTeacher && tabAdmin && formTeacher && formAdmin) {
+      tabTeacher.addEventListener("click", () => {
+        tabTeacher.classList.add("active");
+        tabTeacher.setAttribute("aria-selected", "true");
+        tabAdmin.classList.remove("active");
+        tabAdmin.setAttribute("aria-selected", "false");
+        formTeacher.classList.remove("hidden");
+        formAdmin.classList.add("hidden");
+        if (errTeacher) errTeacher.classList.add("hidden");
+        if (errAdmin) errAdmin.classList.add("hidden");
+      });
+
+      tabAdmin.addEventListener("click", () => {
+        tabAdmin.classList.add("active");
+        tabAdmin.setAttribute("aria-selected", "true");
+        tabTeacher.classList.remove("active");
+        tabTeacher.setAttribute("aria-selected", "false");
+        formAdmin.classList.remove("hidden");
+        formTeacher.classList.add("hidden");
+        if (errTeacher) errTeacher.classList.add("hidden");
+        if (errAdmin) errAdmin.classList.add("hidden");
+        const adminPin = document.getElementById("authAdminPin");
+        if (adminPin) adminPin.focus();
+      });
+
+      formTeacher.addEventListener("submit", e => {
+        e.preventDefault();
+        const sel = document.getElementById("authSelectTeacher");
+        const pinInp = document.getElementById("authTeacherPin");
+        const teacherId = sel ? sel.value : "";
+        const enteredPin = pinInp ? pinInp.value.trim() : "";
+
+        if (!teacherId) {
+          if (errTeacher) {
+            errTeacher.textContent = "Vui lòng chọn tên Giáo viên của bạn.";
+            errTeacher.classList.remove("hidden");
+          }
+          return;
+        }
+
+        const found = (db.teachers || []).find(t => t.id === teacherId);
+        if (!found || String(found.pin).trim() !== enteredPin) {
+          if (errTeacher) {
+            errTeacher.textContent = "Mã PIN không chính xác. Vui lòng kiểm tra lại.";
+            errTeacher.classList.remove("hidden");
+          }
+          if (pinInp) {
+            pinInp.focus();
+            pinInp.select();
+          }
+          return;
+        }
+
+        if (errTeacher) errTeacher.classList.add("hidden");
+        currentUser = { id: found.id, name: found.name, role: "teacher" };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+        isAdminView = false;
+        renderAll();
+      });
+
+      formAdmin.addEventListener("submit", e => {
+        e.preventDefault();
+        const pinInp = document.getElementById("authAdminPin");
+        const enteredPin = pinInp ? pinInp.value.trim() : "";
+        const adminPin = (db.meta && db.meta.adminPin) ? String(db.meta.adminPin).trim() : "8888";
+
+        if (enteredPin !== adminPin) {
+          if (errAdmin) {
+            errAdmin.textContent = "Mã PIN Quản lý không đúng.";
+            errAdmin.classList.remove("hidden");
+          }
+          if (pinInp) {
+            pinInp.focus();
+            pinInp.select();
+          }
+          return;
+        }
+
+        if (errAdmin) errAdmin.classList.add("hidden");
+        currentUser = { id: "admin", name: "Ban Quản lý", role: "admin" };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+        isAdminView = true;
+        renderAll();
+      });
+    }
+
+    const btnSignOut = document.getElementById("btnSignOut");
+    if (btnSignOut) {
+      btnSignOut.addEventListener("click", () => {
+        if (confirm("Bạn có muốn đăng xuất khỏi hệ thống?")) {
+          localStorage.removeItem(SESSION_KEY);
+          currentUser = null;
+          isAdminView = false;
+          const teacherPinInp = document.getElementById("authTeacherPin");
+          if (teacherPinInp) teacherPinInp.value = "";
+          const adminPinInp = document.getElementById("authAdminPin");
+          if (adminPinInp) adminPinInp.value = "";
+          renderAll();
+        }
+      });
     }
   }
 
-  document.getElementById("selectLoginUser").addEventListener("change", updateQuickPinHint);
-
-  document.getElementById("loginForm").addEventListener("submit", e => {
-    const selVal = document.getElementById("selectLoginUser").value;
-    const enteredPin = document.getElementById("inputLoginPin").value.trim();
-    const foundT = db.teachers.find(x => x.id === selVal);
-    if (!foundT || foundT.pin !== enteredPin) {
-      e.preventDefault();
-      document.getElementById("loginErrorMsg").style.visibility = "visible";
-      return;
-    }
-    currentUser = { id: foundT.id, name: foundT.name, role: "teacher" };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
-    isAdminView = false;
-    document.getElementById("teacherWorkspace").classList.remove("hidden");
-    document.getElementById("adminWorkspace").classList.add("hidden");
-    renderAll();
-  });
+  function populateAuthTeacherSelect() {
+    const sel = document.getElementById("authSelectTeacher");
+    if (!sel) return;
+    const curVal = sel.value;
+    sel.innerHTML = '<option value="" disabled selected>-- Chọn tên của bạn --</option>';
+    (db.teachers || []).forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t.id;
+      opt.textContent = t.name;
+      sel.appendChild(opt);
+    });
+    if (curVal) sel.value = curVal;
+  }
 
   // Manage modal (2 separate tabs + Copy Teacher Table as Image)
   let editingTeacherId = null;
@@ -1476,16 +1592,49 @@
   });
 
   function renderAll() {
+    const authPortal = document.getElementById("authPortal");
+    const mainTopBar = document.getElementById("mainTopBar");
+    const teacherWorkspace = document.getElementById("teacherWorkspace");
+    const adminWorkspace = document.getElementById("adminWorkspace");
+
+    if (!currentUser) {
+      if (authPortal) authPortal.classList.remove("hidden");
+      if (mainTopBar) mainTopBar.classList.add("hidden");
+      if (teacherWorkspace) teacherWorkspace.classList.add("hidden");
+      if (adminWorkspace) adminWorkspace.classList.add("hidden");
+      populateAuthTeacherSelect();
+      return;
+    }
+
+    if (authPortal) authPortal.classList.add("hidden");
+    if (mainTopBar) mainTopBar.classList.remove("hidden");
+
     renderTopBar();
-    if (isAdminView) {
-      renderAdminDashboard();
+
+    if (currentUser.role === "admin") {
+      if (isAdminView) {
+        if (teacherWorkspace) teacherWorkspace.classList.add("hidden");
+        if (adminWorkspace) adminWorkspace.classList.remove("hidden");
+        renderAdminDashboard();
+      } else {
+        if (teacherWorkspace) teacherWorkspace.classList.remove("hidden");
+        if (adminWorkspace) adminWorkspace.classList.add("hidden");
+        renderQuickSlideStrip();
+        renderCriteriaForm();
+      }
     } else {
+      // Regular Teacher View
+      isAdminView = false;
+      if (teacherWorkspace) teacherWorkspace.classList.remove("hidden");
+      if (adminWorkspace) adminWorkspace.classList.add("hidden");
       renderQuickSlideStrip();
       renderCriteriaForm();
     }
   }
 
   setupDialogs();
+  setupAuthPortal();
+  populateAuthTeacherSelect();
   renderAll();
   fetchServerDb();
 

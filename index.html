@@ -10,8 +10,68 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- AUTHENTICATION SCREEN (LOGIN PORTAL) -->
+  <section class="auth-portal" id="authPortal" aria-label="Màn hình Đăng nhập">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-brand-badge">NS</div>
+        <h1 class="auth-title">Hệ Thống Nhận Xét Bài Giảng</h1>
+        <p class="auth-sub">NovaStars Education · Vui lòng đăng nhập để bắt đầu</p>
+      </div>
+
+      <!-- ROLE SELECTOR TABS -->
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab-btn active" id="authTabTeacher" role="tab" aria-selected="true">
+          👩‍🏫 Giáo viên
+        </button>
+        <button type="button" class="auth-tab-btn" id="authTabAdmin" role="tab" aria-selected="false">
+          🛡️ Ban Quản lý
+        </button>
+      </div>
+
+      <!-- FORM 1: TEACHER LOGIN -->
+      <form class="auth-form" id="formTeacherLogin">
+        <div class="auth-field">
+          <label for="authSelectTeacher">Họ và tên Giáo viên:</label>
+          <select id="authSelectTeacher" class="auth-input" required>
+            <option value="" disabled selected>-- Chọn tên của bạn --</option>
+          </select>
+        </div>
+
+        <div class="auth-field">
+          <label for="authTeacherPin">Mã PIN cá nhân (4 số):</label>
+          <input type="password" id="authTeacherPin" class="auth-input mono-input" maxlength="8" placeholder="Nhập mã PIN" required autocomplete="current-password">
+        </div>
+
+        <p class="auth-error-msg hidden" id="authTeacherError"></p>
+
+        <button type="submit" class="btn-auth-submit">
+          Đăng nhập nhận xét ➔
+        </button>
+      </form>
+
+      <!-- FORM 2: ADMIN LOGIN -->
+      <form class="auth-form hidden" id="formAdminLogin">
+        <div class="auth-field">
+          <label for="authAdminPin">Mã PIN Quản lý:</label>
+          <input type="password" id="authAdminPin" class="auth-input mono-input" maxlength="8" placeholder="Nhập mã PIN Quản trị" required autocomplete="current-password">
+        </div>
+
+        <p class="auth-error-msg hidden" id="authAdminError"></p>
+
+        <button type="submit" class="btn-auth-submit admin">
+          Đăng nhập Quản trị ➔
+        </button>
+      </form>
+
+      <div class="auth-footer-hint">
+        💡 Giáo viên dùng mã PIN cá nhân do quản lý cấp. Nếu quên mã, vui lòng liên hệ Ban Quản lý.
+      </div>
+    </div>
+  </section>
+
   <!-- COMPACT TOP BAR -->
-  <header class="topbar">
+  <header class="topbar hidden" id="mainTopBar">
     <div class="topbar-left">
       <div class="brand-mark" aria-hidden="true">NS</div>
       <h1 class="brand-title">Phiếu Nhận Xét Bài Giảng</h1>
@@ -23,11 +83,11 @@
 
       <div class="user-switcher">
         <span class="user-dot"></span>
-        <strong id="currentUserName">Cô Ngân</strong>
-        <button type="button" class="btn-switch-user" id="btnSwitchUser">Đổi GV</button>
+        <strong id="currentUserName">Giáo viên</strong>
+        <button type="button" class="btn-signout" id="btnSignOut" title="Đăng xuất khỏi hệ thống">🚪 Đăng xuất</button>
       </div>
 
-      <button type="button" class="btn-admin-toggle" id="btnToggleAdmin">
+      <button type="button" class="btn-admin-toggle hidden" id="btnToggleAdmin">
         📊 Quản lý
       </button>
     </div>

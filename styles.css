@@ -52,6 +52,200 @@ body {
   display: none !important;
 }
 
+/* AUTHENTICATION PORTAL (WELCOME / LOGIN SCREEN) */
+.auth-portal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(circle at 50% 20%, #1E293B 0%, #0F172A 70%, #020617 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: authFadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes authFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.auth-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-brand-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #2563EB;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.5);
+  margin-bottom: 4px;
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.02em;
+}
+
+.auth-sub {
+  font-size: 13px;
+  color: #64748B;
+  line-height: 1.4;
+}
+
+.auth-tabs {
+  display: flex;
+  background: #F1F5F9;
+  padding: 4px;
+  border-radius: 10px;
+  gap: 4px;
+}
+
+.auth-tab-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border: none;
+  background: transparent;
+  color: #64748B;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 700;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.auth-tab-btn:hover {
+  color: #0F172A;
+}
+
+.auth-tab-btn.active {
+  background: #FFFFFF;
+  color: #2563EB;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 9px;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: #0F172A;
+  background: #FFFFFF;
+  transition: all 0.15s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.auth-error-msg {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #DC2626;
+  background: #FEE2E2;
+  border: 1px solid #FECDD3;
+  padding: 8px 12px;
+  border-radius: 7px;
+}
+
+.btn-auth-submit {
+  width: 100%;
+  padding: 12px 18px;
+  background: #2563EB;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9px;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  margin-top: 4px;
+}
+
+.btn-auth-submit:hover {
+  background: #1D4ED8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+.btn-auth-submit.admin {
+  background: #D97706;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.btn-auth-submit.admin:hover {
+  background: #B45309;
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4);
+}
+
+.auth-footer-hint {
+  font-size: 12px;
+  color: #64748B;
+  text-align: center;
+  line-height: 1.5;
+  padding-top: 8px;
+  border-top: 1px solid #F1F5F9;
+}
+
 /* COMPACT TOP BAR */
 .topbar {
   height: 56px;
@@ -152,18 +346,24 @@ body {
   background: #38BDF8;
 }
 
-.btn-switch-user {
+.btn-switch-user,
+.btn-signout {
   background: rgba(255, 255, 255, 0.14);
   color: #FFFFFF;
   border: none;
-  padding: 3px 9px;
-  border-radius: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.btn-switch-user:hover {
-  background: rgba(255, 255, 255, 0.24);
+.btn-switch-user:hover,
+.btn-signout:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #FCA5A5;
+}
 }
 
 .btn-admin-toggle {
