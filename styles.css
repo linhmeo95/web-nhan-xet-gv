@@ -2759,3 +2759,216 @@ dialog::backdrop {
   font-weight: 800;
   color: var(--ink-primary);
 }
+
+/* ======================================================================
+   VISUAL GUIDE & TUTORIAL STYLES (#guideDialog, .btn-help-guide, .smart-tips-bar)
+   ====================================================================== */
+
+.btn-help-guide {
+  background: #FFF5F7;
+  color: #BE185D;
+  border: 1.5px solid #FBCFE8;
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-help-guide:hover {
+  background: #FFE4E6;
+  border-color: #BE185D;
+}
+
+.smart-tips-bar {
+  background: #FFF5F7;
+  border: 1.5px solid #FBCFE8;
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(112, 11, 51, 0.03);
+  flex-wrap: wrap;
+}
+
+.smart-tips-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 260px;
+}
+
+.smart-tips-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.smart-tips-text {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  line-height: 1.45;
+}
+
+.smart-tips-text strong {
+  color: #3B0718;
+}
+
+.guide-mini-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.guide-mini-tag.c1 { background: #ECFDF5; color: #065F46; }
+.guide-mini-tag.c2 { background: #FFFBEB; color: #92400E; }
+.guide-mini-tag.c3 { background: #FFF1F2; color: #9D174D; }
+.guide-mini-tag.c4 { background: #FFE4E6; color: #881337; }
+
+.btn-open-guide-inline {
+  background: #FFFFFF;
+  color: #BE185D;
+  border: 1px solid #FBCFE8;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.12s ease;
+  flex-shrink: 0;
+}
+
+.btn-open-guide-inline:hover {
+  background: #BE185D;
+  color: #FFFFFF;
+  border-color: #BE185D;
+}
+
+/* GUIDE DIALOG */
+#guideDialog {
+  max-width: 760px;
+  width: calc(100% - 32px);
+}
+
+.dialog-guide {
+  padding: 24px;
+}
+
+.guide-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 12px 0 6px 0;
+}
+
+.guide-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 720px) {
+  .guide-steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.guide-step-card {
+  background: #FFF5F7;
+  border: 1.5px solid #FBCFE8;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.guide-step-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 800;
+  background: #FFE4E6;
+  color: #BE185D;
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+
+.guide-step-icon {
+  font-size: 26px;
+  margin-bottom: 2px;
+}
+
+.guide-step-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: #3B0718;
+}
+
+.guide-step-desc {
+  font-size: 12.5px;
+  color: var(--ink-secondary);
+  line-height: 1.45;
+}
+
+.guide-chips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.guide-chip {
+  font-size: 11.5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1.35;
+  border: 1px solid transparent;
+}
+
+.guide-chip.c1 { background: #ECFDF5; color: #065F46; border-color: #A7F3D0; }
+.guide-chip.c2 { background: #FFFBEB; color: #92400E; border-color: #FCD34D; }
+.guide-chip.c3 { background: #FFF1F2; color: #9D174D; border-color: #FBCFE8; }
+.guide-chip.c4 { background: #FFE4E6; color: #881337; border-color: #FDA4AF; }
+
+.guide-demo-box {
+  background: #FFFFFF;
+  border: 1.5px solid #FBCFE8;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.demo-box-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.demo-box-text {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  line-height: 1.4;
+}
+
+.demo-box-text strong {
+  color: #3B0718;
+}

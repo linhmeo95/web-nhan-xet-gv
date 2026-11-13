@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="stylesheet" href="styles.css?v=16">
 </head>
 <body>
   <!-- AUTHENTICATION SCREEN (LOGIN PORTAL) -->
@@ -153,6 +153,10 @@
             <div class="editor-actions">
               <button type="button" class="btn-mode-toggle" id="btnToggleMode" title="Chuyển đổi giữa Giao diện Dòng chảy Slide và 4 Sheet Excel">
                 📱 Dòng chảy Slide (Mới)
+              </button>
+
+              <button type="button" class="btn-help-guide" id="btnOpenGuide" title="Xem hướng dẫn sử dụng giao diện mới">
+                💡 Hướng dẫn
               </button>
 
               <a href="#" target="_blank" rel="noopener" class="btn-open-tab" id="linkOpenHdTab" title="Mở Slide thật trên 1 tab mới">
@@ -334,7 +338,64 @@
     </div>
   </dialog>
 
-  <script src="data/initial_data.js?v=15"></script>
-  <script src="app.js?v=15"></script>
+  <!-- MODAL 4: HƯỚNG DẪN SỬ DỤNG TRỰC QUAN -->
+  <dialog id="guideDialog" closedby="any" aria-labelledby="guideDialogTitle">
+    <div class="dialog-inner dialog-guide">
+      <div class="dialog-header">
+        <h2 id="guideDialogTitle">✨ Hướng Dẫn Sử Dụng Giao Diện Dòng Chảy Slide</h2>
+        <button type="button" class="btn-close-dialog" data-close-dialog="guideDialog" aria-label="Đóng">✕</button>
+      </div>
+
+      <div class="guide-content">
+        <!-- 3 STEPS CARDS -->
+        <div class="guide-steps-grid">
+          <div class="guide-step-card">
+            <div class="guide-step-badge">Bước 1</div>
+            <div class="guide-step-icon">📌</div>
+            <h3 class="guide-step-title">Chọn số Slide</h3>
+            <p class="guide-step-desc">Bấm số Slide trên thanh trượt hoặc dùng nút <strong>◀ Trước / Sau ▶</strong> để lật từng trang. Slide có chấm xanh là đã có ý kiến.</p>
+          </div>
+
+          <div class="guide-step-card">
+            <div class="guide-step-badge">Bước 2</div>
+            <div class="guide-step-icon">✍️</div>
+            <h3 class="guide-step-title">Gõ suy nghĩ tự nhiên</h3>
+            <p class="guide-step-desc">Cô chỉ cần gõ vào <strong>1 ô duy nhất</strong>. Hệ thống AI tự động đọc hiểu câu chữ và xếp vào đúng mục:</p>
+            <div class="guide-chips-list">
+              <span class="guide-chip c1">🟢 <strong>Khen:</strong> đẹp, hay, thích, sinh động...</span>
+              <span class="guide-chip c2">🟡 <strong>Thắc mắc:</strong> chưa hiểu, tại sao, có dấu '?'...</span>
+              <span class="guide-chip c3">🔵 <strong>Đề xuất:</strong> nên đổi, cần thêm, thay bằng...</span>
+              <span class="guide-chip c4">🔴 <strong>Khó khăn:</strong> học sinh khó, không kịp, cháy giáo án...</span>
+            </div>
+          </div>
+
+          <div class="guide-step-card">
+            <div class="guide-step-badge">Bước 3</div>
+            <div class="guide-step-icon">💾</div>
+            <h3 class="guide-step-title">Lưu &amp; Chuyển đổi</h3>
+            <p class="guide-step-desc">Bấm phím <strong>Enter</strong> để lưu ngay. Cô có thể bấm vào huy hiệu màu để đổi mục bất kỳ lúc nào, hoặc bấm <strong>📊 4 Sheet Excel</strong> để xem lại dạng bảng tính truyền thống.</p>
+          </div>
+        </div>
+
+        <!-- QUICK INTERACTIVE DEMO BOX -->
+        <div class="guide-demo-box">
+          <span class="demo-box-icon">💡</span>
+          <div class="demo-box-text">
+            <strong>Ví dụ thực tế cô có thể gõ thử:</strong>
+            <em>"Nên bổ sung thêm đồng hồ 2 phút ở slide này"</em> ➔ Hệ thống tự nhận diện mục <strong style="color:#9D174D;">🔵 Đề xuất cải tiến</strong> mà cô không cần bấm chọn!
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn-primary" data-close-dialog="guideDialog" style="padding:10px 24px;font-size:14px;">
+          Đã hiểu, Bắt đầu dùng ngay! 🎉
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="data/initial_data.js?v=16"></script>
+  <script src="app.js?v=16"></script>
 </body>
 </html>

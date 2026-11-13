@@ -1246,6 +1246,14 @@
       });
     }
 
+    const btnOpenGuide = document.getElementById("btnOpenGuide");
+    if (btnOpenGuide) {
+      btnOpenGuide.addEventListener("click", () => {
+        const guideDlg = document.getElementById("guideDialog");
+        if (guideDlg) guideDlg.showModal();
+      });
+    }
+
     const btnApplyUpdate = document.getElementById("btnApplyUpdate");
     if (btnApplyUpdate) {
       btnApplyUpdate.addEventListener("click", () => {
@@ -1253,6 +1261,14 @@
         const banner = document.getElementById("updateBanner");
         if (banner) banner.classList.add("hidden");
         setViewMode("smart");
+
+        // Automatically show visual guide modal on first update activation
+        const seen = localStorage.getItem("novastars_guide_seen");
+        if (!seen) {
+          localStorage.setItem("novastars_guide_seen", "true");
+          const guideDlg = document.getElementById("guideDialog");
+          if (guideDlg) guideDlg.showModal();
+        }
       });
     }
 
@@ -1407,6 +1423,19 @@
         </div>
         <button type="button" class="btn-slide-nav" id="btnSlideNavNext" ${canNext ? "" : "disabled"}>
           Slide sau ▶
+        </button>
+      </div>
+
+      <!-- INLINE VISUAL QUICK TIPS BAR -->
+      <div class="smart-tips-bar">
+        <div class="smart-tips-left">
+          <span class="smart-tips-icon">💡</span>
+          <div class="smart-tips-text">
+            <strong>Mẹo nhận diện:</strong> Gõ tự nhiên vào 1 ô duy nhất (Máy tự phân loại: <span class="guide-mini-tag c1">🟢 Khen</span> <span class="guide-mini-tag c2">🟡 Thắc mắc</span> <span class="guide-mini-tag c3">🔵 Đề xuất "Nên..."</span> <span class="guide-mini-tag c4">🔴 Khó khăn</span>) ➔ Bấm <strong>Enter</strong> để lưu ngay!
+          </div>
+        </div>
+        <button type="button" class="btn-open-guide-inline" id="btnOpenGuideInline">
+          Xem hướng dẫn chi tiết ➔
         </button>
       </div>
 
@@ -1795,6 +1824,15 @@
         document.getElementById("lightboxDialog").showModal();
       });
     });
+
+    // 11. Open Visual Guide Dialog
+    const btnOpenGuideInline = container.querySelector("#btnOpenGuideInline");
+    if (btnOpenGuideInline) {
+      btnOpenGuideInline.addEventListener("click", () => {
+        const guideDlg = document.getElementById("guideDialog");
+        if (guideDlg) guideDlg.showModal();
+      });
+    }
   }
 
   function assignOrAddSlidePoint(critKey, slideNum) {
