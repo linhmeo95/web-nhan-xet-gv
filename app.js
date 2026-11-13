@@ -1412,6 +1412,53 @@
         });
       });
 
+      // Drag and drop image directly onto point-item in Classic mode
+      card.querySelectorAll(".point-item").forEach(pItem => {
+        let pDragCounter = 0;
+        const [, idxStr] = (pItem.dataset.pointWrap || "").split(":");
+        const pIdx = Number(idxStr);
+        pItem.addEventListener("dragenter", e => {
+          e.preventDefault();
+          e.stopPropagation();
+          pDragCounter++;
+          pItem.classList.add("drag-active");
+        });
+        pItem.addEventListener("dragover", e => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
+          pItem.classList.add("drag-active");
+        });
+        pItem.addEventListener("dragleave", e => {
+          e.preventDefault();
+          e.stopPropagation();
+          pDragCounter--;
+          if (pDragCounter <= 0) {
+            pDragCounter = 0;
+            pItem.classList.remove("drag-active");
+          }
+        });
+        pItem.addEventListener("drop", async e => {
+          e.preventDefault();
+          e.stopPropagation();
+          pDragCounter = 0;
+          pItem.classList.remove("drag-active");
+          const dt = e.dataTransfer;
+          if (!dt) return;
+          const files = Array.from(dt.files || []).filter(f => f.type && f.type.startsWith("image/"));
+          if (files.length > 0) {
+            for (const file of files) {
+              const compressed = await compressImageFile(file);
+              points[pIdx].images.push(compressed);
+            }
+            syncCriterionSummaryFromPoints(cData);
+            rev.updatedAt = new Date().toISOString();
+            triggerAutoSave();
+            renderCriteriaForm({ critKey: cm.key, pointIdx: pIdx });
+          }
+        });
+      });
+
       // Delete image from a specific point
       card.querySelectorAll("[data-del-pt-img]").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -1855,6 +1902,69 @@
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
           saveCurrentSmartNote();
+        }
+      });
+
+      // Paste image directly into Smart Composer textarea
+      ta.addEventListener("paste", async e => {
+        const items = (e.clipboardData && e.clipboardData.items) || [];
+        let hasImg = false;
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.startsWith("image/")) {
+            e.preventDefault();
+            const file = items[i].getAsFile();
+            if (file) {
+              const compressed = await compressImageFile(file);
+              stagedSmartImages.push(compressed);
+              hasImg = true;
+            }
+          }
+        }
+        if (hasImg) {
+          renderSmartSlideFlow();
+        }
+      });
+    }
+
+    // Drag and drop image directly onto Smart Composer card
+    const composerCard = container.querySelector(".smart-composer-card");
+    if (composerCard) {
+      let cDragCounter = 0;
+      composerCard.addEventListener("dragenter", e => {
+        e.preventDefault();
+        e.stopPropagation();
+        cDragCounter++;
+        composerCard.classList.add("drag-active");
+      });
+      composerCard.addEventListener("dragover", e => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
+        composerCard.classList.add("drag-active");
+      });
+      composerCard.addEventListener("dragleave", e => {
+        e.preventDefault();
+        e.stopPropagation();
+        cDragCounter--;
+        if (cDragCounter <= 0) {
+          cDragCounter = 0;
+          composerCard.classList.remove("drag-active");
+        }
+      });
+      composerCard.addEventListener("drop", async e => {
+        e.preventDefault();
+        e.stopPropagation();
+        cDragCounter = 0;
+        composerCard.classList.remove("drag-active");
+        const dt = e.dataTransfer;
+        if (!dt) return;
+        const files = Array.from(dt.files || []).filter(f => f.type && f.type.startsWith("image/"));
+        if (files.length > 0) {
+          for (const file of files) {
+            const compressed = await compressImageFile(file);
+            stagedSmartImages.push(compressed);
+          }
+          renderSmartSlideFlow();
         }
       });
     }
@@ -3506,6 +3616,14 @@
       renderCriteriaForm();
     }
   }
+
+  // Global Drag & Drop Prevention (Ngăn trình duyệt tự ý mở file ảnh khi kéo thả nhầm ra ngoài vùng nhận diện)
+  window.addEventListener("dragover", e => {
+    e.preventDefault();
+  }, false);
+  window.addEventListener("drop", e => {
+    e.preventDefault();
+  }, false);
 
   setupSidebar();
   setupModeControls();

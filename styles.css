@@ -2567,6 +2567,60 @@ dialog::backdrop {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.smart-composer-card.drag-active {
+  border: 2px dashed #E11D48 !important;
+  background-color: #FFF1F2 !important;
+  box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.2) !important;
+}
+
+.smart-composer-card.drag-active::after {
+  content: "📥 Thả file ảnh vào đây để đính kèm";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 241, 242, 0.92);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 800;
+  color: #BE185D;
+  z-index: 50;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.point-item.drag-active {
+  border: 2px dashed #E11D48 !important;
+  background-color: #FFF1F2 !important;
+  position: relative;
+}
+
+.point-item.drag-active::after {
+  content: "📥 Thả ảnh vào đây";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 241, 242, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #BE185D;
+  z-index: 10;
+  border-radius: 8px;
+  pointer-events: none;
 }
 
 .smart-composer-head {
