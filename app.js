@@ -1883,6 +1883,44 @@
     });
   }
 
+  async function handleManualSave() {
+    const btn = document.getElementById("btnManualSave");
+    const saveText = document.getElementById("saveText");
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `⏳ Đang lưu...`;
+    }
+
+    triggerAutoSave(true, true);
+
+    setTimeout(() => {
+      const nowStr = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `✓ Đã lưu thành công!`;
+        btn.classList.add("saved-highlight");
+        setTimeout(() => {
+          btn.innerHTML = `💾 Lưu dữ liệu`;
+          btn.classList.remove("saved-highlight");
+        }, 2500);
+      }
+      if (saveText) {
+        saveText.textContent = `✓ Đã lưu lúc ${nowStr}`;
+      }
+    }, 400);
+  }
+
+  const btnManualSave = document.getElementById("btnManualSave");
+  if (btnManualSave) {
+    btnManualSave.addEventListener("click", handleManualSave);
+  }
+
+  const btnTopSave = document.getElementById("btnTopSave");
+  if (btnTopSave) {
+    btnTopSave.addEventListener("click", handleManualSave);
+  }
+
   const btnSubmitReview = document.getElementById("btnSubmitReview");
   if (btnSubmitReview) {
     btnSubmitReview.addEventListener("click", () => {

@@ -783,6 +783,53 @@ body {
   color: #065F46;
 }
 
+.btn-manual-save {
+  background: #FFFFFF;
+  color: #065F46;
+  border: 1.5px solid #A7F3D0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-manual-save:hover {
+  background: #ECFDF5;
+  border-color: #059669;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.15);
+}
+
+.btn-manual-save.saved-highlight {
+  background: #059669;
+  color: #FFFFFF;
+  border-color: #059669;
+}
+
+.btn-top-save {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  padding: 4px 10px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-top-save:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
 .btn-submit-review {
   background: #059669;
   color: #FFFFFF;
