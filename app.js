@@ -40,6 +40,100 @@
   let activeAdminTab = "matrix";
   let expandedDossierLessons = {};
 
+  // SMART SLIDE FLOW STATE (v15 OPT-IN UPDATE)
+  let currentViewMode = localStorage.getItem("novastars_ui_view_mode") || "classic";
+  let activeSlideNumber = 1;
+  let stagedSmartImages = [];
+  let userSelectedCategoryOverride = null;
+  let smartFeedFilter = "current"; // "current" | "all"
+
+  // SMART SEMANTIC CLASSIFIER (AI / HEURISTIC NATURAL LANGUAGE RULE ENGINE)
+  function classifyReviewText(rawText) {
+    if (!rawText || !rawText.trim()) {
+      return { key: "cai_tien", label: "3. Đề xuất cải tiến", icon: "🔵", catClass: "cat-cai_tien", score: 0 };
+    }
+    const text = rawText.toLowerCase();
+    let scores = {
+      ung_y: 0,
+      chua_hieu: 0,
+      cai_tien: 0,
+      kho_khan: 0
+    };
+
+    // 1. Cai Tien (Đề xuất cải tiến)
+    const caiTienKeywords = [
+      "nên ", "nên đổi", "cần thêm", "thay bằng", "thay vì", "sửa lại", "chỉnh sửa", 
+      "đổi thành", "chuyển thành", "bổ sung", "đề xuất", "gợi ý", "cắt bớt", "lược bớt",
+      "thêm đồng hồ", "thêm timer", "tách làm", "thêm hoạt động", "nếu đổi", "cần có thêm",
+      "cải tiến", "điều chỉnh", "thay ảnh", "thay video", "đổi tên", "thêm gợi ý", "tách bước",
+      "gộp lại", "làm rõ hơn bằng cách", "thêm slide", "bỏ bớt", "cho học sinh"
+    ];
+    caiTienKeywords.forEach(kw => {
+      if (text.includes(kw)) scores.cai_tien += 3;
+    });
+
+    // 2. Kho Khan (Khó khăn khi dạy)
+    const khoKhanKeywords = [
+      "khó dạy", "học sinh khó", "không kịp", "cháy giáo án", "quá dài", "quá tải",
+      "quá sức", "nặng quá", "rối quá", "lớp đông", "không đủ thời gian", "mất thời gian",
+      "khó quản lý", "khó theo dõi", "dễ chán", "trừu tượng", "dễ nhầm", "học sinh hay nhầm",
+      "khó thao tác", "áp lực", "loay hoay", "mất trật tự", "bị vướng", "khó nhớ",
+      "chậm", "chưa phù hợp với lứa tuổi", "khó thực hiện"
+    ];
+    khoKhanKeywords.forEach(kw => {
+      if (text.includes(kw)) scores.kho_khan += 3;
+    });
+
+    // 3. Chua Hieu (Điểm cần làm rõ)
+    const chuaHieuKeywords = [
+      "chưa hiểu", "chưa rõ", "tại sao", "vì sao", "nghĩa là gì", "thắc mắc",
+      "mơ hồ", "cần giải thích", "không rõ", "ý nghĩa gì", "chưa thuyết phục",
+      "lúng túng", "chưa hiểu rõ", "khó hiểu mục đích", "chưa nêu rõ", "chưa thấy"
+    ];
+    chuaHieuKeywords.forEach(kw => {
+      if (text.includes(kw)) scores.chua_hieu += 3;
+    });
+    if (text.includes("?") && scores.chua_hieu === 0) {
+      scores.chua_hieu += 2;
+    }
+
+    // 4. Ung Y (Điểm ưng ý)
+    const ungYKeywords = [
+      "hay", "đẹp", "thích", "sinh động", "rõ ràng", "hợp lý", "hấp dẫn",
+      "lôi cuốn", "sáng tạo", "ấn tượng", "chuẩn", "tốt", "tuyệt vời",
+      "cuốn hút", "rất thích", "dễ hiểu", "dễ dạy", "hứng thú", "rất hay",
+      "trực quan", "thông minh", "tinh tế", "khen", "ưng ý", "bổ ích",
+      "rất ổn", "rất đẹp", "rất sinh động", "rất thích thú", "thích nhất"
+    ];
+    ungYKeywords.forEach(kw => {
+      if (text.includes(kw)) scores.ung_y += 3;
+    });
+
+    let maxKey = "cai_tien";
+    let maxScore = scores.cai_tien;
+
+    ["kho_khan", "chua_hieu", "cai_tien", "ung_y"].forEach(k => {
+      if (scores[k] > maxScore) {
+        maxScore = scores[k];
+        maxKey = k;
+      }
+    });
+
+    if (maxScore === 0) {
+      if (text.includes("?")) maxKey = "chua_hieu";
+      else maxKey = "cai_tien";
+    }
+
+    const meta = {
+      ung_y: { key: "ung_y", label: "1. Điểm ưng ý", icon: "🟢", catClass: "cat-ung_y" },
+      chua_hieu: { key: "chua_hieu", label: "2. Điểm cần làm rõ", icon: "🟡", catClass: "cat-chua_hieu" },
+      cai_tien: { key: "cai_tien", label: "3. Đề xuất cải tiến", icon: "🔵", catClass: "cat-cai_tien" },
+      kho_khan: { key: "kho_khan", label: "4. Khó khăn khi dạy", icon: "🔴", catClass: "cat-kho_khan" }
+    };
+
+    return { ...meta[maxKey], score: maxScore };
+  }
+
   function syncLatestLessons(targetDb) {
     if (!targetDb.lessons || targetDb.lessons.length === 0) {
       if (window.INITIAL_APP_DATA && Array.isArray(window.INITIAL_APP_DATA.lessons)) {
@@ -799,6 +893,42 @@
       statusPill.className = "status-pill";
     }
 
+    // Update Announcement Banner display
+    const updateBanner = document.getElementById("updateBanner");
+    if (updateBanner) {
+      const dismissed = localStorage.getItem("novastars_update_banner_dismissed");
+      if (dismissed === "true") {
+        updateBanner.classList.add("hidden");
+      } else {
+        updateBanner.classList.remove("hidden");
+      }
+    }
+
+    // Update Mode Toggle Button text
+    const btnToggleMode = document.getElementById("btnToggleMode");
+    if (btnToggleMode) {
+      if (currentViewMode === "smart") {
+        btnToggleMode.innerHTML = "📊 4 Sheet Excel";
+        btnToggleMode.title = "Chuyển sang chế độ xem dạng 4 Sheet Excel";
+      } else {
+        btnToggleMode.innerHTML = "📱 Dòng chảy Slide (Mới)";
+        btnToggleMode.title = "Chuyển sang chế độ Dòng chảy Slide & Tự động phân loại";
+      }
+    }
+
+    const smartFlowEl = document.getElementById("smartSlideFlow");
+    const classicSheetEl = document.getElementById("classicSheetContainer");
+
+    if (currentViewMode === "smart") {
+      if (smartFlowEl) smartFlowEl.classList.remove("hidden");
+      if (classicSheetEl) classicSheetEl.classList.add("hidden");
+      renderSmartSlideFlow();
+      return;
+    } else {
+      if (smartFlowEl) smartFlowEl.classList.add("hidden");
+      if (classicSheetEl) classicSheetEl.classList.remove("hidden");
+    }
+
     const stack = document.getElementById("criteriaStack");
     stack.innerHTML = "";
 
@@ -1100,6 +1230,571 @@
         targetTa.setSelectionRange(targetTa.value.length, targetTa.value.length);
       }
     }
+  }
+
+  function setViewMode(mode) {
+    currentViewMode = mode;
+    localStorage.setItem("novastars_ui_view_mode", mode);
+    renderCriteriaForm();
+  }
+
+  function setupModeControls() {
+    const btnToggleMode = document.getElementById("btnToggleMode");
+    if (btnToggleMode) {
+      btnToggleMode.addEventListener("click", () => {
+        setViewMode(currentViewMode === "smart" ? "classic" : "smart");
+      });
+    }
+
+    const btnApplyUpdate = document.getElementById("btnApplyUpdate");
+    if (btnApplyUpdate) {
+      btnApplyUpdate.addEventListener("click", () => {
+        localStorage.setItem("novastars_update_banner_dismissed", "true");
+        const banner = document.getElementById("updateBanner");
+        if (banner) banner.classList.add("hidden");
+        setViewMode("smart");
+      });
+    }
+
+    const btnDismissUpdate = document.getElementById("btnDismissUpdate");
+    if (btnDismissUpdate) {
+      btnDismissUpdate.addEventListener("click", () => {
+        localStorage.setItem("novastars_update_banner_dismissed", "true");
+        const banner = document.getElementById("updateBanner");
+        if (banner) banner.classList.add("hidden");
+      });
+    }
+  }
+
+  function renderSmartSlideFlow() {
+    const smartContainer = document.getElementById("smartSlideFlow");
+    if (!smartContainer) return;
+
+    const lesson = getCurrentLesson();
+    if (!lesson) return;
+    const totalSlides = (lesson.slides && lesson.slides.length) ? lesson.slides.length : (lesson.totalSlides || 19);
+
+    if (activeSlideNumber > totalSlides && activeSlideNumber !== "chung") {
+      activeSlideNumber = 1;
+    }
+
+    const rev = getOrCreateReview(lesson.id, currentUser.id, currentUser.name);
+
+    // Collect all points across all 4 criteria
+    let allPoints = [];
+    CRITERIA_META.forEach(cm => {
+      const cData = rev.criteria[cm.key];
+      const pts = ensureCriterionPoints(cData);
+      pts.forEach((pt, pIdx) => {
+        if (pt.text.trim().length > 0 || (pt.images && pt.images.length > 0)) {
+          allPoints.push({
+            ...pt,
+            critKey: cm.key,
+            critTitle: cm.title,
+            originalPointIdx: pIdx
+          });
+        }
+      });
+    });
+
+    // Points for active slide
+    const currentSlidePoints = allPoints.filter(p => {
+      if (activeSlideNumber === "chung") {
+        return !p.slide || p.slide === "" || p.slide === "chung";
+      }
+      return String(p.slide || "") === String(activeSlideNumber);
+    });
+
+    // 1. Build Stepper HTML
+    let slidePillsHtml = "";
+    for (let s = 1; s <= totalSlides; s++) {
+      const count = allPoints.filter(p => String(p.slide || "") === String(s)).length;
+      const isActive = (String(activeSlideNumber) === String(s));
+      const dotHtml = count > 0 ? `<span class="smart-pill-dot" title="${count} ý kiến"></span>` : "";
+      slidePillsHtml += `
+        <button type="button" class="smart-slide-pill ${isActive ? "active" : ""}" data-smart-slide="${s}">
+          ${s} ${dotHtml}
+        </button>
+      `;
+    }
+    const chungCount = allPoints.filter(p => !p.slide || p.slide === "" || p.slide === "chung").length;
+    const isChungActive = (activeSlideNumber === "chung");
+    const chungDot = chungCount > 0 ? `<span class="smart-pill-dot" title="${chungCount} ý kiến"></span>` : "";
+    slidePillsHtml += `
+      <button type="button" class="smart-slide-pill ${isChungActive ? "active" : ""}" data-smart-slide="chung">
+        📌 Chung ${chungDot}
+      </button>
+    `;
+
+    const canPrev = (activeSlideNumber !== 1 && activeSlideNumber !== "chung");
+    const canNext = (activeSlideNumber !== totalSlides && activeSlideNumber !== "chung");
+
+    // 2. Active category classification default
+    const defaultCat = userSelectedCategoryOverride
+      ? {
+          key: userSelectedCategoryOverride,
+          label: (CRITERIA_META.find(c => c.key === userSelectedCategoryOverride) || CRITERIA_META[0]).title,
+          icon: { ung_y: "🟢", chua_hieu: "🟡", cai_tien: "🔵", kho_khan: "🔴" }[userSelectedCategoryOverride],
+          catClass: `cat-${userSelectedCategoryOverride}`
+        }
+      : classifyReviewText("");
+
+    // 3. Staged Images HTML
+    const stagedImgsHtml = stagedSmartImages.map((src, idx) => `
+      <div class="attached-thumb-wrap">
+        <img src="${src}" alt="Ảnh đính kèm" data-preview-img="${src}">
+        <button type="button" class="btn-del-img" data-del-staged-img="${idx}">✕</button>
+      </div>
+    `).join("");
+
+    // 4. Feed points list
+    const displayedPoints = (smartFeedFilter === "all") ? allPoints : currentSlidePoints;
+    let feedHtml = "";
+    if (displayedPoints.length === 0) {
+      feedHtml = `
+        <div class="smart-note-empty">
+          <span>✨ Chưa có ý kiến nhận xét nào ${smartFeedFilter === "all" ? "cho bài giảng này" : `cho Slide ${activeSlideNumber}`}.</span>
+          <span style="font-size:12px;">Cô hãy gõ suy nghĩ vào ô trên và bấm <strong>Lưu ý kiến</strong> nhé!</span>
+        </div>
+      `;
+    } else {
+      feedHtml = displayedPoints.map(p => {
+        const catIcons = { ung_y: "🟢", chua_hieu: "🟡", cai_tien: "🔵", kho_khan: "🔴" };
+        const imgs = (p.images || []).map(src => `
+          <div class="attached-thumb-wrap">
+            <img src="${src}" alt="Ảnh" data-preview-img="${src}">
+          </div>
+        `).join("");
+
+        return `
+          <div class="smart-note-card">
+            <div class="smart-note-top">
+              <div class="smart-note-tags">
+                <button type="button" class="smart-cat-badge ${p.critKey}" data-change-point-cat="${p.critKey}:${p.originalPointIdx}" title="Bấm để chuyển nhanh sang mục khác (Khen / Cần làm rõ / Cải tiến / Khó khăn)">
+                  <span>${catIcons[p.critKey]}</span>
+                  <span>${escapeHtml(p.critTitle)}</span>
+                  <span style="font-size:10px;">▾</span>
+                </button>
+                <span class="smart-slide-tag">${p.slide ? `Slide ${escapeHtml(p.slide)}` : "Chung cả bài"}</span>
+              </div>
+              <button type="button" class="btn-del-point" data-del-smart-pt="${p.critKey}:${p.originalPointIdx}" title="Xóa ý này">
+                ✕ Xóa
+              </button>
+            </div>
+            <div class="smart-note-text">${escapeHtml(p.text)}</div>
+            ${imgs ? `<div class="attached-images-list" style="margin-top:6px;">${imgs}</div>` : ""}
+          </div>
+        `;
+      }).join("");
+    }
+
+    // 5. Mini Criteria Summary
+    const counts = {
+      ung_y: allPoints.filter(p => p.critKey === "ung_y").length,
+      chua_hieu: allPoints.filter(p => p.critKey === "chua_hieu").length,
+      cai_tien: allPoints.filter(p => p.critKey === "cai_tien").length,
+      kho_khan: allPoints.filter(p => p.critKey === "kho_khan").length
+    };
+
+    smartContainer.innerHTML = `
+      <!-- 1. SLIDE STEPPER & STRIP -->
+      <div class="smart-stepper-card">
+        <button type="button" class="btn-slide-nav" id="btnSlideNavPrev" ${canPrev ? "" : "disabled"}>
+          ◀ Slide trước
+        </button>
+        <div class="smart-slides-scroll" id="smartSlidesScroll">
+          ${slidePillsHtml}
+        </div>
+        <button type="button" class="btn-slide-nav" id="btnSlideNavNext" ${canNext ? "" : "disabled"}>
+          Slide sau ▶
+        </button>
+      </div>
+
+      <!-- 2. SMART COMPOSER -->
+      <div class="smart-composer-card">
+        <div class="smart-composer-head">
+          <div class="composer-target-info">
+            <span class="composer-target-label">Đang nhận xét cho:</span>
+            <select class="composer-slide-select" id="composerSlideSelect" aria-label="Chọn Slide nhận xét">
+              ${buildSlideOptionsHtml(totalSlides, activeSlideNumber === "chung" ? "" : activeSlideNumber)}
+            </select>
+          </div>
+
+          <div class="smart-detect-wrap">
+            <button type="button" class="smart-detect-pill ${defaultCat.catClass}" id="smartDetectPill" title="Hệ thống tự động nhận diện theo câu chữ cô gõ. Bấm để đổi loại nếu muốn.">
+              <span>🤖 Tự động xếp:</span>
+              <strong id="smartDetectLabel">${defaultCat.icon} ${defaultCat.label}</strong>
+              <span style="font-size:10px;">▾</span>
+            </button>
+
+            <!-- DROPDOWN OVERRIDE MENU -->
+            <div class="smart-cat-menu hidden" id="smartCatMenu">
+              <button type="button" class="smart-cat-item" data-pick-cat="ung_y">
+                <span>🟢</span> <span>1. Điểm ưng ý</span>
+              </button>
+              <button type="button" class="smart-cat-item" data-pick-cat="chua_hieu">
+                <span>🟡</span> <span>2. Điểm cần làm rõ</span>
+              </button>
+              <button type="button" class="smart-cat-item" data-pick-cat="cai_tien">
+                <span>🔵</span> <span>3. Đề xuất cải tiến</span>
+              </button>
+              <button type="button" class="smart-cat-item" data-pick-cat="kho_khan">
+                <span>🔴</span> <span>4. Khó khăn khi dạy</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="smart-composer-body">
+          <textarea
+            class="smart-composer-textarea"
+            id="smartComposerTextarea"
+            placeholder="Ví dụ: 'Nên thêm đồng hồ 2 phút ở slide này...' hoặc 'Học sinh rất thích tranh vẽ robot mở đầu...' (Hệ thống sẽ tự nhận diện Khen, Cần làm rõ, Đề xuất hoặc Khó khăn)"
+          ></textarea>
+
+          <div class="attached-images-list ${stagedSmartImages.length ? "" : "hidden"}" id="smartStagedImgs">
+            ${stagedImgsHtml}
+          </div>
+
+          <div class="smart-composer-footer">
+            <div class="point-img-actions">
+              <button type="button" class="btn-paste-clipboard" id="btnPasteSmartImg" title="Chụp màn hình xong bấm nút này để dán ảnh ngay">
+                📋 Dán ảnh vừa chụp
+              </button>
+              <label class="btn-upload-file" title="Chọn file ảnh từ máy tính">
+                📁 Chọn ảnh từ máy
+                <input type="file" accept="image/*" hidden id="inputUploadSmartImg">
+              </label>
+            </div>
+
+            <button type="button" class="btn-smart-save" id="btnSaveSmartNote">
+              + Lưu ý kiến (Enter) ➔
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. FEED OF NOTES -->
+      <div class="smart-feed-section">
+        <div class="smart-feed-head">
+          <span class="smart-feed-title">
+            📝 Ý kiến đã ghi ${smartFeedFilter === "all" ? `toàn bài (${allPoints.length} ý)` : `cho Slide ${activeSlideNumber} (${currentSlidePoints.length} ý)`}
+          </span>
+          <div class="smart-feed-filters">
+            <button type="button" class="btn-feed-filter ${smartFeedFilter === "current" ? "active" : ""}" data-smart-filter="current">
+              Chỉ Slide ${activeSlideNumber} (${currentSlidePoints.length})
+            </button>
+            <button type="button" class="btn-feed-filter ${smartFeedFilter === "all" ? "active" : ""}" data-smart-filter="all">
+              Tất cả các Slide (${allPoints.length})
+            </button>
+          </div>
+        </div>
+
+        <div class="smart-feed-list">
+          ${feedHtml}
+        </div>
+      </div>
+
+      <!-- 4. SUMMARY AT BOTTOM -->
+      <div class="smart-crit-summary">
+        <div class="smart-summary-head">
+          <span class="smart-summary-title">📊 Tổng kết 4 Tiêu chí bài này (Đã ghi tổng cộng ${allPoints.length} ý)</span>
+          <button type="button" class="btn-open-side" id="btnSwitchToClassicSheet">
+            Xem chi tiết dạng 4 Sheet Excel ➔
+          </button>
+        </div>
+        <div class="smart-summary-grid">
+          <div class="smart-summary-card c1" data-switch-to-sheet="ung_y" title="Bấm để xem riêng Sheet 1">
+            <span class="smart-summary-card-title">🟢 1. Điểm ưng ý</span>
+            <span class="smart-summary-card-count">${counts.ung_y} ý</span>
+          </div>
+          <div class="smart-summary-card c2" data-switch-to-sheet="chua_hieu" title="Bấm để xem riêng Sheet 2">
+            <span class="smart-summary-card-title">🟡 2. Điểm cần làm rõ</span>
+            <span class="smart-summary-card-count">${counts.chua_hieu} ý</span>
+          </div>
+          <div class="smart-summary-card c3" data-switch-to-sheet="cai_tien" title="Bấm để xem riêng Sheet 3">
+            <span class="smart-summary-card-title">🔵 3. Đề xuất cải tiến</span>
+            <span class="smart-summary-card-count">${counts.cai_tien} ý</span>
+          </div>
+          <div class="smart-summary-card c4" data-switch-to-sheet="kho_khan" title="Bấm để xem riêng Sheet 4">
+            <span class="smart-summary-card-title">🔴 4. Khó khăn khi dạy</span>
+            <span class="smart-summary-card-count">${counts.kho_khan} ý</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    attachSmartFlowHandlers(smartContainer, rev, totalSlides);
+  }
+
+  function attachSmartFlowHandlers(container, rev, totalSlides) {
+    // 1. Stepper navigation
+    const btnPrev = container.querySelector("#btnSlideNavPrev");
+    if (btnPrev) {
+      btnPrev.addEventListener("click", () => {
+        if (activeSlideNumber === "chung") {
+          activeSlideNumber = totalSlides;
+        } else if (activeSlideNumber > 1) {
+          activeSlideNumber--;
+        }
+        renderSmartSlideFlow();
+      });
+    }
+
+    const btnNext = container.querySelector("#btnSlideNavNext");
+    if (btnNext) {
+      btnNext.addEventListener("click", () => {
+        if (activeSlideNumber === "chung") {
+          activeSlideNumber = 1;
+        } else if (activeSlideNumber < totalSlides) {
+          activeSlideNumber++;
+        }
+        renderSmartSlideFlow();
+      });
+    }
+
+    container.querySelectorAll("[data-smart-slide]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const val = btn.dataset.smartSlide;
+        activeSlideNumber = (val === "chung" ? "chung" : Number(val));
+        renderSmartSlideFlow();
+      });
+    });
+
+    const composerSel = container.querySelector("#composerSlideSelect");
+    if (composerSel) {
+      composerSel.addEventListener("change", () => {
+        activeSlideNumber = composerSel.value ? Number(composerSel.value) : "chung";
+        renderSmartSlideFlow();
+      });
+    }
+
+    // 2. Real-time NLP classification on textarea
+    const ta = container.querySelector("#smartComposerTextarea");
+    const detectPill = container.querySelector("#smartDetectPill");
+    const detectLabel = container.querySelector("#smartDetectLabel");
+    const catMenu = container.querySelector("#smartCatMenu");
+
+    if (ta) {
+      ta.focus();
+      ta.addEventListener("input", () => {
+        if (!userSelectedCategoryOverride) {
+          const cat = classifyReviewText(ta.value);
+          detectPill.className = `smart-detect-pill ${cat.catClass}`;
+          detectLabel.textContent = `${cat.icon} ${cat.label}`;
+        }
+      });
+
+      ta.addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          saveCurrentSmartNote();
+        }
+      });
+    }
+
+    // 3. Category Override Menu
+    if (detectPill && catMenu) {
+      detectPill.addEventListener("click", e => {
+        e.stopPropagation();
+        catMenu.classList.toggle("hidden");
+      });
+
+      catMenu.querySelectorAll("[data-pick-cat]").forEach(item => {
+        item.addEventListener("click", e => {
+          e.stopPropagation();
+          const pickKey = item.dataset.pickCat;
+          userSelectedCategoryOverride = pickKey;
+          const found = CRITERIA_META.find(c => c.key === pickKey);
+          const icons = { ung_y: "🟢", chua_hieu: "🟡", cai_tien: "🔵", kho_khan: "🔴" };
+          detectPill.className = `smart-detect-pill cat-${pickKey}`;
+          detectLabel.textContent = `${icons[pickKey]} ${found.title}`;
+          catMenu.classList.add("hidden");
+          if (ta) ta.focus();
+        });
+      });
+
+      document.addEventListener("click", () => {
+        if (catMenu) catMenu.classList.add("hidden");
+      }, { once: true });
+    }
+
+    // 4. Save Note function
+    function saveCurrentSmartNote() {
+      if (!ta) return;
+      const textVal = ta.value.trim();
+      if (!textVal && stagedSmartImages.length === 0) {
+        ta.focus();
+        return;
+      }
+
+      const catKey = userSelectedCategoryOverride || classifyReviewText(textVal).key;
+      const slideVal = (activeSlideNumber === "chung" ? "" : String(activeSlideNumber));
+
+      const cData = rev.criteria[catKey];
+      const pts = ensureCriterionPoints(cData);
+
+      // If only 1 empty point exists, replace it, else push
+      if (pts.length === 1 && !pts[0].text.trim() && (!pts[0].images || pts[0].images.length === 0)) {
+        pts[0].text = textVal;
+        pts[0].slide = slideVal;
+        pts[0].images = [...stagedSmartImages];
+      } else {
+        pts.push({
+          id: "pt_" + Date.now() + "_" + Math.random().toString(36).substr(2, 6),
+          text: textVal,
+          slide: slideVal,
+          images: [...stagedSmartImages],
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      syncCriterionSummaryFromPoints(cData);
+      rev.updatedAt = new Date().toISOString();
+      triggerAutoSave();
+
+      // Reset composer
+      ta.value = "";
+      stagedSmartImages = [];
+      userSelectedCategoryOverride = null;
+
+      renderSmartSlideFlow();
+    }
+
+    const btnSave = container.querySelector("#btnSaveSmartNote");
+    if (btnSave) {
+      btnSave.addEventListener("click", saveCurrentSmartNote);
+    }
+
+    // 5. Paste & Upload Image for Composer
+    const btnPaste = container.querySelector("#btnPasteSmartImg");
+    if (btnPaste) {
+      btnPaste.addEventListener("click", async () => {
+        try {
+          const items = await navigator.clipboard.read();
+          for (const item of items) {
+            for (const type of item.types) {
+              if (type.startsWith("image/")) {
+                const blob = await item.getType(type);
+                const compressed = await compressImageFile(blob);
+                stagedSmartImages.push(compressed);
+                renderSmartSlideFlow();
+                return;
+              }
+            }
+          }
+          alert("Không tìm thấy ảnh trong bộ nhớ tạm (clipboard). Cô hãy chụp màn hình trước nhé!");
+        } catch (err) {
+          alert("Trình duyệt cần quyền truy cập Clipboard để dán ảnh. Hoặc cô có thể dùng nút 'Chọn ảnh từ máy'.");
+        }
+      });
+    }
+
+    const inputUpload = container.querySelector("#inputUploadSmartImg");
+    if (inputUpload) {
+      inputUpload.addEventListener("change", async e => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+          const compressed = await compressImageFile(file);
+          stagedSmartImages.push(compressed);
+          renderSmartSlideFlow();
+        }
+      });
+    }
+
+    container.querySelectorAll("[data-del-staged-img]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = Number(btn.dataset.delStagedImg);
+        stagedSmartImages.splice(idx, 1);
+        renderSmartSlideFlow();
+      });
+    });
+
+    // 6. Delete Note in Feed
+    container.querySelectorAll("[data-del-smart-pt]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const [cKey, pIdxStr] = btn.dataset.delSmartPt.split(":");
+        const pIdx = Number(pIdxStr);
+        const cData = rev.criteria[cKey];
+        const pts = ensureCriterionPoints(cData);
+        if (pts.length <= 1) {
+          pts[0].text = "";
+          pts[0].slide = "";
+          pts[0].images = [];
+        } else {
+          pts.splice(pIdx, 1);
+        }
+        syncCriterionSummaryFromPoints(cData);
+        rev.updatedAt = new Date().toISOString();
+        triggerAutoSave();
+        renderSmartSlideFlow();
+      });
+    });
+
+    // 7. Cycle category on existing note card (1-tap switch)
+    container.querySelectorAll("[data-change-point-cat]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const [oldKey, pIdxStr] = btn.dataset.changePointCat.split(":");
+        const pIdx = Number(pIdxStr);
+        const nextMap = { ung_y: "chua_hieu", chua_hieu: "cai_tien", cai_tien: "kho_khan", kho_khan: "ung_y" };
+        const newKey = nextMap[oldKey];
+
+        const oldPoints = ensureCriterionPoints(rev.criteria[oldKey]);
+        const pointData = oldPoints[pIdx];
+        if (!pointData) return;
+
+        // Remove from old
+        oldPoints.splice(pIdx, 1);
+        if (oldPoints.length === 0) {
+          oldPoints.push(createEmptyPoint(""));
+        }
+        syncCriterionSummaryFromPoints(rev.criteria[oldKey]);
+
+        // Add to new
+        const newPoints = ensureCriterionPoints(rev.criteria[newKey]);
+        if (newPoints.length === 1 && !newPoints[0].text.trim() && (!newPoints[0].images || newPoints[0].images.length === 0)) {
+          newPoints[0] = pointData;
+        } else {
+          newPoints.push(pointData);
+        }
+        syncCriterionSummaryFromPoints(rev.criteria[newKey]);
+
+        rev.updatedAt = new Date().toISOString();
+        triggerAutoSave();
+        renderSmartSlideFlow();
+      });
+    });
+
+    // 8. Feed Filter Toggle
+    container.querySelectorAll("[data-smart-filter]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        smartFeedFilter = btn.dataset.smartFilter;
+        renderSmartSlideFlow();
+      });
+    });
+
+    // 9. Switch to Classic Sheet
+    const btnSwitchClassic = container.querySelector("#btnSwitchToClassicSheet");
+    if (btnSwitchClassic) {
+      btnSwitchClassic.addEventListener("click", () => {
+        setViewMode("classic");
+      });
+    }
+
+    container.querySelectorAll("[data-switch-to-sheet]").forEach(card => {
+      card.addEventListener("click", () => {
+        activeCritKey = card.dataset.switchToSheet;
+        setViewMode("classic");
+      });
+    });
+
+    // 10. Image Preview Lightbox
+    container.querySelectorAll("[data-preview-img]").forEach(imgEl => {
+      imgEl.addEventListener("click", () => {
+        document.getElementById("lightboxImg").src = imgEl.dataset.previewImg;
+        document.getElementById("lightboxDialog").showModal();
+      });
+    });
   }
 
   function assignOrAddSlidePoint(critKey, slideNum) {
@@ -2274,6 +2969,7 @@
   }
 
   setupSidebar();
+  setupModeControls();
   setupDialogs();
   setupAuthPortal();
   populateAuthTeacherSelect();

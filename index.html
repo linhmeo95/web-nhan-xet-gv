@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=14">
+  <link rel="stylesheet" href="styles.css?v=15">
 </head>
 <body>
   <!-- AUTHENTICATION SCREEN (LOGIN PORTAL) -->
@@ -125,6 +125,21 @@
       <!-- MAIN WORKSPACE: SINGLE CLEAN SCREEN (TEACHER VIEW) -->
       <main class="single-workspace" id="teacherWorkspace">
         <div class="workspace-container">
+          <!-- UPDATE ANNOUNCEMENT BANNER -->
+          <div class="update-banner" id="updateBanner">
+            <div class="update-banner-left">
+              <span class="update-badge">BẢN CẬP NHẬT MỚI</span>
+              <div class="update-text-group">
+                <strong>Giao diện Dòng chảy Slide &amp; Tự động phân loại 4 mục!</strong>
+                <span>Xem slide tới đâu ghi nhận xét tới đó, hệ thống tự động phân loại Khen, Cần làm rõ, Đề xuất hoặc Khó khăn.</span>
+              </div>
+            </div>
+            <div class="update-banner-actions">
+              <button type="button" class="btn-update-action primary" id="btnApplyUpdate">Trải nghiệm ngay ➔</button>
+              <button type="button" class="btn-update-action secondary" id="btnDismissUpdate">Để sau</button>
+            </div>
+          </div>
+
           <!-- LESSON HEADER -->
           <section class="editor-header" aria-label="Thông tin bài giảng và nút mở Slide thật">
             <div class="editor-lesson-info">
@@ -136,8 +151,12 @@
             </div>
 
             <div class="editor-actions">
+              <button type="button" class="btn-mode-toggle" id="btnToggleMode" title="Chuyển đổi giữa Giao diện Dòng chảy Slide và 4 Sheet Excel">
+                📱 Dòng chảy Slide (Mới)
+              </button>
+
               <a href="#" target="_blank" rel="noopener" class="btn-open-tab" id="linkOpenHdTab" title="Mở Slide thật trên 1 tab mới">
-                ↗ Mở Slide bài giảng trên HD Tương tác
+                ↗ Mở Slide HD Tương tác
               </a>
 
               <span class="divider-v" aria-hidden="true"></span>
@@ -149,19 +168,25 @@
             </div>
           </section>
 
-          <!-- QUICK SLIDE TAGGER STRIP -->
-          <section class="quick-slide-bar" aria-label="Gắn nhanh số Slide">
-            <span class="quick-bar-label" id="lblQuickBarTarget">
-              📌 Bấm số Slide để gán cho <strong>Ý 1</strong>:
-            </span>
-            <div class="slide-num-strip" id="slideNumStrip"></div>
-          </section>
+          <!-- VIEW MODE 1: SMART SLIDE FLOW CONTAINER (NEW) -->
+          <section class="smart-slide-flow hidden" id="smartSlideFlow" aria-label="Giao diện nhận xét theo dòng chảy Slide"></section>
 
-          <!-- EXCEL-STYLE 4 SHEET TABS -->
-          <div class="excel-sheet-nav" id="excelSheetNav" role="tablist" aria-label="4 Sheet nhận xét"></div>
+          <!-- VIEW MODE 2: CLASSIC 4-SHEET EXCEL CONTAINER -->
+          <div class="classic-sheet-container" id="classicSheetContainer">
+            <!-- QUICK SLIDE TAGGER STRIP -->
+            <section class="quick-slide-bar" aria-label="Gắn nhanh số Slide">
+              <span class="quick-bar-label" id="lblQuickBarTarget">
+                📌 Bấm số Slide để gán cho <strong>Ý 1</strong>:
+              </span>
+              <div class="slide-num-strip" id="slideNumStrip"></div>
+            </section>
 
-          <!-- 4 CRITERIA CARDS (CONTROLLED AS EXCEL SHEETS) -->
-          <section class="criteria-grid" id="criteriaStack" aria-label="4 mục nhận xét"></section>
+            <!-- EXCEL-STYLE 4 SHEET TABS -->
+            <div class="excel-sheet-nav" id="excelSheetNav" role="tablist" aria-label="4 Sheet nhận xét"></div>
+
+            <!-- 4 CRITERIA CARDS (CONTROLLED AS EXCEL SHEETS) -->
+            <section class="criteria-grid" id="criteriaStack" aria-label="4 mục nhận xét"></section>
+          </div>
         </div>
       </main>
 
@@ -309,7 +334,7 @@
     </div>
   </dialog>
 
-  <script src="data/initial_data.js?v=14"></script>
-  <script src="app.js?v=14"></script>
+  <script src="data/initial_data.js?v=15"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>
