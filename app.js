@@ -40,6 +40,8 @@
   let activeAdminTab = "matrix";
   let expandedDossierLessons = {};
   let isSidebarCollapsed = localStorage.getItem("novastars_sidebar_collapsed") === "true";
+  let activeBtvSheetIdx = 0;
+  let adminSynthesisSheetIdx = 0;
 
   // SMART SLIDE FLOW STATE (v15 OPT-IN UPDATE)
   let currentViewMode = localStorage.getItem("novastars_ui_view_mode") || "classic";
@@ -147,6 +149,11 @@
         }
       });
     }
+    if (!targetDb.synthesis_reports || !Array.isArray(targetDb.synthesis_reports) || targetDb.synthesis_reports.length === 0) {
+      if (window.INITIAL_APP_DATA && Array.isArray(window.INITIAL_APP_DATA.synthesis_reports)) {
+        targetDb.synthesis_reports = JSON.parse(JSON.stringify(window.INITIAL_APP_DATA.synthesis_reports));
+      }
+    }
     return targetDb;
   }
 
@@ -163,6 +170,12 @@
     }
     if (!resultDb) {
       resultDb = JSON.parse(JSON.stringify(window.INITIAL_APP_DATA));
+    }
+
+    if (!resultDb.synthesis_reports || !Array.isArray(resultDb.synthesis_reports) || resultDb.synthesis_reports.length === 0) {
+      if (window.INITIAL_APP_DATA && Array.isArray(window.INITIAL_APP_DATA.synthesis_reports)) {
+        resultDb.synthesis_reports = JSON.parse(JSON.stringify(window.INITIAL_APP_DATA.synthesis_reports));
+      }
     }
 
     // Auto-recover any lessons or custom teachers added in previous storage versions (V8, V7, V6, V5...)
@@ -216,9 +229,19 @@
 
   function loadInitialUser() {
     const params = new URLSearchParams(window.location.search);
+    const roleParam = params.get("role");
+    const viewParam = params.get("view");
     const gvParam = params.get("gv");
     const pinParam = params.get("pin");
     const adminPin = (db.meta && db.meta.adminPin) ? String(db.meta.adminPin).trim() : "8888";
+
+    // Direct URL for BTV (Editor / Guest - Strictly Read-only, no PIN required):
+    if (roleParam === "btv" || roleParam === "editor" || viewParam === "btv" || viewParam === "tong-hop") {
+      isAdminView = false;
+      const btvUser = { id: "btv", name: "Biên tập viên", role: "btv" };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(btvUser));
+      return btvUser;
+    }
 
     // Direct URL login for admin: ?gv=admin&pin=8888
     if (gvParam === "admin" && pinParam === adminPin) {
@@ -243,6 +266,8 @@
         if (parsed && parsed.id) {
           if (parsed.role === "admin") {
             isAdminView = true;
+          } else if (parsed.role === "btv") {
+            isAdminView = false;
           } else {
             isAdminView = false;
           }
@@ -332,6 +357,13 @@
         }
         if (cloudConfig.meta) {
           db.meta = cloudConfig.meta;
+        }
+        if (Array.isArray(cloudConfig.synthesis_reports) && cloudConfig.synthesis_reports.length > 0) {
+          db.synthesis_reports = cloudConfig.synthesis_reports;
+        } else if (!db.synthesis_reports || !Array.isArray(db.synthesis_reports) || db.synthesis_reports.length === 0) {
+          if (window.INITIAL_APP_DATA && Array.isArray(window.INITIAL_APP_DATA.synthesis_reports)) {
+            db.synthesis_reports = JSON.parse(JSON.stringify(window.INITIAL_APP_DATA.synthesis_reports));
+          }
         }
       }
 
@@ -442,7 +474,8 @@
           payload: {
             meta: db.meta,
             teachers: db.teachers,
-            lessons: slimLessons
+            lessons: slimLessons,
+            synthesis_reports: db.synthesis_reports || []
           },
           updated_at: new Date().toISOString()
         });
@@ -900,6 +933,8 @@
     const nameEl = document.getElementById("currentUserName");
     const dotEl = document.querySelector(".user-dot");
     const btnToggleAdmin = document.getElementById("btnToggleAdmin");
+    const btnToggleSidebar = document.getElementById("btnToggleSidebar");
+    const btnTopSave = document.getElementById("btnTopSave");
 
     if (currentUser.role === "admin") {
       nameEl.textContent = "🛡️ Ban Quản lý";
@@ -907,11 +942,22 @@
       // Allow admin to toggle between viewing the admin panel and previewing the teacher form
       btnToggleAdmin.classList.remove("hidden");
       btnToggleAdmin.textContent = isAdminView ? "👁️ Xem phiếu GV" : "📊 Về Quản lý";
+      if (btnToggleSidebar) btnToggleSidebar.classList.remove("hidden");
+      if (btnTopSave) btnTopSave.classList.add("hidden");
+    } else if (currentUser.role === "btv") {
+      nameEl.textContent = "👁️ Biên tập viên (Chỉ xem)";
+      if (dotEl) dotEl.style.background = "#0284C7";
+      // STRICT ROLE ISOLATION: Hide all admin & teacher tools for BTV
+      btnToggleAdmin.classList.add("hidden");
+      if (btnToggleSidebar) btnToggleSidebar.classList.add("hidden");
+      if (btnTopSave) btnTopSave.classList.add("hidden");
     } else {
       nameEl.textContent = "👩‍🏫 " + currentUser.name;
       if (dotEl) dotEl.style.background = "#FB7185";
       // CRITICAL: HIDE ADMIN BUTTON COMPLETELY FOR TEACHERS
       btnToggleAdmin.classList.add("hidden");
+      if (btnToggleSidebar) btnToggleSidebar.classList.remove("hidden");
+      if (btnTopSave) btnTopSave.classList.remove("hidden");
     }
   }
 
@@ -2020,6 +2066,202 @@
     });
   }
 
+  function renderBtvSpreadsheet() {
+    const reports = db.synthesis_reports || [];
+    if (!reports.length) return;
+
+    if (activeBtvSheetIdx >= reports.length) {
+      activeBtvSheetIdx = 0;
+    }
+
+    const currentSheet = reports[activeBtvSheetIdx];
+    const mainTitleEl = document.getElementById("btvLessonMainTitle");
+    const subTitleEl = document.getElementById("btvLessonSubtitle");
+    if (mainTitleEl) mainTitleEl.textContent = currentSheet.title || "Báo cáo tổng hợp";
+    if (subTitleEl) subTitleEl.textContent = currentSheet.subtitle || "";
+
+    // Render Sheet Tabs
+    const tabsBar = document.getElementById("btvSheetTabsBar");
+    if (tabsBar) {
+      tabsBar.innerHTML = "";
+      reports.forEach((sheet, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btv-sheet-tab" + (idx === activeBtvSheetIdx ? " active" : "");
+        btn.innerHTML = `📊 ${escapeHtml(sheet.sheet_name)}`;
+        btn.addEventListener("click", () => {
+          activeBtvSheetIdx = idx;
+          renderBtvSpreadsheet();
+        });
+        tabsBar.appendChild(btn);
+      });
+    }
+
+    // Render Table Rows
+    const tbody = document.getElementById("btvExcelTableBody");
+    if (tbody) {
+      tbody.innerHTML = "";
+      (currentSheet.rows || []).forEach(row => {
+        const tr = document.createElement("tr");
+        const critClass = `c${row.stt}`;
+        tr.className = `btv-row-${critClass}`;
+
+        const formatBullets = (txt) => {
+          if (!txt) return "";
+          const lines = txt.split("\n").filter(l => l.trim().length > 0);
+          return `<ul class="btv-text-bullet">${lines.map(l => {
+            const clean = l.replace(/^[•\-\*]\s*/, "");
+            return `<li>${escapeHtml(clean)}</li>`;
+          }).join("")}</ul>`;
+        };
+
+        const imgSrc = `data/slide_imgs/${escapeHtml(row.img)}`;
+
+        tr.innerHTML = `
+          <td style="text-align: center; font-weight: 800; font-family: var(--font-mono); font-size: 14px;">${escapeHtml(row.stt)}</td>
+          <td class="cell-crit">
+            <span class="btv-crit-badge ${critClass}">${escapeHtml(row.tieu_chi)}</span>
+          </td>
+          <td>${formatBullets(row.nhan_xet)}</td>
+          <td>${formatBullets(row.dan_chung)}</td>
+          <td style="text-align: center;">
+            <div class="btv-thumb-wrap">
+              <img src="${imgSrc}" alt="${escapeHtml(row.tieu_chi)}" class="btv-slide-thumb" data-full-src="${imgSrc}" data-title="${escapeHtml(currentSheet.sheet_name)} — ${escapeHtml(row.tieu_chi)}">
+              <span class="btv-thumb-hint">🔍 Bấm ảnh để phóng to</span>
+            </div>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll(".btv-slide-thumb").forEach(img => {
+        img.addEventListener("click", () => {
+          openImageLightbox(img.dataset.fullSrc, img.dataset.title);
+        });
+      });
+    }
+  }
+
+  function openImageLightbox(src, title) {
+    const dialog = document.getElementById("imageLightboxDialog");
+    const imgEl = document.getElementById("lightboxImage");
+    const titleEl = document.getElementById("lightboxTitle");
+    if (!dialog || !imgEl) return;
+
+    imgEl.src = src;
+    if (titleEl) titleEl.textContent = title || "Ảnh minh họa slide dẫn chứng";
+    dialog.showModal();
+  }
+
+  function renderAdminSynthesisEditor() {
+    const reports = db.synthesis_reports || [];
+    if (!reports.length) return;
+
+    if (adminSynthesisSheetIdx >= reports.length) {
+      adminSynthesisSheetIdx = 0;
+    }
+
+    const currentSheet = reports[adminSynthesisSheetIdx];
+
+    // 1. Render pills
+    const pillsWrap = document.getElementById("adminSynthesisSheetPills");
+    if (pillsWrap) {
+      pillsWrap.innerHTML = "";
+      reports.forEach((sheet, idx) => {
+        const pill = document.createElement("button");
+        pill.type = "button";
+        pill.className = "synthesis-pill" + (idx === adminSynthesisSheetIdx ? " active" : "");
+        pill.textContent = `📊 ${sheet.sheet_name}`;
+        pill.addEventListener("click", () => {
+          adminSynthesisSheetIdx = idx;
+          renderAdminSynthesisEditor();
+        });
+        pillsWrap.appendChild(pill);
+      });
+    }
+
+    // 2. Render rows
+    const rowsWrap = document.getElementById("adminSynthesisFormRows");
+    if (rowsWrap) {
+      rowsWrap.innerHTML = "";
+      (currentSheet.rows || []).forEach((row, rIdx) => {
+        const card = document.createElement("div");
+        card.className = "synthesis-crit-card";
+        const critClass = `c${row.stt}`;
+
+        card.innerHTML = `
+          <div class="synthesis-crit-title">
+            <span class="btv-crit-badge ${critClass}">${escapeHtml(row.tieu_chi)}</span>
+            <span style="font-size: 12px; color: var(--ink-muted); font-weight: 600;">Ảnh: ${escapeHtml(row.img)}</span>
+          </div>
+
+          <div class="synthesis-input-group">
+            <label class="synthesis-input-label">Nội dung nhận xét đúc kết (mỗi ý 1 dòng có dấu •):</label>
+            <textarea class="synthesis-textarea" id="synthNhanXet_${rIdx}" rows="4">${escapeHtml(row.nhan_xet || "")}</textarea>
+          </div>
+
+          <div class="synthesis-input-group">
+            <label class="synthesis-input-label">Dẫn chứng slide cụ thể:</label>
+            <textarea class="synthesis-textarea" id="synthDanChung_${rIdx}" rows="3">${escapeHtml(row.dan_chung || "")}</textarea>
+          </div>
+        `;
+
+        rowsWrap.appendChild(card);
+      });
+    }
+
+    // 3. Actions
+    const btnSave = document.getElementById("btnSaveSynthesis");
+    if (btnSave) {
+      btnSave.onclick = async () => {
+        btnSave.disabled = true;
+        btnSave.innerHTML = `⏳ Đang lưu...`;
+
+        (currentSheet.rows || []).forEach((row, rIdx) => {
+          const nxEl = document.getElementById(`synthNhanXet_${rIdx}`);
+          const dcEl = document.getElementById(`synthDanChung_${rIdx}`);
+          if (nxEl) row.nhan_xet = nxEl.value;
+          if (dcEl) row.dan_chung = dcEl.value;
+        });
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        triggerAutoSave(true, true);
+
+        setTimeout(() => {
+          btnSave.disabled = false;
+          btnSave.innerHTML = `✓ Đã lưu xuất bản!`;
+          setTimeout(() => {
+            btnSave.innerHTML = `💾 Lưu xuất bản BTV`;
+          }, 2500);
+        }, 400);
+      };
+    }
+
+    const btnCopy = document.getElementById("btnCopyBtvLink");
+    if (btnCopy) {
+      btnCopy.onclick = () => {
+        const btvUrl = `${window.location.origin}${window.location.pathname}?role=btv`;
+        navigator.clipboard.writeText(btvUrl).then(() => {
+          const orig = btnCopy.innerHTML;
+          btnCopy.innerHTML = `✓ Đã chép link!`;
+          setTimeout(() => { btnCopy.innerHTML = orig; }, 2000);
+        }).catch(() => {
+          alert(`Link gửi BTV:\n${btvUrl}`);
+        });
+      };
+    }
+
+    const btnPreview = document.getElementById("btnPreviewBtvView");
+    if (btnPreview) {
+      btnPreview.onclick = () => {
+        currentUser = { id: "btv", name: "Biên tập viên", role: "btv" };
+        isAdminView = false;
+        renderAll();
+      };
+    }
+  }
+
   function renderAdminDashboard() {
     // 1. Render Admin Dossier Tab Bar
     const tabBar = document.getElementById("adminDossierTabBar");
@@ -2066,10 +2308,33 @@
         });
         tabBar.appendChild(tBtn);
       });
+
+      // Tab 3: Synthesis Editor for BTV
+      const synthBtn = document.createElement("button");
+      synthBtn.type = "button";
+      synthBtn.className = "admin-sheet-tab" + (activeAdminTab === "synthesis" ? " active" : "");
+      synthBtn.innerHTML = `📋 Báo cáo BTV (Bản tổng hợp)`;
+      synthBtn.title = "Biên tập báo cáo nhận xét tổng hợp dành cho Biên tập viên";
+      synthBtn.addEventListener("click", () => {
+        activeAdminTab = "synthesis";
+        renderAdminDashboard();
+      });
+      tabBar.appendChild(synthBtn);
     }
 
     const panelMatrix = document.getElementById("adminPanelMatrix");
     const panelDossier = document.getElementById("adminPanelTeacherDossier");
+    const panelSynthesis = document.getElementById("adminPanelSynthesis");
+
+    if (activeAdminTab === "synthesis") {
+      if (panelMatrix) panelMatrix.classList.add("hidden");
+      if (panelDossier) panelDossier.classList.add("hidden");
+      if (panelSynthesis) panelSynthesis.classList.remove("hidden");
+      renderAdminSynthesisEditor();
+      return;
+    } else {
+      if (panelSynthesis) panelSynthesis.classList.add("hidden");
+    }
 
     if (activeAdminTab === "matrix") {
       if (panelMatrix) panelMatrix.classList.remove("hidden");
@@ -3092,6 +3357,8 @@
     const appShell = document.getElementById("appShell");
     const teacherWorkspace = document.getElementById("teacherWorkspace");
     const adminWorkspace = document.getElementById("adminWorkspace");
+    const btvWorkspace = document.getElementById("btvWorkspace");
+    const lessonSidebar = document.getElementById("lessonSidebar");
 
     if (!currentUser) {
       if (authPortal) authPortal.classList.remove("hidden");
@@ -3099,6 +3366,7 @@
       if (appShell) appShell.classList.add("hidden");
       if (teacherWorkspace) teacherWorkspace.classList.add("hidden");
       if (adminWorkspace) adminWorkspace.classList.add("hidden");
+      if (btvWorkspace) btvWorkspace.classList.add("hidden");
       populateAuthTeacherSelect();
       return;
     }
@@ -3110,6 +3378,20 @@
     renderLessonSidebar();
     renderTopBar();
     updateSidebarUI();
+
+    // STRICT ROLE ISOLATION FOR BTV (READ-ONLY)
+    if (currentUser.role === "btv") {
+      isAdminView = false;
+      if (teacherWorkspace) teacherWorkspace.classList.add("hidden");
+      if (adminWorkspace) adminWorkspace.classList.add("hidden");
+      if (lessonSidebar) lessonSidebar.classList.add("hidden");
+      if (btvWorkspace) btvWorkspace.classList.remove("hidden");
+      renderBtvSpreadsheet();
+      return;
+    } else {
+      if (btvWorkspace) btvWorkspace.classList.add("hidden");
+      if (lessonSidebar) lessonSidebar.classList.remove("hidden");
+    }
 
     if (currentUser.role === "admin") {
       if (isAdminView) {

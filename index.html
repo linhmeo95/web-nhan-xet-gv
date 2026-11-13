@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=18">
+  <link rel="stylesheet" href="styles.css?v=19">
 </head>
 <body>
   <!-- AUTHENTICATION SCREEN (LOGIN PORTAL) -->
@@ -252,10 +252,96 @@
           <div class="admin-view-panel hidden" id="adminPanelTeacherDossier">
             <!-- Rendered by JS: Profile Banner + List of Expandable Lesson Dossier Cards -->
           </div>
+
+          <!-- VIEW 3: SYNTHESIS EDITOR FOR ADMIN -->
+          <div class="admin-view-panel hidden" id="adminPanelSynthesis">
+            <div class="admin-card">
+              <div class="synthesis-editor-header">
+                <div>
+                  <h3 style="margin: 0; font-size: 16px; color: var(--ink-primary);">📋 Biên tập Báo cáo Tổng hợp (Bản hiển thị cho BTV)</h3>
+                  <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--ink-muted);">
+                    Quản lý có thể trực tiếp chỉnh sửa nội dung nhận xét và dẫn chứng slide của 3 bài. Bấm "Lưu xuất bản" để link BTV nhận được bản mới tức thì.
+                  </p>
+                </div>
+                <div class="synthesis-admin-actions">
+                  <button type="button" class="btn-copy-btv-link" id="btnCopyBtvLink" title="Sao chép link gửi Biên tập viên">
+                    🔗 Sao chép link gửi BTV
+                  </button>
+                  <button type="button" class="btn-preview-btv" id="btnPreviewBtvView" title="Xem trước giao diện của BTV">
+                    👁️ Xem giao diện BTV
+                  </button>
+                  <button type="button" class="btn-save-synthesis" id="btnSaveSynthesis">
+                    💾 Lưu xuất bản BTV
+                  </button>
+                </div>
+              </div>
+
+              <!-- ADMIN SYNTHESIS SHEET SELECTOR -->
+              <div class="synthesis-sheet-pills" id="adminSynthesisSheetPills"></div>
+
+              <!-- SYNTHESIS EDITING FORM -->
+              <div class="synthesis-form-rows" id="adminSynthesisFormRows"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. BTV SPREADSHEET WORKSPACE (READ-ONLY FOR EDITORS) -->
+      <section class="btv-workspace hidden" id="btvWorkspace" aria-label="Báo cáo Tổng hợp Nhận xét dành cho Biên tập viên">
+        <div class="btv-container">
+          <!-- BTV HEADER BANNER -->
+          <div class="btv-top-banner">
+            <div class="btv-banner-left">
+              <span class="btv-role-badge">📋 Báo cáo Tổng hợp dành cho Biên tập viên</span>
+              <h2 class="btv-main-title" id="btvLessonMainTitle">Báo cáo Tổng hợp Nhận xét Bài giảng</h2>
+              <p class="btv-subtitle" id="btvLessonSubtitle">Bản đúc kết ý kiến khách quan từ tất cả Giáo viên đứng lớp · Kèm dẫn chứng và ảnh chụp slide thực tế</p>
+            </div>
+            <div class="btv-banner-actions">
+              <a href="data/TONG_HOP_NHAN_XET_3_BAI_TIEU_HOC.xlsx" download="TONG_HOP_NHAN_XET_3_BAI_TIEU_HOC.xlsx" class="btn-btv-download" id="btnBtvDownloadExcel" title="Tải file Excel gốc có chèn ảnh slide">
+                📊 Tải file Excel (.xlsx)
+              </a>
+            </div>
+          </div>
+
+          <!-- EXCEL-STYLE SHEET TABS -->
+          <div class="btv-sheet-tabs-bar" id="btvSheetTabsBar" role="tablist" aria-label="Các Sheet bài giảng trong Excel"></div>
+
+          <!-- EXCEL SPREADSHEET TABLE -->
+          <div class="btv-excel-card">
+            <div class="table-responsive">
+              <table class="btv-excel-table" id="btvExcelTable">
+                <thead>
+                  <tr>
+                    <th style="width: 55px; text-align: center;">STT</th>
+                    <th style="width: 210px;">Tiêu chí đánh giá</th>
+                    <th style="min-width: 360px;">Nội dung nhận xét đúc kết (Ý kiến đồng thuận)</th>
+                    <th style="width: 260px;">Dẫn chứng slide cụ thể</th>
+                    <th style="width: 290px; text-align: center;">Hình ảnh minh họa slide</th>
+                  </tr>
+                </thead>
+                <tbody id="btvExcelTableBody">
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
     </div>
   </div>
+
+  <!-- IMAGE LIGHTBOX DIALOG -->
+  <dialog class="image-lightbox-dialog" id="imageLightboxDialog" closedby="any" aria-label="Phóng to ảnh slide dẫn chứng">
+    <div class="lightbox-content">
+      <div class="lightbox-head">
+        <span class="lightbox-title" id="lightboxTitle">Ảnh minh họa slide dẫn chứng</span>
+        <button type="button" class="btn-close-lightbox" id="btnCloseLightbox" data-close-dialog="imageLightboxDialog" title="Đóng (Esc)">✕</button>
+      </div>
+      <div class="lightbox-body">
+        <img src="" alt="Slide dẫn chứng" id="lightboxImage" class="lightbox-img">
+      </div>
+    </div>
+  </dialog>
 
   <!-- MODAL 1: SWITCH TEACHER -->
   <dialog id="loginDialog" closedby="any" aria-labelledby="loginDialogTitle">
@@ -409,7 +495,7 @@
     </div>
   </dialog>
 
-  <script src="data/initial_data.js?v=18"></script>
-  <script src="app.js?v=18"></script>
+  <script src="data/initial_data.js?v=19"></script>
+  <script src="app.js?v=19"></script>
 </body>
 </html>
