@@ -144,8 +144,23 @@
       }
     } else if (window.INITIAL_APP_DATA && Array.isArray(window.INITIAL_APP_DATA.lessons)) {
       window.INITIAL_APP_DATA.lessons.forEach(sl => {
-        if (!targetDb.lessons.some(l => l.id === sl.id || l.code === sl.code)) {
+        const existing = targetDb.lessons.find(l => l.id === sl.id || l.code === sl.code);
+        if (!existing) {
           targetDb.lessons.push(sl);
+        } else {
+          // ALWAYS sync exact totalSlides and slides metadata from canonical source
+          if (sl.totalSlides && sl.totalSlides !== existing.totalSlides) {
+            existing.totalSlides = sl.totalSlides;
+          }
+          if (sl.slides && Array.isArray(sl.slides)) {
+            existing.slides = JSON.parse(JSON.stringify(sl.slides));
+          }
+          if (sl.slide_titles && Array.isArray(sl.slide_titles)) {
+            existing.slide_titles = [...sl.slide_titles];
+          }
+          if (sl.url && !existing.url) {
+            existing.url = sl.url;
+          }
         }
       });
     }
@@ -935,6 +950,7 @@
     const btnToggleAdmin = document.getElementById("btnToggleAdmin");
     const btnToggleSidebar = document.getElementById("btnToggleSidebar");
     const btnTopSave = document.getElementById("btnTopSave");
+    const btnTopOpenSynthesis = document.getElementById("btnTopOpenSynthesis");
 
     if (currentUser.role === "admin") {
       nameEl.textContent = "🛡️ Ban Quản lý";
@@ -944,11 +960,23 @@
       btnToggleAdmin.textContent = isAdminView ? "👁️ Xem phiếu GV" : "📊 Về Quản lý";
       if (btnToggleSidebar) btnToggleSidebar.classList.remove("hidden");
       if (btnTopSave) btnTopSave.classList.add("hidden");
+
+      if (btnTopOpenSynthesis) {
+        btnTopOpenSynthesis.classList.remove("hidden");
+        btnTopOpenSynthesis.onclick = () => {
+          isAdminView = true;
+          activeAdminTab = "synthesis";
+          renderAll();
+          const pSynth = document.getElementById("adminPanelSynthesis");
+          if (pSynth) pSynth.scrollIntoView({ behavior: "smooth", block: "start" });
+        };
+      }
     } else if (currentUser.role === "btv") {
       nameEl.textContent = "👁️ Biên tập viên (Chỉ xem)";
       if (dotEl) dotEl.style.background = "#0284C7";
       // STRICT ROLE ISOLATION: Hide all admin & teacher tools for BTV
       btnToggleAdmin.classList.add("hidden");
+      if (btnTopOpenSynthesis) btnTopOpenSynthesis.classList.add("hidden");
       if (btnToggleSidebar) btnToggleSidebar.classList.add("hidden");
       if (btnTopSave) btnTopSave.classList.add("hidden");
     } else {
@@ -956,6 +984,7 @@
       if (dotEl) dotEl.style.background = "#FB7185";
       // CRITICAL: HIDE ADMIN BUTTON COMPLETELY FOR TEACHERS
       btnToggleAdmin.classList.add("hidden");
+      if (btnTopOpenSynthesis) btnTopOpenSynthesis.classList.add("hidden");
       if (btnToggleSidebar) btnToggleSidebar.classList.remove("hidden");
       if (btnTopSave) btnTopSave.classList.remove("hidden");
     }
@@ -997,12 +1026,16 @@
     }
   }
 
-  function buildSlideOptionsHtml(totalSlides, selectedSlide) {
+  function buildSlideOptionsHtml(totalSlides, selectedSlide, slidesList) {
     const selStr = String(selectedSlide || "");
     let html = `<option value="" ${selStr === "" ? "selected" : ""}>📌 Chung cả bài</option>`;
     for (let i = 1; i <= totalSlides; i++) {
       const isSel = selStr === String(i) ? "selected" : "";
-      html += `<option value="${i}" ${isSel}>📌 Slide ${i}</option>`;
+      let titleSuffix = "";
+      if (slidesList && slidesList[i - 1] && slidesList[i - 1].tieuDe) {
+        titleSuffix = ` - ${slidesList[i - 1].tieuDe}`;
+      }
+      html += `<option value="${i}" ${isSel}>📌 Slide ${i}${escapeHtml(titleSuffix)}</option>`;
     }
     return html;
   }
@@ -1125,7 +1158,7 @@
                 <div class="point-left-meta">
                   <span class="point-index-badge">Ý ${pIdx + 1}</span>
                   <select class="point-slide-select" data-slide-select="${cm.key}:${pIdx}" aria-label="Chọn Slide cho Ý ${pIdx + 1}">
-                    ${buildSlideOptionsHtml(totalSlides, pt.slide)}
+                    ${buildSlideOptionsHtml(totalSlides, pt.slide, lesson.slides)}
                   </select>
                 </div>
                 <button type="button" class="btn-del-point" data-del-point="${cm.key}:${pIdx}" title="Xóa ý này">
@@ -1460,8 +1493,10 @@
       const count = allPoints.filter(p => String(p.slide || "") === String(s)).length;
       const isActive = (String(activeSlideNumber) === String(s));
       const dotHtml = count > 0 ? `<span class="smart-pill-dot" title="${count} ý kiến"></span>` : "";
+      const slideInfo = (lesson.slides && lesson.slides[s - 1]) ? lesson.slides[s - 1] : null;
+      const slideTitle = slideInfo && slideInfo.tieuDe ? `Slide ${s}: ${slideInfo.tieuDe}` : `Slide ${s}`;
       slidePillsHtml += `
-        <button type="button" class="smart-slide-pill ${isActive ? "active" : ""}" data-smart-slide="${s}">
+        <button type="button" class="smart-slide-pill ${isActive ? "active" : ""}" data-smart-slide="${s}" title="${escapeHtml(slideTitle)}">
           ${s} ${dotHtml}
         </button>
       `;
@@ -1470,7 +1505,7 @@
     const isChungActive = (activeSlideNumber === "chung");
     const chungDot = chungCount > 0 ? `<span class="smart-pill-dot" title="${chungCount} ý kiến"></span>` : "";
     slidePillsHtml += `
-      <button type="button" class="smart-slide-pill ${isChungActive ? "active" : ""}" data-smart-slide="chung">
+      <button type="button" class="smart-slide-pill ${isChungActive ? "active" : ""}" data-smart-slide="chung" title="Nhận xét chung cả bài">
         📌 Chung ${chungDot}
       </button>
     `;
@@ -1508,7 +1543,6 @@
       `;
     } else {
       feedHtml = displayedPoints.map(p => {
-        const catIcons = { ung_y: "🟢", chua_hieu: "🟡", cai_tien: "🔵", kho_khan: "🔴" };
         const imgs = (p.images || []).map(src => `
           <div class="attached-thumb-wrap">
             <img src="${src}" alt="Ảnh" data-preview-img="${src}">
@@ -1516,14 +1550,17 @@
         `).join("");
 
         return `
-          <div class="smart-note-card">
+          <div class="smart-note-card" data-note-card-id="${p.critKey}:${p.originalPointIdx}">
             <div class="smart-note-top">
               <div class="smart-note-tags">
-                <button type="button" class="smart-cat-badge ${p.critKey}" data-change-point-cat="${p.critKey}:${p.originalPointIdx}" title="Bấm để chuyển nhanh sang mục khác (Khen / Cần làm rõ / Cải tiến / Khó khăn)">
-                  <span>${catIcons[p.critKey]}</span>
-                  <span>${escapeHtml(p.critTitle)}</span>
-                  <span style="font-size:10px;">▾</span>
-                </button>
+                <div class="smart-cat-select-wrap">
+                  <select class="smart-note-cat-select ${p.critKey}" data-move-point="${p.critKey}:${p.originalPointIdx}" title="Bấm để chọn chuyển ý này sang mục khác">
+                    <option value="ung_y" ${p.critKey === "ung_y" ? "selected" : ""}>🟢 1. Điểm ưng ý</option>
+                    <option value="chua_hieu" ${p.critKey === "chua_hieu" ? "selected" : ""}>🟡 2. Cần làm rõ</option>
+                    <option value="cai_tien" ${p.critKey === "cai_tien" ? "selected" : ""}>🔵 3. Đề xuất cải tiến</option>
+                    <option value="kho_khan" ${p.critKey === "kho_khan" ? "selected" : ""}>🔴 4. Khó khăn khi dạy</option>
+                  </select>
+                </div>
                 <span class="smart-slide-tag">${p.slide ? `Slide ${escapeHtml(p.slide)}` : "Chung cả bài"}</span>
               </div>
               <button type="button" class="btn-del-point" data-del-smart-pt="${p.critKey}:${p.originalPointIdx}" title="Xóa ý này">
@@ -1564,7 +1601,7 @@
         <div class="smart-tips-left">
           <span class="smart-tips-icon">💡</span>
           <div class="smart-tips-text">
-            <strong>Mẹo nhận diện:</strong> Gõ tự nhiên vào 1 ô duy nhất (Máy tự phân loại: <span class="guide-mini-tag c1">🟢 Khen</span> <span class="guide-mini-tag c2">🟡 Thắc mắc</span> <span class="guide-mini-tag c3">🔵 Đề xuất "Nên..."</span> <span class="guide-mini-tag c4">🔴 Khó khăn</span>) ➔ Bấm <strong>Enter</strong> để lưu ngay!
+            <strong>Mẹo nhanh:</strong> Cô có thể bấm ghim trực tiếp mục nhận xét ở thanh chọn bên dưới, hoặc gõ tự nhiên để máy tự phân loại (Enter để lưu ngay).
           </div>
         </div>
         <button type="button" class="btn-open-guide-inline" id="btnOpenGuideInline">
@@ -1578,40 +1615,42 @@
           <div class="composer-target-info">
             <span class="composer-target-label">Đang nhận xét cho:</span>
             <select class="composer-slide-select" id="composerSlideSelect" aria-label="Chọn Slide nhận xét">
-              ${buildSlideOptionsHtml(totalSlides, activeSlideNumber === "chung" ? "" : activeSlideNumber)}
+              ${buildSlideOptionsHtml(totalSlides, activeSlideNumber === "chung" ? "" : activeSlideNumber, lesson.slides)}
             </select>
           </div>
 
-          <div class="smart-detect-wrap">
-            <button type="button" class="smart-detect-pill ${defaultCat.catClass}" id="smartDetectPill" title="Hệ thống tự động nhận diện theo câu chữ cô gõ. Bấm để đổi loại nếu muốn.">
-              <span>🤖 Tự động xếp:</span>
-              <strong id="smartDetectLabel">${defaultCat.icon} ${defaultCat.label}</strong>
-              <span style="font-size:10px;">▾</span>
+          <div class="smart-cat-pills-bar" role="group" aria-label="Chọn thẻ nhận xét">
+            <button type="button" class="btn-cat-pill auto ${!userSelectedCategoryOverride ? "active" : ""}" data-cat-choice="auto" title="Tự động nhận diện (AI) theo nội dung cô gõ">
+              <span>🤖 Tự động (AI)</span>
             </button>
-
-            <!-- DROPDOWN OVERRIDE MENU -->
-            <div class="smart-cat-menu hidden" id="smartCatMenu">
-              <button type="button" class="smart-cat-item" data-pick-cat="ung_y">
-                <span>🟢</span> <span>1. Điểm ưng ý</span>
-              </button>
-              <button type="button" class="smart-cat-item" data-pick-cat="chua_hieu">
-                <span>🟡</span> <span>2. Điểm cần làm rõ</span>
-              </button>
-              <button type="button" class="smart-cat-item" data-pick-cat="cai_tien">
-                <span>🔵</span> <span>3. Đề xuất cải tiến</span>
-              </button>
-              <button type="button" class="smart-cat-item" data-pick-cat="kho_khan">
-                <span>🔴</span> <span>4. Khó khăn khi dạy</span>
-              </button>
-            </div>
+            <button type="button" class="btn-cat-pill ung_y ${userSelectedCategoryOverride === "ung_y" ? "active pinned" : ""}" data-cat-choice="ung_y" title="Ghim mục 1: Điểm ưng ý / Khen ngợi">
+              <span>🟢 1. Ưng ý</span>
+            </button>
+            <button type="button" class="btn-cat-pill chua_hieu ${userSelectedCategoryOverride === "chua_hieu" ? "active pinned" : ""}" data-cat-choice="chua_hieu" title="Ghim mục 2: Điểm cần làm rõ / Thắc mắc">
+              <span>🟡 2. Cần làm rõ</span>
+            </button>
+            <button type="button" class="btn-cat-pill cai_tien ${userSelectedCategoryOverride === "cai_tien" ? "active pinned" : ""}" data-cat-choice="cai_tien" title="Ghim mục 3: Đề xuất cải tiến / Góp ý">
+              <span>🔵 3. Cải tiến</span>
+            </button>
+            <button type="button" class="btn-cat-pill kho_khan ${userSelectedCategoryOverride === "kho_khan" ? "active pinned" : ""}" data-cat-choice="kho_khan" title="Ghim mục 4: Khó khăn khi tổ chức dạy">
+              <span>🔴 4. Khó khăn</span>
+            </button>
           </div>
         </div>
 
         <div class="smart-composer-body">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span class="composer-cat-status ${userSelectedCategoryOverride ? "pinned" : ""}" id="composerCatStatus">
+              ${userSelectedCategoryOverride
+                ? `📌 Đã ghim: <strong>${defaultCat.icon} ${defaultCat.label}</strong> (Ý kiến sẽ lưu cố định vào mục này, không đổi khi gõ)`
+                : `🤖 AI đang tự nhận diện: <strong>${defaultCat.icon} ${defaultCat.label}</strong>`}
+            </span>
+          </div>
+
           <textarea
             class="smart-composer-textarea"
             id="smartComposerTextarea"
-            placeholder="Ví dụ: 'Nên thêm đồng hồ 2 phút ở slide này...' hoặc 'Học sinh rất thích tranh vẽ robot mở đầu...' (Hệ thống sẽ tự nhận diện Khen, Cần làm rõ, Đề xuất hoặc Khó khăn)"
+            placeholder="Ví dụ: 'Nên thêm đồng hồ 2 phút ở slide này...' hoặc 'Học sinh rất thích tranh vẽ robot mở đầu...' (Cô có thể chọn ghim thẻ ở trên hoặc để AI tự động phân loại)"
           ></textarea>
 
           <div class="attached-images-list ${stagedSmartImages.length ? "" : "hidden"}" id="smartStagedImgs">
@@ -1731,19 +1770,34 @@
       });
     }
 
-    // 2. Real-time NLP classification on textarea
+    // 2. Category selection via Pills Bar
+    container.querySelectorAll("[data-cat-choice]").forEach(pill => {
+      pill.addEventListener("click", () => {
+        const choice = pill.dataset.catChoice;
+        if (choice === "auto") {
+          userSelectedCategoryOverride = null;
+        } else {
+          userSelectedCategoryOverride = choice;
+        }
+        renderSmartSlideFlow();
+        const newTa = container.querySelector("#smartComposerTextarea");
+        if (newTa) newTa.focus();
+      });
+    });
+
+    // 3. Real-time NLP classification on textarea (Active only when NOT pinned)
     const ta = container.querySelector("#smartComposerTextarea");
-    const detectPill = container.querySelector("#smartDetectPill");
-    const detectLabel = container.querySelector("#smartDetectLabel");
-    const catMenu = container.querySelector("#smartCatMenu");
+    const catStatusEl = container.querySelector("#composerCatStatus");
 
     if (ta) {
       ta.focus();
       ta.addEventListener("input", () => {
         if (!userSelectedCategoryOverride) {
           const cat = classifyReviewText(ta.value);
-          detectPill.className = `smart-detect-pill ${cat.catClass}`;
-          detectLabel.textContent = `${cat.icon} ${cat.label}`;
+          if (catStatusEl) {
+            catStatusEl.className = "composer-cat-status";
+            catStatusEl.innerHTML = `🤖 AI đang tự nhận diện: <strong>${cat.icon} ${cat.label}</strong>`;
+          }
         }
       });
 
@@ -1753,32 +1807,6 @@
           saveCurrentSmartNote();
         }
       });
-    }
-
-    // 3. Category Override Menu
-    if (detectPill && catMenu) {
-      detectPill.addEventListener("click", e => {
-        e.stopPropagation();
-        catMenu.classList.toggle("hidden");
-      });
-
-      catMenu.querySelectorAll("[data-pick-cat]").forEach(item => {
-        item.addEventListener("click", e => {
-          e.stopPropagation();
-          const pickKey = item.dataset.pickCat;
-          userSelectedCategoryOverride = pickKey;
-          const found = CRITERIA_META.find(c => c.key === pickKey);
-          const icons = { ung_y: "🟢", chua_hieu: "🟡", cai_tien: "🔵", kho_khan: "🔴" };
-          detectPill.className = `smart-detect-pill cat-${pickKey}`;
-          detectLabel.textContent = `${icons[pickKey]} ${found.title}`;
-          catMenu.classList.add("hidden");
-          if (ta) ta.focus();
-        });
-      });
-
-      document.addEventListener("click", () => {
-        if (catMenu) catMenu.classList.add("hidden");
-      }, { once: true });
     }
 
     // 4. Save Note function
@@ -1893,13 +1921,13 @@
       });
     });
 
-    // 7. Cycle category on existing note card (1-tap switch)
-    container.querySelectorAll("[data-change-point-cat]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const [oldKey, pIdxStr] = btn.dataset.changePointCat.split(":");
+    // 7. Move category on existing note card via explicit Dropdown Select
+    container.querySelectorAll("[data-move-point]").forEach(sel => {
+      sel.addEventListener("change", () => {
+        const [oldKey, pIdxStr] = sel.dataset.movePoint.split(":");
         const pIdx = Number(pIdxStr);
-        const nextMap = { ung_y: "chua_hieu", chua_hieu: "cai_tien", cai_tien: "kho_khan", kho_khan: "ung_y" };
-        const newKey = nextMap[oldKey];
+        const newKey = sel.value;
+        if (newKey === oldKey) return;
 
         const oldPoints = ensureCriterionPoints(rev.criteria[oldKey]);
         const pointData = oldPoints[pIdx];
@@ -1923,7 +1951,11 @@
 
         rev.updatedAt = new Date().toISOString();
         triggerAutoSave();
+
+        // Preserve scroll position so page doesn't jump
+        const currentScrollY = window.scrollY;
         renderSmartSlideFlow();
+        window.scrollTo({ top: currentScrollY, behavior: "instant" });
       });
     });
 
@@ -2263,6 +2295,17 @@
   }
 
   function renderAdminDashboard() {
+    // 0. Wire Prominent Admin Synthesis Button
+    const btnAdminSynth = document.getElementById("btnAdminOpenSynthesis");
+    if (btnAdminSynth) {
+      btnAdminSynth.onclick = () => {
+        activeAdminTab = "synthesis";
+        renderAdminDashboard();
+        const pSynth = document.getElementById("adminPanelSynthesis");
+        if (pSynth) pSynth.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+    }
+
     // 1. Render Admin Dossier Tab Bar
     const tabBar = document.getElementById("adminDossierTabBar");
     if (tabBar) {
@@ -2279,7 +2322,19 @@
       });
       tabBar.appendChild(matrixBtn);
 
-      // Teacher Tabs
+      // Tab 2: Synthesis Editor for BTV (Prominent Position right after Matrix)
+      const synthBtn = document.createElement("button");
+      synthBtn.type = "button";
+      synthBtn.className = "admin-sheet-tab tab-btv-synthesis" + (activeAdminTab === "synthesis" ? " active" : "");
+      synthBtn.innerHTML = `📋 Báo cáo BTV (Bản tổng hợp)`;
+      synthBtn.title = "Biên tập báo cáo nhận xét tổng hợp dành cho Biên tập viên";
+      synthBtn.addEventListener("click", () => {
+        activeAdminTab = "synthesis";
+        renderAdminDashboard();
+      });
+      tabBar.appendChild(synthBtn);
+
+      // Teacher Tabs (Tabs 3..8)
       db.teachers.forEach(t => {
         const submittedCount = db.lessons.filter(l => {
           const r = db.reviews.find(rev => rev.lessonId === l.id && (
@@ -2308,18 +2363,6 @@
         });
         tabBar.appendChild(tBtn);
       });
-
-      // Tab 3: Synthesis Editor for BTV
-      const synthBtn = document.createElement("button");
-      synthBtn.type = "button";
-      synthBtn.className = "admin-sheet-tab" + (activeAdminTab === "synthesis" ? " active" : "");
-      synthBtn.innerHTML = `📋 Báo cáo BTV (Bản tổng hợp)`;
-      synthBtn.title = "Biên tập báo cáo nhận xét tổng hợp dành cho Biên tập viên";
-      synthBtn.addEventListener("click", () => {
-        activeAdminTab = "synthesis";
-        renderAdminDashboard();
-      });
-      tabBar.appendChild(synthBtn);
     }
 
     const panelMatrix = document.getElementById("adminPanelMatrix");

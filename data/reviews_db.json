@@ -13,7 +13,133 @@
       "version": 1,
       "title": "Nụ cười của Robot do con người tạo ra",
       "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-1-nu-cuoi-robot-minh-hoa-rev03",
-      "totalSlides": 18
+      "totalSlides": 31,
+      "slides": [
+        {
+          "so": 1,
+          "tieuDe": "Nụ cười của Robot do con người tạo ra"
+        },
+        {
+          "so": 2,
+          "tieuDe": "Sẵn sàng quan sát"
+        },
+        {
+          "so": 3,
+          "tieuDe": "Hoạt động 1: Cười có phải là vui?"
+        },
+        {
+          "so": 4,
+          "tieuDe": "Hoạt động 1: Nghe câu chuyện"
+        },
+        {
+          "so": 5,
+          "tieuDe": "Robot có cảm thấy vui như Nam không?"
+        },
+        {
+          "so": 6,
+          "tieuDe": "Hoạt động 1: So sánh cảm giác vui"
+        },
+        {
+          "so": 7,
+          "tieuDe": "Hoạt động 1: Nghĩ rồi nói"
+        },
+        {
+          "so": 8,
+          "tieuDe": "Hoạt động 1: Nói rồi đổi lượt"
+        },
+        {
+          "so": 9,
+          "tieuDe": "Hoạt động 1: Cùng lắng nghe chia sẻ"
+        },
+        {
+          "so": 10,
+          "tieuDe": "Ô cửa bí mật"
+        },
+        {
+          "so": 11,
+          "tieuDe": "Hoạt động 1: Điều cần nhớ"
+        },
+        {
+          "so": 12,
+          "tieuDe": "Hoạt động 2: Ai quyết định nét mặt?"
+        },
+        {
+          "so": 13,
+          "tieuDe": "Hoạt động 2: Người chọn nét mặt"
+        },
+        {
+          "so": 14,
+          "tieuDe": "Hoạt động 2: A chọn"
+        },
+        {
+          "so": 15,
+          "tieuDe": "Hoạt động 2: B đặt"
+        },
+        {
+          "so": 16,
+          "tieuDe": "Hoạt động 2: Đổi vai"
+        },
+        {
+          "so": 17,
+          "tieuDe": "Hoạt động 2: Chia sẻ và kiểm tra"
+        },
+        {
+          "so": 18,
+          "tieuDe": "Hoạt động 2: Điều cần nhớ"
+        },
+        {
+          "so": 19,
+          "tieuDe": "Hoạt động 3: Em nối và giải thích"
+        },
+        {
+          "so": 20,
+          "tieuDe": "Hoạt động 3: Hai tình huống"
+        },
+        {
+          "so": 21,
+          "tieuDe": "Hoạt động 3: Nhận phiếu và giao việc"
+        },
+        {
+          "so": 22,
+          "tieuDe": "Hoạt động 3: Em tự nối"
+        },
+        {
+          "so": 23,
+          "tieuDe": "Hoạt động 3: Giữ phiếu của em"
+        },
+        {
+          "so": 24,
+          "tieuDe": "Hoạt động 3: Mỗi em nói hai ý"
+        },
+        {
+          "so": 25,
+          "tieuDe": "Hoạt động 3: Nói rồi đổi lượt"
+        },
+        {
+          "so": 26,
+          "tieuDe": "Hoạt động 3: Chia sẻ trước lớp"
+        },
+        {
+          "so": 27,
+          "tieuDe": "Ghép đúng – Giải thích hay"
+        },
+        {
+          "so": 28,
+          "tieuDe": "Hoạt động 3: Sau đó mới sửa"
+        },
+        {
+          "so": 29,
+          "tieuDe": "Em tự đối chiếu mục tiêu"
+        },
+        {
+          "so": 30,
+          "tieuDe": "Hoàn thành và nộp phiếu"
+        },
+        {
+          "so": 31,
+          "tieuDe": "Điều em ghi nhớ hôm nay"
+        }
+      ]
     },
     {
       "id": "ai-2-22-cl",
@@ -23,7 +149,69 @@
       "version": 39,
       "title": "Vì sao máy chia nhóm bị nhầm?",
       "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-2-22-cl",
-      "totalSlides": 15
+      "totalSlides": 15,
+      "slides": [
+        {
+          "so": 1,
+          "tieuDe": "Vì sao máy chia nhóm bị nhầm?"
+        },
+        {
+          "so": 2,
+          "tieuDe": "Em gọi tên vật nào?"
+        },
+        {
+          "so": 3,
+          "tieuDe": "Hoạt động 1: Kiểm tra máy chia nhóm"
+        },
+        {
+          "so": 4,
+          "tieuDe": "Em chọn ảnh nào?"
+        },
+        {
+          "so": 5,
+          "tieuDe": "Vật và nhãn có khớp không?"
+        },
+        {
+          "so": 6,
+          "tieuDe": "Hoạt động 2: Tìm chi tiết cần xem lại"
+        },
+        {
+          "so": 7,
+          "tieuDe": "Nói rồi đổi lượt"
+        },
+        {
+          "so": 8,
+          "tieuDe": "Đã đủ biết chắc vì sao máy sai chưa?"
+        },
+        {
+          "so": 9,
+          "tieuDe": "Hoạt động 3: Nêu điều em rút ra"
+        },
+        {
+          "so": 10,
+          "tieuDe": "Em nói bằng lời của mình"
+        },
+        {
+          "so": 11,
+          "tieuDe": "Hoạt động 4: Kiểm tra trường hợp mới"
+        },
+        {
+          "so": 12,
+          "tieuDe": "Tự làm trên phiếu"
+        },
+        {
+          "so": 13,
+          "tieuDe": "Chia sẻ với bạn"
+        },
+        {
+          "so": 14,
+          "tieuDe": "Đối chiếu và sửa"
+        },
+        {
+          "so": 15,
+          "tieuDe": "Điều em cần nhớ"
+        }
+      ]
     },
     {
       "id": "ai-3-28-cl",
@@ -33,7 +221,129 @@
       "version": 1,
       "title": "Ảnh sai nhãn khiến máy dễ đoán nhầm",
       "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-3-anh-sai-nhan",
-      "totalSlides": 18
+      "totalSlides": 30,
+      "slides": [
+        {
+          "so": 1,
+          "tieuDe": "Ảnh sai nhãn khiến máy dễ đoán nhầm"
+        },
+        {
+          "so": 2,
+          "tieuDe": "Sẵn sàng vào cửa hàng"
+        },
+        {
+          "so": 3,
+          "tieuDe": "Nếu ảnh mẫu sai nhãn, việc học và dự đoán của máy có thể bị ảnh hưởng thế nào?"
+        },
+        {
+          "so": 4,
+          "tieuDe": "Hoạt động 1: Xếp thẻ và nêu căn cứ"
+        },
+        {
+          "so": 5,
+          "tieuDe": "Em phát hiện điều gì?"
+        },
+        {
+          "so": 6,
+          "tieuDe": "Xếp thẻ và nêu căn cứ"
+        },
+        {
+          "so": 7,
+          "tieuDe": "Hai điều cần kiểm"
+        },
+        {
+          "so": 8,
+          "tieuDe": "Xếp thẻ theo ảnh và nhãn"
+        },
+        {
+          "so": 9,
+          "tieuDe": "Hoạt động 2: Giải thích hai vấn đề"
+        },
+        {
+          "so": 10,
+          "tieuDe": "Em quan sát và suy nghĩ"
+        },
+        {
+          "so": 11,
+          "tieuDe": "Một cách bắt đầu"
+        },
+        {
+          "so": 12,
+          "tieuDe": "Góp ý lời giải thích"
+        },
+        {
+          "so": 13,
+          "tieuDe": "Dữ liệu có vấn đề ảnh hưởng thế nào?"
+        },
+        {
+          "so": 14,
+          "tieuDe": "Nhãn sai có thể ảnh hưởng việc học"
+        },
+        {
+          "so": 15,
+          "tieuDe": "Hoạt động 3: Rút yêu cầu cho bộ ảnh"
+        },
+        {
+          "so": 16,
+          "tieuDe": "Hai yêu cầu từ hai thẻ"
+        },
+        {
+          "so": 17,
+          "tieuDe": "Hai ảnh khác nhau giúp thêm điều gì?"
+        },
+        {
+          "so": 18,
+          "tieuDe": "Cần những ví dụ phù hợp khác nhau"
+        },
+        {
+          "so": 19,
+          "tieuDe": "Nhãn sai nằm ở đâu?"
+        },
+        {
+          "so": 20,
+          "tieuDe": "Từ dữ liệu đến dự đoán"
+        },
+        {
+          "so": 21,
+          "tieuDe": "Em chốt bằng lời của mình"
+        },
+        {
+          "so": 22,
+          "tieuDe": "Hoạt động 4: Kiểm bộ ảnh thỏ–gấu"
+        },
+        {
+          "so": 23,
+          "tieuDe": "Em giúp cửa hàng chuẩn bị bộ ảnh mới"
+        },
+        {
+          "so": 24,
+          "tieuDe": "Góp ý cùng bạn"
+        },
+        {
+          "so": 25,
+          "tieuDe": "Đối chiếu và giải thích"
+        },
+        {
+          "so": 26,
+          "tieuDe": "Những ý hợp lý"
+        },
+        {
+          "so": 27,
+          "tieuDe": "Em xem lại và bổ sung"
+        },
+        {
+          "so": 28,
+          "tieuDe": "Hôm nay em làm được gì?"
+        },
+        {
+          "so": 29,
+          "tieuDe": "Kiểm cả ảnh và nhãn"
+        },
+        {
+          "so": 30,
+          "tieuDe": "Mang điều đã học vào cuộc sống"
+        }
+      ]
     },
     {
       "id": "ai-4-23-cl",
@@ -43,7 +353,85 @@
       "version": 43,
       "title": "Ý tưởng chiếc máy thông minh giúp ích trường em",
       "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-4-23-cl",
-      "totalSlides": 19
+      "totalSlides": 19,
+      "slides": [
+        {
+          "so": 1,
+          "tieuDe": "Ý tưởng chiếc máy thông minh giúp ích trường em"
+        },
+        {
+          "so": 2,
+          "tieuDe": "Hoạt động 1: Tìm chỗ dễ nhầm"
+        },
+        {
+          "so": 3,
+          "tieuDe": "Thám tử ở điểm bỏ rác"
+        },
+        {
+          "so": 4,
+          "tieuDe": "Em đã tìm đúng chỗ cần giúp?"
+        },
+        {
+          "so": 5,
+          "tieuDe": "Hoạt động 2: Phác hai cách giúp"
+        },
+        {
+          "so": 6,
+          "tieuDe": "Mở ô góp ý"
+        },
+        {
+          "so": 7,
+          "tieuDe": "Góp ý cho nhóm bên"
+        },
+        {
+          "so": 8,
+          "tieuDe": "Kiểm bản phác của nhóm"
+        },
+        {
+          "so": 9,
+          "tieuDe": "Hoạt động 3: Nói rõ máy giúp thế nào"
+        },
+        {
+          "so": 10,
+          "tieuDe": "Hai cách giúp bạn chọn thùng"
+        },
+        {
+          "so": 11,
+          "tieuDe": "Xếp ba bước giúp bạn"
+        },
+        {
+          "so": 12,
+          "tieuDe": "Che tên máy, đọc lại, sửa một ô"
+        },
+        {
+          "so": 13,
+          "tieuDe": "Hoạt động 4: Viết hai ý tưởng của em"
+        },
+        {
+          "so": 14,
+          "tieuDe": "Ghi vào phiếu cá nhân"
+        },
+        {
+          "so": 15,
+          "tieuDe": "Vượt ba cửa kiểm phiếu"
+        },
+        {
+          "so": 16,
+          "tieuDe": "Trước khi nộp phiếu"
+        },
+        {
+          "so": 17,
+          "tieuDe": "Đổi phiếu, góp ý, rồi tự sửa"
+        },
+        {
+          "so": 18,
+          "tieuDe": "Đối chiếu hai ý tưởng mẫu"
+        },
+        {
+          "so": 19,
+          "tieuDe": "Từ việc cần giúp đến ý tưởng AI"
+        }
+      ]
     },
     {
       "id": "ai-5-24-cl",
@@ -53,7 +441,81 @@
       "version": 40,
       "title": "Thêm ảnh mẫu và so sánh kết quả",
       "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-5-24-cl",
-      "totalSlides": 18
+      "totalSlides": 18,
+      "slides": [
+        {
+          "so": 1,
+          "tieuDe": "Thêm ảnh mẫu và so sánh kết quả"
+        },
+        {
+          "so": 2,
+          "tieuDe": "Hoạt động 1: Kiểm tra kết quả ban đầu"
+        },
+        {
+          "so": 3,
+          "tieuDe": "Lần kiểm thứ nhất"
+        },
+        {
+          "so": 4,
+          "tieuDe": "Đối chiếu lần 1"
+        },
+        {
+          "so": 5,
+          "tieuDe": "Hoạt động 2: Thêm mẫu và so sánh"
+        },
+        {
+          "so": 6,
+          "tieuDe": "Thêm mẫu rồi học lại"
+        },
+        {
+          "so": 7,
+          "tieuDe": "Lần kiểm thứ hai"
+        },
+        {
+          "so": 8,
+          "tieuDe": "Hai lần kiểm, em thấy gì?"
+        },
+        {
+          "so": 9,
+          "tieuDe": "So sánh và sửa"
+        },
+        {
+          "so": 10,
+          "tieuDe": "Hoạt động 3: Giải thích điều thay đổi"
+        },
+        {
+          "so": 11,
+          "tieuDe": "Em giải thích bằng ví dụ"
+        },
+        {
+          "so": 12,
+          "tieuDe": "Tự kiểm lời giải thích"
+        },
+        {
+          "so": 13,
+          "tieuDe": "Một câu giải thích tham khảo"
+        },
+        {
+          "so": 14,
+          "tieuDe": "Hoạt động 4: Vận dụng với ảnh chai"
+        },
+        {
+          "so": 15,
+          "tieuDe": "Em đề xuất và giải thích"
+        },
+        {
+          "so": 16,
+          "tieuDe": "Đối chiếu phương án"
+        },
+        {
+          "so": 17,
+          "tieuDe": "Em tự đối chiếu"
+        },
+        {
+          "so": 18,
+          "tieuDe": "Điều em cần nhớ"
+        }
+      ]
     }
   ],
   "teachers": [

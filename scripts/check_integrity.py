@@ -30,26 +30,31 @@ CANONICAL_LESSONS = {
         "id": "ai-1-02-cl",
         "title": "Nụ cười của Robot do con người tạo ra",
         "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-1-nu-cuoi-robot-minh-hoa-rev03",
+        "totalSlides": 31,
     },
     "2.22.CL": {
         "id": "ai-2-22-cl",
         "title": "Vì sao máy chia nhóm bị nhầm?",
         "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-2-22-cl",
+        "totalSlides": 15,
     },
     "3.28.CL": {
         "id": "ai-3-28-cl",
         "title": "Ảnh sai nhãn khiến máy dễ đoán nhầm",
         "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-3-anh-sai-nhan",
+        "totalSlides": 30,
     },
     "4.23.CL": {
         "id": "ai-4-23-cl",
         "title": "Ý tưởng chiếc máy thông minh giúp ích trường em",
         "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-4-23-cl",
+        "totalSlides": 19,
     },
     "5.24.CL": {
         "id": "ai-5-24-cl",
         "title": "Thêm ảnh mẫu và so sánh kết quả",
         "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-5-24-cl",
+        "totalSlides": 18,
     },
 }
 
@@ -103,6 +108,10 @@ def check_dataset(db, source_name, errors):
             errors.append(f"[{source_name}] Lesson '{canon_code}' title mismatch: expected '{canon['title']}', found '{l.get('title')}'")
         if not l.get("editorUrl", "").startswith("https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/"):
             errors.append(f"[{source_name}] Lesson '{canon_code}' editorUrl invalid: '{l.get('editorUrl')}'")
+        if "totalSlides" in canon and l.get("totalSlides") != canon["totalSlides"]:
+            errors.append(
+                f"[{source_name}] Lesson '{canon_code}' totalSlides mismatch: expected {canon['totalSlides']}, found {l.get('totalSlides')}"
+            )
             
     print(f"    - Lessons verified: {len(lessons)} found (all 5 canonical lessons intact with correct URLs).")
     
