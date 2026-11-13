@@ -36,6 +36,9 @@
   let currentLessonId = db.lessons[0] ? db.lessons[0].id : "";
   let activeCritKey = "ung_y";
   let activePointIdxByCrit = { ung_y: 0, chua_hieu: 0, cai_tien: 0, kho_khan: 0 };
+  let sidebarSearchQuery = "";
+  let activeAdminTab = "matrix";
+  let expandedDossierLessons = {};
 
   function syncLatestLessons(targetDb) {
     if (!targetDb.lessons || targetDb.lessons.length === 0) {
@@ -529,6 +532,173 @@
     return rev;
   }
 
+  function renderLessonSidebar() {
+    const listEl = document.getElementById("sidebarLessonsList");
+    if (!listEl) return;
+
+    const countEl = document.getElementById("lblSidebarTotalLessons");
+    if (countEl) countEl.textContent = `${db.lessons.length} bài`;
+
+    const searchInput = document.getElementById("sidebarSearchInput");
+    const clearBtn = document.getElementById("btnSidebarClearSearch");
+    if (searchInput && clearBtn) {
+      if (searchInput.value.trim().length > 0) {
+        clearBtn.classList.remove("hidden");
+      } else {
+        clearBtn.classList.add("hidden");
+      }
+    }
+
+    const query = sidebarSearchQuery.trim().toLowerCase();
+
+    // Filter matching lessons
+    const filteredLessons = db.lessons.filter(l => {
+      if (!query) return true;
+      const codeMatch = (l.code || "").toLowerCase().includes(query);
+      const titleMatch = (l.title || "").toLowerCase().includes(query);
+      const gradeMatch = (l.grade || "").toLowerCase().includes(query);
+      return codeMatch || titleMatch || gradeMatch;
+    });
+
+    if (filteredLessons.length === 0) {
+      listEl.innerHTML = `
+        <div style="padding: 28px 14px; text-align: center; color: var(--ink-muted); font-size: 13px; line-height: 1.5;">
+          🔍 Không tìm thấy bài giảng nào phù hợp với từ khóa "<strong>${escapeHtml(sidebarSearchQuery)}</strong>".
+        </div>
+      `;
+      return;
+    }
+
+    // Group by Grade
+    const gradeOrder = ["Khối 1", "Khối 2", "Khối 3", "Khối 4", "Khối 5"];
+    const grouped = {};
+    filteredLessons.forEach(l => {
+      const g = l.grade || "Khối khác";
+      if (!grouped[g]) grouped[g] = [];
+      grouped[g].push(l);
+    });
+
+    // Sort grades
+    const sortedGrades = Object.keys(grouped).sort((a, b) => {
+      const idxA = gradeOrder.indexOf(a);
+      const idxB = gradeOrder.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.localeCompare(b);
+    });
+
+    listEl.innerHTML = "";
+
+    sortedGrades.forEach(gradeName => {
+      const lessonsInGrade = grouped[gradeName];
+      const groupEl = document.createElement("div");
+      groupEl.className = "sidebar-grade-group";
+
+      const titleEl = document.createElement("div");
+      titleEl.className = "grade-group-title";
+      titleEl.innerHTML = `
+        <span>${escapeHtml(gradeName)}</span>
+        <span style="font-size: 10.5px; opacity: 0.8; font-weight: 700;">${lessonsInGrade.length} bài</span>
+      `;
+      groupEl.appendChild(titleEl);
+
+      const itemsWrap = document.createElement("div");
+      itemsWrap.className = "grade-lessons-list";
+
+      lessonsInGrade.forEach(lesson => {
+        const itemBtn = document.createElement("button");
+        itemBtn.type = "button";
+        const isActive = lesson.id === currentLessonId;
+        itemBtn.className = "sidebar-lesson-item" + (isActive ? " active" : "");
+        itemBtn.dataset.sidebarLessonId = lesson.id;
+
+        // Compute status for current teacher or for admin
+        let statusHtml = "";
+        if (currentUser && currentUser.role === "admin") {
+          const submittedTeachers = db.teachers.filter(t => {
+            const rev = db.reviews.find(r => r.lessonId === lesson.id && (r.teacherId === t.id || r.teacherName === t.name));
+            return rev && rev.status === "submitted";
+          }).length;
+          statusHtml = `<span class="sidebar-item-status ${submittedTeachers > 0 ? 'done' : 'empty'}">${submittedTeachers}/${db.teachers.length} cô nộp</span>`;
+        } else if (currentUser) {
+          const rev = db.reviews.find(r => r.lessonId === lesson.id && (r.teacherId === currentUser.id || r.teacherName === currentUser.name));
+          const hasContent = rev && CRITERIA_META.some(cm => rev.criteria[cm.key] && rev.criteria[cm.key].text.trim().length > 0);
+          if (rev && rev.status === "submitted" && hasContent) {
+            statusHtml = `<span class="sidebar-item-status done">✓ Đã nộp</span>`;
+          } else if (hasContent) {
+            statusHtml = `<span class="sidebar-item-status draft">✎ Đang soạn</span>`;
+          } else {
+            statusHtml = `<span class="sidebar-item-status empty">Chưa làm</span>`;
+          }
+        }
+
+        itemBtn.innerHTML = `
+          <div class="sidebar-item-top">
+            <span class="sidebar-item-code">${escapeHtml(lesson.code)}</span>
+            ${statusHtml}
+          </div>
+          <div class="sidebar-item-title">${escapeHtml(lesson.title)}</div>
+        `;
+
+        itemBtn.addEventListener("click", () => {
+          currentLessonId = lesson.id;
+          renderLessonSidebar();
+          if (isAdminView) {
+            renderAdminDashboard();
+          } else {
+            renderQuickSlideStrip();
+            renderCriteriaForm();
+          }
+          // Close mobile sidebar if open
+          const sb = document.getElementById("lessonSidebar");
+          const bd = document.getElementById("sidebarBackdrop");
+          if (sb) sb.classList.remove("open");
+          if (bd) bd.classList.add("hidden");
+        });
+
+        itemsWrap.appendChild(itemBtn);
+      });
+
+      groupEl.appendChild(itemsWrap);
+      listEl.appendChild(groupEl);
+    });
+  }
+
+  function setupSidebar() {
+    const searchInput = document.getElementById("sidebarSearchInput");
+    const clearBtn = document.getElementById("btnSidebarClearSearch");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        sidebarSearchQuery = e.target.value;
+        renderLessonSidebar();
+      });
+    }
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        if (searchInput) searchInput.value = "";
+        sidebarSearchQuery = "";
+        renderLessonSidebar();
+        if (searchInput) searchInput.focus();
+      });
+    }
+    const toggleBtn = document.getElementById("btnToggleSidebar");
+    const sidebar = document.getElementById("lessonSidebar");
+    const backdrop = document.getElementById("sidebarBackdrop");
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+        if (backdrop) backdrop.classList.toggle("hidden", !sidebar.classList.contains("open"));
+      });
+    }
+    if (backdrop && sidebar) {
+      backdrop.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+        backdrop.classList.add("hidden");
+      });
+    }
+  }
+
   function renderTopBar() {
     if (!currentUser) return;
     const nav = document.getElementById("lessonNav");
@@ -632,7 +802,36 @@
     const stack = document.getElementById("criteriaStack");
     stack.innerHTML = "";
 
-    CRITERIA_META.forEach(cm => {
+    // 1. Render Excel Sheet Nav Tabs
+    const sheetNav = document.getElementById("excelSheetNav");
+    if (sheetNav) {
+      sheetNav.innerHTML = "";
+      CRITERIA_META.forEach((cm, idx) => {
+        const cData = rev.criteria[cm.key];
+        const points = ensureCriterionPoints(cData);
+        const filledCount = points.filter(p => p.text.trim().length > 0 || (p.images && p.images.length > 0)).length;
+        const icons = ["🟢", "🟡", "🔵", "🔴"];
+
+        const tabBtn = document.createElement("button");
+        tabBtn.type = "button";
+        tabBtn.className = "excel-sheet-tab" + (cm.key === activeCritKey ? " active" : "") + ` sheet-tab-${cm.key}`;
+        tabBtn.setAttribute("role", "tab");
+        tabBtn.setAttribute("aria-selected", cm.key === activeCritKey ? "true" : "false");
+        tabBtn.innerHTML = `
+          <span class="sheet-tab-icon">${icons[idx]}</span>
+          <span class="sheet-tab-title">${escapeHtml(cm.title)}</span>
+          <span class="sheet-tab-count">${filledCount > 0 ? `${filledCount} ý` : "0"}</span>
+        `;
+        tabBtn.addEventListener("click", () => {
+          activeCritKey = cm.key;
+          renderCriteriaForm();
+          updateQuickBarTargetLabel();
+        });
+        sheetNav.appendChild(tabBtn);
+      });
+    }
+
+    CRITERIA_META.forEach((cm, idx) => {
       const cData = rev.criteria[cm.key];
       const points = ensureCriterionPoints(cData);
       if (activePointIdxByCrit[cm.key] >= points.length) {
@@ -642,7 +841,7 @@
       const filledCount = points.filter(p => p.text.trim().length > 0 || (p.images && p.images.length > 0)).length;
 
       const card = document.createElement("div");
-      card.className = "criterion-card" + (activeCritKey === cm.key ? " focused-card" : "");
+      card.className = "criterion-card" + (activeCritKey === cm.key ? " active-sheet focused-card" : "");
       card.dataset.crit = cm.key;
 
       const pointsHtml = points
@@ -709,8 +908,21 @@
           <button type="button" class="btn-add-point-bottom" data-add-point="${cm.key}">
             + Thêm ý nhận xét tiếp theo vào mục "${escapeHtml(cm.title)}"
           </button>
+          <div class="sheet-footer-nav">
+            ${idx > 0 ? `<button type="button" class="btn-sheet-step prev" data-goto-crit="${CRITERIA_META[idx - 1].key}">← Sheet trước: ${escapeHtml(CRITERIA_META[idx - 1].title)}</button>` : `<div></div>`}
+            ${idx < CRITERIA_META.length - 1 ? `<button type="button" class="btn-sheet-step next" data-goto-crit="${CRITERIA_META[idx + 1].key}">Sang Sheet tiếp: ${escapeHtml(CRITERIA_META[idx + 1].title)} →</button>` : `<div></div>`}
+          </div>
         </div>
       `;
+
+      // Sheet nav step buttons
+      card.querySelectorAll("[data-goto-crit]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          activeCritKey = btn.dataset.gotoCrit;
+          renderCriteriaForm();
+          updateQuickBarTargetLabel();
+        });
+      });
 
       // Add new point handlers
       card.querySelectorAll(`[data-add-point="${cm.key}"]`).forEach(btn => {
@@ -951,153 +1163,411 @@
   }
 
   function renderAdminDashboard() {
-    const matrixTable = document.getElementById("progressMatrixTable");
-    let thead = `<thead><tr><th>Giáo viên</th><th>PIN</th>`;
-    db.lessons.forEach(l => {
-      thead += `<th>${escapeHtml(l.code)} — ${escapeHtml(l.title)}</th>`;
-    });
-    thead += `</tr></thead>`;
+    // 1. Render Admin Dossier Tab Bar
+    const tabBar = document.getElementById("adminDossierTabBar");
+    if (tabBar) {
+      tabBar.innerHTML = "";
 
-    let tbody = `<tbody>`;
-    db.teachers.forEach(t => {
-      tbody += `<tr><td><strong>${escapeHtml(t.name)}</strong></td><td><code>${escapeHtml(t.pin)}</code></td>`;
-      db.lessons.forEach(l => {
-        const rev = db.reviews.find(r => r.lessonId === l.id && (
-          r.teacherId === t.id ||
-          (r.teacherName && t.name && (
-            r.teacherName.trim().toLowerCase() === t.name.trim().toLowerCase() ||
-            r.teacherName.toLowerCase().includes(t.name.toLowerCase()) ||
-            t.name.toLowerCase().includes(r.teacherName.toLowerCase())
-          ))
-        ));
-        if (rev) {
-          CRITERIA_META.forEach(cm => {
-            if (rev.criteria[cm.key]) ensureCriterionPoints(rev.criteria[cm.key]);
-          });
-        }
-        const hasContent = rev && CRITERIA_META.some(cm => rev.criteria[cm.key] && rev.criteria[cm.key].text.trim().length > 0);
-        let statusClass = "empty";
-        let statusLabel = "Chưa gõ";
-        if (rev && rev.status === "submitted" && hasContent) {
-          statusClass = "done";
-          statusLabel = "✓ Đã nộp";
-        } else if (hasContent) {
-          statusClass = "draft";
-          statusLabel = "✎ Đang soạn";
-        }
-        tbody += `<td>
-          <button type="button" class="matrix-cell-btn ${statusClass}" data-inspect-gv="${t.id}" data-inspect-lesson="${l.id}">
-            ${statusLabel}
-          </button>
-        </td>`;
+      // Tab 1: Progress Matrix
+      const matrixBtn = document.createElement("button");
+      matrixBtn.type = "button";
+      matrixBtn.className = "admin-sheet-tab" + (activeAdminTab === "matrix" ? " active" : "");
+      matrixBtn.innerHTML = `📊 Tổng hợp Tiến độ`;
+      matrixBtn.addEventListener("click", () => {
+        activeAdminTab = "matrix";
+        renderAdminDashboard();
       });
-      tbody += `</tr>`;
-    });
-    tbody += `</tbody>`;
-    matrixTable.innerHTML = thead + tbody;
+      tabBar.appendChild(matrixBtn);
 
-    matrixTable.querySelectorAll("[data-inspect-gv]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const gvId = btn.dataset.inspectGv;
-        const lId = btn.dataset.inspectLesson;
-        const foundT = db.teachers.find(x => x.id === gvId);
-        if (foundT) {
-          currentUser = { id: foundT.id, name: foundT.name, role: "teacher" };
-          localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
-          currentLessonId = lId;
-          isAdminView = false;
-          document.getElementById("teacherWorkspace").classList.remove("hidden");
-          document.getElementById("adminWorkspace").classList.add("hidden");
-          renderAll();
-        }
-      });
-    });
+      // Teacher Tabs
+      db.teachers.forEach(t => {
+        const submittedCount = db.lessons.filter(l => {
+          const r = db.reviews.find(rev => rev.lessonId === l.id && (
+            rev.teacherId === t.id ||
+            (rev.teacherName && t.name && (
+              rev.teacherName.trim().toLowerCase() === t.name.trim().toLowerCase() ||
+              rev.teacherName.toLowerCase().includes(t.name.toLowerCase()) ||
+              t.name.toLowerCase().includes(rev.teacherName.toLowerCase())
+            ))
+          ));
+          return r && r.status === "submitted";
+        }).length;
 
-    const lesson = getCurrentLesson();
-    document.getElementById("adminComparisonTitle").textContent =
-      `2. Chi tiết nhận xét — Bài ${lesson.code}: ${lesson.title}`;
-
-    const filterSel = document.getElementById("adminTeacherFilter");
-    const curVal = filterSel.value || "ALL";
-    filterSel.innerHTML = `<option value="ALL">Tất cả Giáo viên</option>`;
-    db.teachers.forEach(t => {
-      const opt = document.createElement("option");
-      opt.value = t.id;
-      opt.textContent = t.name;
-      filterSel.appendChild(opt);
-    });
-    filterSel.value = curVal;
-
-    const grid = document.getElementById("adminComparisonGrid");
-    grid.innerHTML = "";
-    const lessonReviews = db.reviews.filter(r => r.lessonId === lesson.id && (curVal === "ALL" || r.teacherId === curVal));
-
-    CRITERIA_META.forEach((cm, idx) => {
-      const box = document.createElement("div");
-      box.className = "admin-crit-box";
-      const colors = [
-        { bg: "#ECFDF5", text: "#065F46" },
-        { bg: "#FFFBEB", text: "#92400E" },
-        { bg: "#EFF6FF", text: "#1E40AF" },
-        { bg: "#FFF1F2", text: "#9F1239" }
-      ][idx];
-
-      let itemsHtml = "";
-      lessonReviews.forEach(r => {
-        const cData = r.criteria[cm.key];
-        if (!cData) return;
-        const pts = ensureCriterionPoints(cData).filter(
-          p => p.text.trim().length > 0 || (p.images && p.images.length > 0)
-        );
-        if (pts.length === 0) return;
-
-        const ptsHtml = pts
-          .map((pt, pIdx) => {
-            const sBadge = pt.slide ? `<span class="slide-tag-chip">Slide ${escapeHtml(pt.slide)}</span>` : `<span class="slide-tag-chip">Chung</span>`;
-            const imgs = (pt.images || [])
-              .map(src => `<div class="attached-thumb-wrap"><img src="${src}" data-preview-img="${src}" alt="Ảnh"></div>`)
-              .join("");
-            return `
-              <div style="padding:6px 8px;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:6px;margin-top:4px;">
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                  <strong style="font-size:11.5px;color:#475569;">Ý ${pIdx + 1}:</strong>
-                  ${sBadge}
-                </div>
-                <div class="teacher-review-text">${escapeHtml(pt.text)}</div>
-                ${imgs ? `<div class="attached-images-list" style="margin-top:6px;">${imgs}</div>` : ""}
-              </div>
-            `;
-          })
-          .join("");
-
-        itemsHtml += `
-          <div class="teacher-review-item">
-            <div class="teacher-review-meta">
-              <span class="teacher-review-name">${escapeHtml(r.teacherName)} (${pts.length} ý)</span>
-            </div>
-            ${ptsHtml}
-          </div>
+        const tBtn = document.createElement("button");
+        tBtn.type = "button";
+        tBtn.className = "admin-sheet-tab" + (activeAdminTab === t.id ? " active" : "");
+        const shortName = t.name.split(" ").slice(-2).join(" ");
+        tBtn.innerHTML = `
+          👩‍🏫 Cô ${escapeHtml(shortName)}
+          <span class="admin-tab-pill">${submittedCount}/${db.lessons.length}</span>
         `;
+        tBtn.title = `Hồ sơ nhận xét của Cô ${t.name}`;
+        tBtn.addEventListener("click", () => {
+          activeAdminTab = t.id;
+          renderAdminDashboard();
+        });
+        tabBar.appendChild(tBtn);
       });
+    }
 
-      if (!itemsHtml) itemsHtml = `<p style="font-size:12.5px;color:#64748B;">Chưa có ý kiến.</p>`;
+    const panelMatrix = document.getElementById("adminPanelMatrix");
+    const panelDossier = document.getElementById("adminPanelTeacherDossier");
 
-      box.innerHTML = `
-        <div class="admin-crit-box-head" style="background:${colors.bg};color:${colors.text};">
-          ${escapeHtml(cm.title)}
-        </div>
-        <div class="admin-crit-list">${itemsHtml}</div>
-      `;
+    if (activeAdminTab === "matrix") {
+      if (panelMatrix) panelMatrix.classList.remove("hidden");
+      if (panelDossier) panelDossier.classList.add("hidden");
 
-      box.querySelectorAll("[data-preview-img]").forEach(imgEl => {
-        imgEl.addEventListener("click", () => {
-          document.getElementById("lightboxImg").src = imgEl.dataset.previewImg;
-          document.getElementById("lightboxDialog").showModal();
+      const matrixTable = document.getElementById("progressMatrixTable");
+      let thead = `<thead><tr><th>Giáo viên</th><th>PIN</th>`;
+      db.lessons.forEach(l => {
+        thead += `<th>${escapeHtml(l.code)} — ${escapeHtml(l.title)}</th>`;
+      });
+      thead += `</tr></thead>`;
+
+      let tbody = `<tbody>`;
+      db.teachers.forEach(t => {
+        tbody += `<tr><td><strong>${escapeHtml(t.name)}</strong></td><td><code>${escapeHtml(t.pin)}</code></td>`;
+        db.lessons.forEach(l => {
+          const rev = db.reviews.find(r => r.lessonId === l.id && (
+            r.teacherId === t.id ||
+            (r.teacherName && t.name && (
+              r.teacherName.trim().toLowerCase() === t.name.trim().toLowerCase() ||
+              r.teacherName.toLowerCase().includes(t.name.toLowerCase()) ||
+              t.name.toLowerCase().includes(r.teacherName.toLowerCase())
+            ))
+          ));
+          if (rev) {
+            CRITERIA_META.forEach(cm => {
+              if (rev.criteria[cm.key]) ensureCriterionPoints(rev.criteria[cm.key]);
+            });
+          }
+          const hasContent = rev && CRITERIA_META.some(cm => rev.criteria[cm.key] && rev.criteria[cm.key].text.trim().length > 0);
+          let statusClass = "empty";
+          let statusLabel = "Chưa gõ";
+          if (rev && rev.status === "submitted" && hasContent) {
+            statusClass = "done";
+            statusLabel = "✓ Đã nộp";
+          } else if (hasContent) {
+            statusClass = "draft";
+            statusLabel = "✎ Đang soạn";
+          }
+          tbody += `<td>
+            <button type="button" class="matrix-cell-btn ${statusClass}" data-inspect-gv="${t.id}" data-inspect-lesson="${l.id}">
+              ${statusLabel}
+            </button>
+          </td>`;
+        });
+        tbody += `</tr>`;
+      });
+      tbody += `</tbody>`;
+      matrixTable.innerHTML = thead + tbody;
+
+      matrixTable.querySelectorAll("[data-inspect-gv]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const gvId = btn.dataset.inspectGv;
+          const lId = btn.dataset.inspectLesson;
+          const foundT = db.teachers.find(x => x.id === gvId);
+          if (foundT) {
+            currentUser = { id: foundT.id, name: foundT.name, role: "teacher" };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+            currentLessonId = lId;
+            isAdminView = false;
+            document.getElementById("teacherWorkspace").classList.remove("hidden");
+            document.getElementById("adminWorkspace").classList.add("hidden");
+            renderAll();
+          }
         });
       });
 
-      grid.appendChild(box);
-    });
+      const lesson = getCurrentLesson();
+      document.getElementById("adminComparisonTitle").textContent =
+        `2. Chi tiết nhận xét — Bài ${lesson.code}: ${lesson.title}`;
+
+      const filterSel = document.getElementById("adminTeacherFilter");
+      const curVal = filterSel.value || "ALL";
+      filterSel.innerHTML = `<option value="ALL">Tất cả Giáo viên</option>`;
+      db.teachers.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.id;
+        opt.textContent = t.name;
+        filterSel.appendChild(opt);
+      });
+      filterSel.value = curVal;
+
+      const grid = document.getElementById("adminComparisonGrid");
+      grid.innerHTML = "";
+      const lessonReviews = db.reviews.filter(r => r.lessonId === lesson.id && (curVal === "ALL" || r.teacherId === curVal));
+
+      CRITERIA_META.forEach((cm, idx) => {
+        const box = document.createElement("div");
+        box.className = "admin-crit-box";
+        const colors = [
+          { bg: "#ECFDF5", text: "#065F46" },
+          { bg: "#FFFBEB", text: "#92400E" },
+          { bg: "#EFF6FF", text: "#1E40AF" },
+          { bg: "#FFF1F2", text: "#9F1239" }
+        ][idx];
+
+        let itemsHtml = "";
+        lessonReviews.forEach(r => {
+          const cData = r.criteria[cm.key];
+          if (!cData) return;
+          const pts = ensureCriterionPoints(cData).filter(
+            p => p.text.trim().length > 0 || (p.images && p.images.length > 0)
+          );
+          if (pts.length === 0) return;
+
+          const ptsHtml = pts
+            .map((pt, pIdx) => {
+              const sBadge = pt.slide ? `<span class="slide-tag-chip">Slide ${escapeHtml(pt.slide)}</span>` : `<span class="slide-tag-chip">Chung</span>`;
+              const imgs = (pt.images || [])
+                .map(src => `<div class="attached-thumb-wrap"><img src="${src}" data-preview-img="${src}" alt="Ảnh"></div>`)
+                .join("");
+              return `
+                <div style="padding:6px 8px;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:6px;margin-top:4px;">
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                    <strong style="font-size:11.5px;color:#475569;">Ý ${pIdx + 1}:</strong>
+                    ${sBadge}
+                  </div>
+                  <div class="teacher-review-text">${escapeHtml(pt.text)}</div>
+                  ${imgs ? `<div class="attached-images-list" style="margin-top:6px;">${imgs}</div>` : ""}
+                </div>
+              `;
+            })
+            .join("");
+
+          itemsHtml += `
+            <div class="teacher-review-item">
+              <div class="teacher-review-meta">
+                <span class="teacher-review-name">${escapeHtml(r.teacherName)} (${pts.length} ý)</span>
+              </div>
+              ${ptsHtml}
+            </div>
+          `;
+        });
+
+        if (!itemsHtml) itemsHtml = `<p style="font-size:12.5px;color:#64748B;">Chưa có ý kiến.</p>`;
+
+        box.innerHTML = `
+          <div class="admin-crit-box-head" style="background:${colors.bg};color:${colors.text};">
+            ${escapeHtml(cm.title)}
+          </div>
+          <div class="admin-crit-list">${itemsHtml}</div>
+        `;
+
+        box.querySelectorAll("[data-preview-img]").forEach(imgEl => {
+          imgEl.addEventListener("click", () => {
+            document.getElementById("lightboxImg").src = imgEl.dataset.previewImg;
+            document.getElementById("lightboxDialog").showModal();
+          });
+        });
+
+        grid.appendChild(box);
+      });
+    } else {
+      // 3. Teacher Dossier View (Option A: Expandable Lesson Cards)
+      if (panelMatrix) panelMatrix.classList.add("hidden");
+      if (panelDossier) panelDossier.classList.remove("hidden");
+
+      const teacher = db.teachers.find(t => t.id === activeAdminTab) || db.teachers[0];
+      if (!teacher || !panelDossier) return;
+
+      let submittedCount = 0;
+      let draftCount = 0;
+      let totalPoints = 0;
+
+      db.lessons.forEach(l => {
+        const r = db.reviews.find(rev => rev.lessonId === l.id && (
+          rev.teacherId === teacher.id ||
+          (rev.teacherName && teacher.name && (
+            rev.teacherName.trim().toLowerCase() === teacher.name.trim().toLowerCase() ||
+            rev.teacherName.toLowerCase().includes(teacher.name.toLowerCase()) ||
+            teacher.name.toLowerCase().includes(rev.teacherName.toLowerCase())
+          ))
+        ));
+        const hasContent = r && CRITERIA_META.some(cm => r.criteria[cm.key] && r.criteria[cm.key].text.trim().length > 0);
+        if (r && r.status === "submitted" && hasContent) {
+          submittedCount++;
+        } else if (hasContent) {
+          draftCount++;
+        }
+        if (r) {
+          CRITERIA_META.forEach(cm => {
+            if (r.criteria[cm.key]) {
+              const pts = ensureCriterionPoints(r.criteria[cm.key]).filter(p => p.text.trim().length > 0 || (p.images && p.images.length > 0));
+              totalPoints += pts.length;
+            }
+          });
+        }
+      });
+
+      panelDossier.innerHTML = `
+        <div class="teacher-dossier-hero">
+          <div class="dossier-hero-left">
+            <div class="dossier-hero-avatar">👩‍🏫</div>
+            <div>
+              <h3 class="dossier-hero-name">Cô ${escapeHtml(teacher.name)}</h3>
+              <p class="dossier-hero-meta">
+                Mã GV: <code>${escapeHtml(teacher.id)}</code> · Mã PIN: <code>${escapeHtml(teacher.pin)}</code> · Tổng đóng góp: <strong>${totalPoints} ý nhận xét</strong>
+              </p>
+            </div>
+          </div>
+          <div class="dossier-hero-stats">
+            <span class="hero-stat-badge done">✓ Đã nộp: ${submittedCount}/${db.lessons.length} bài</span>
+            <span class="hero-stat-badge draft">✎ Đang soạn: ${draftCount} bài</span>
+            <button type="button" class="btn-act-as-teacher" id="btnActAsTeacher">
+              🔑 Đăng nhập xem trực tiếp ➔
+            </button>
+          </div>
+        </div>
+
+        <div class="dossier-lesson-cards-list" id="dossierLessonCardsList"></div>
+      `;
+
+      const actBtn = document.getElementById("btnActAsTeacher");
+      if (actBtn) {
+        actBtn.addEventListener("click", () => {
+          currentUser = { id: teacher.id, name: teacher.name, role: "teacher" };
+          localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+          isAdminView = false;
+          renderAll();
+        });
+      }
+
+      const cardsList = document.getElementById("dossierLessonCardsList");
+      if (!cardsList) return;
+
+      db.lessons.forEach(l => {
+        const r = db.reviews.find(rev => rev.lessonId === l.id && (
+          rev.teacherId === teacher.id ||
+          (rev.teacherName && teacher.name && (
+            rev.teacherName.trim().toLowerCase() === teacher.name.trim().toLowerCase() ||
+            rev.teacherName.toLowerCase().includes(teacher.name.toLowerCase()) ||
+            teacher.name.toLowerCase().includes(rev.teacherName.toLowerCase())
+          ))
+        ));
+        const hasContent = r && CRITERIA_META.some(cm => r.criteria[cm.key] && r.criteria[cm.key].text.trim().length > 0);
+
+        let statusBadge = `<span class="hero-stat-badge" style="background:#F1F5F9;color:#64748B;">Chưa nhận xét</span>`;
+        if (r && r.status === "submitted" && hasContent) {
+          statusBadge = `<span class="hero-stat-badge done">✓ Đã nộp</span>`;
+        } else if (hasContent) {
+          statusBadge = `<span class="hero-stat-badge draft">✎ Đang soạn</span>`;
+        }
+
+        const critCounts = {};
+        let lessonTotalPts = 0;
+        CRITERIA_META.forEach(cm => {
+          let pts = [];
+          if (r && r.criteria[cm.key]) {
+            pts = ensureCriterionPoints(r.criteria[cm.key]).filter(p => p.text.trim().length > 0 || (p.images && p.images.length > 0));
+          }
+          critCounts[cm.key] = pts;
+          lessonTotalPts += pts.length;
+        });
+
+        // Default expanded if lesson has points or previously expanded
+        const isExpanded = expandedDossierLessons[l.id] !== undefined ? expandedDossierLessons[l.id] : (lessonTotalPts > 0);
+
+        const card = document.createElement("div");
+        card.className = "dossier-lesson-card" + (isExpanded ? " expanded" : " collapsed");
+        card.dataset.dossierLessonId = l.id;
+
+        let critGridHtml = "";
+        if (lessonTotalPts === 0) {
+          critGridHtml = `<div style="padding:16px;text-align:center;color:#64748B;font-size:13px;background:#FFFFFF;border-radius:8px;border:1px dashed #CBD5E1;">Cô chưa có ý kiến nhận xét nào cho bài học này.</div>`;
+        } else {
+          critGridHtml = `<div class="dossier-crit-grid">`;
+          CRITERIA_META.forEach((cm, cIdx) => {
+            const pts = critCounts[cm.key] || [];
+            const colors = [
+              { bg: "#ECFDF5", text: "#065F46" },
+              { bg: "#FFFBEB", text: "#92400E" },
+              { bg: "#EFF6FF", text: "#1E40AF" },
+              { bg: "#FFF1F2", text: "#9F1239" }
+            ][cIdx];
+
+            let ptsListHtml = "";
+            if (pts.length === 0) {
+              ptsListHtml = `<div style="font-size:12px;color:#94A3B8;font-style:italic;padding:4px 0;">Không có ý kiến</div>`;
+            } else {
+              ptsListHtml = pts.map((pt, pIdx) => {
+                const slideBadge = pt.slide ? `<span class="dossier-slide-badge">Slide ${escapeHtml(pt.slide)}</span>` : `<span class="dossier-slide-badge" style="background:#64748B;">Chung</span>`;
+                const imgsHtml = (pt.images || []).map(src => `<div class="attached-thumb-wrap"><img src="${src}" data-preview-img="${src}" alt="Ảnh"></div>`).join("");
+                return `
+                  <div class="dossier-point-row">
+                    <div class="dossier-point-top">
+                      <strong style="font-size:11.5px;color:#475569;">Ý ${pIdx + 1}:</strong>
+                      ${slideBadge}
+                    </div>
+                    <div class="dossier-point-text">${escapeHtml(pt.text)}</div>
+                    ${imgsHtml ? `<div class="attached-images-list" style="margin-top:6px;">${imgsHtml}</div>` : ""}
+                  </div>
+                `;
+              }).join("");
+            }
+
+            critGridHtml += `
+              <div class="dossier-crit-box">
+                <div class="dossier-crit-head" style="background:${colors.bg};color:${colors.text};">
+                  <span>${escapeHtml(cm.title)}</span>
+                  <span style="font-size:11px;font-weight:700;">${pts.length} ý</span>
+                </div>
+                <div class="dossier-crit-content">
+                  ${ptsListHtml}
+                </div>
+              </div>
+            `;
+          });
+          critGridHtml += `</div>`;
+        }
+
+        card.innerHTML = `
+          <div class="dossier-card-head" data-toggle-dossier-lesson="${l.id}">
+            <div class="dossier-head-left">
+              <span class="dossier-chevron">▶</span>
+              <span class="dossier-lesson-code">${escapeHtml(l.code)}</span>
+              <span class="dossier-lesson-grade">${escapeHtml(l.grade)}</span>
+              <h4 class="dossier-lesson-title">${escapeHtml(l.title)}</h4>
+            </div>
+            <div class="dossier-head-right">
+              ${statusBadge}
+              <div class="dossier-mini-tags">
+                <span class="mini-tag c1" title="Ưng ý">🟢 ${critCounts.ung_y.length}</span>
+                <span class="mini-tag c2" title="Cần làm rõ">🟡 ${critCounts.chua_hieu.length}</span>
+                <span class="mini-tag c3" title="Cải tiến">🔵 ${critCounts.cai_tien.length}</span>
+                <span class="mini-tag c4" title="Khó khăn">🔴 ${critCounts.kho_khan.length}</span>
+              </div>
+            </div>
+          </div>
+          <div class="dossier-card-body">
+            ${critGridHtml}
+            <div class="dossier-footer-link">
+              <a href="${l.editorUrl}" target="_blank" rel="noopener" class="btn-dossier-open-tab">
+                ↗ Mở Slide "${escapeHtml(l.title)}" trên HD Tương tác
+              </a>
+            </div>
+          </div>
+        `;
+
+        card.querySelector("[data-toggle-dossier-lesson]").addEventListener("click", () => {
+          const nowExp = card.classList.contains("expanded");
+          card.classList.toggle("expanded", !nowExp);
+          card.classList.toggle("collapsed", nowExp);
+          expandedDossierLessons[l.id] = !nowExp;
+        });
+
+        card.querySelectorAll("[data-preview-img]").forEach(imgEl => {
+          imgEl.addEventListener("click", (e) => {
+            e.stopPropagation();
+            document.getElementById("lightboxImg").src = imgEl.dataset.previewImg;
+            document.getElementById("lightboxDialog").showModal();
+          });
+        });
+
+        cardsList.appendChild(card);
+      });
+    }
   }
 
   const adminFilter = document.getElementById("adminTeacherFilter");
@@ -1761,12 +2231,14 @@
   function renderAll() {
     const authPortal = document.getElementById("authPortal");
     const mainTopBar = document.getElementById("mainTopBar");
+    const appShell = document.getElementById("appShell");
     const teacherWorkspace = document.getElementById("teacherWorkspace");
     const adminWorkspace = document.getElementById("adminWorkspace");
 
     if (!currentUser) {
       if (authPortal) authPortal.classList.remove("hidden");
       if (mainTopBar) mainTopBar.classList.add("hidden");
+      if (appShell) appShell.classList.add("hidden");
       if (teacherWorkspace) teacherWorkspace.classList.add("hidden");
       if (adminWorkspace) adminWorkspace.classList.add("hidden");
       populateAuthTeacherSelect();
@@ -1775,7 +2247,9 @@
 
     if (authPortal) authPortal.classList.add("hidden");
     if (mainTopBar) mainTopBar.classList.remove("hidden");
+    if (appShell) appShell.classList.remove("hidden");
 
+    renderLessonSidebar();
     renderTopBar();
 
     if (currentUser.role === "admin") {
@@ -1799,6 +2273,7 @@
     }
   }
 
+  setupSidebar();
   setupDialogs();
   setupAuthPortal();
   populateAuthTeacherSelect();

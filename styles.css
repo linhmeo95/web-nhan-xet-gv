@@ -364,7 +364,6 @@ body {
   background: rgba(239, 68, 68, 0.3);
   color: #FCA5A5;
 }
-}
 
 .btn-admin-toggle {
   background: #F59E0B;
@@ -378,12 +377,272 @@ body {
   white-space: nowrap;
 }
 
-/* SINGLE CLEAN WORKSPACE */
+/* APP SHELL & 2-COLUMN LAYOUT */
+.app-shell {
+  display: flex;
+  height: calc(100vh - 56px);
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.workspace-viewport {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg-studio);
+  display: flex;
+  flex-direction: column;
+}
+
 .single-workspace {
   flex: 1;
-  height: calc(100vh - 56px);
   overflow-y: auto;
   padding: 18px 24px;
+}
+
+/* 1. VERTICAL LESSON SIDEBAR */
+.lesson-sidebar {
+  width: 320px;
+  min-width: 320px;
+  max-width: 320px;
+  background: #FFFFFF;
+  border-right: 1px solid var(--border-strong);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-shrink: 0;
+  z-index: 10;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar-header {
+  padding: 14px 16px 10px 16px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #FAFBFD;
+}
+
+.sidebar-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-heading {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.sidebar-count-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563EB;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.sidebar-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-search-wrap .search-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  pointer-events: none;
+}
+
+.sidebar-search-input {
+  width: 100%;
+  padding: 8px 30px 8px 32px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink-primary);
+  background: #FFFFFF;
+  transition: all 0.15s ease;
+}
+
+.sidebar-search-input:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.btn-clear-search {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  padding: 2px 5px;
+}
+
+.sidebar-lessons-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sidebar-grade-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.grade-group-title {
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.grade-lessons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-lesson-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1.5px solid var(--border-light);
+  background: #FFFFFF;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.sidebar-lesson-item:hover {
+  background: #F8FAFC;
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.sidebar-lesson-item.active {
+  background: #EFF6FF;
+  border-color: #2563EB;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+}
+
+.sidebar-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.sidebar-item-code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #1D4ED8;
+  background: rgba(37, 99, 235, 0.08);
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+.sidebar-lesson-item.active .sidebar-item-code {
+  background: #2563EB;
+  color: #FFFFFF;
+}
+
+.sidebar-item-status {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.sidebar-item-status.done {
+  background: #DCFCE7;
+  color: #065F46;
+}
+
+.sidebar-item-status.draft {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.sidebar-item-status.empty {
+  background: #F1F5F9;
+  color: #64748B;
+}
+
+.sidebar-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.btn-sidebar-toggle {
+  display: none;
+  background: #1E293B;
+  color: #FFFFFF;
+  border: 1px solid #334155;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+@media (max-width: 900px) {
+  .btn-sidebar-toggle {
+    display: block;
+  }
+  .lesson-sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    box-shadow: 6px 0 25px rgba(0, 0, 0, 0.2);
+  }
+  .lesson-sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 56px 0 0 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 9;
+  }
 }
 
 .workspace-container {
@@ -569,34 +828,167 @@ body {
   border-color: var(--brand-cobalt);
 }
 
-/* 4 CRITERIA CARDS (2x2 GRID) */
+/* EXCEL-STYLE 4 SHEET TABS */
+.excel-sheet-nav {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  border-bottom: 2px solid var(--border-strong);
+  padding: 0 4px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.excel-sheet-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #E2E8F0;
+  color: var(--ink-secondary);
+  border: 1.5px solid var(--border-strong);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  top: 2px;
+  white-space: nowrap;
+}
+
+.excel-sheet-tab:hover {
+  background: #F1F5F9;
+  color: var(--ink-primary);
+}
+
+.excel-sheet-tab.active {
+  background: #FFFFFF;
+  color: var(--ink-primary);
+  border-color: var(--border-strong);
+  border-bottom: 2px solid #FFFFFF;
+  top: 2px;
+  z-index: 2;
+  box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.04);
+}
+
+.excel-sheet-tab.active.sheet-tab-ung_y {
+  border-top: 3.5px solid #059669;
+  color: #065F46;
+}
+
+.excel-sheet-tab.active.sheet-tab-chua_hieu {
+  border-top: 3.5px solid #D97706;
+  color: #92400E;
+}
+
+.excel-sheet-tab.active.sheet-tab-cai_tien {
+  border-top: 3.5px solid #2563EB;
+  color: #1E40AF;
+}
+
+.excel-sheet-tab.active.sheet-tab-kho_khan {
+  border-top: 3.5px solid #DC2626;
+  color: #9F1239;
+}
+
+.sheet-tab-icon {
+  font-size: 13px;
+}
+
+.sheet-tab-title {
+  font-weight: 700;
+}
+
+.sheet-tab-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(15, 23, 42, 0.08);
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: inherit;
+}
+
+.excel-sheet-tab.active .sheet-tab-count {
+  background: rgba(15, 23, 42, 0.12);
+}
+
+/* 4 CRITERIA CARDS DISPLAY CONTROL: SHOW ACTIVE SHEET ONLY */
 .criteria-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex !important;
+  flex-direction: column !important;
   gap: 14px;
   flex: 1;
   min-height: 420px;
 }
 
-@media (max-width: 900px) {
-  .criteria-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .criterion-card {
+  display: none !important;
   background: #FFFFFF;
   border-radius: 12px;
   border: 1.5px solid var(--border-strong);
-  display: flex;
   flex-direction: column;
   overflow: hidden;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+.criterion-card.active-sheet {
+  display: flex !important;
+  width: 100%;
+}
+
 .criterion-card.focused-card {
   border-color: var(--brand-cobalt);
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+}
+
+.sheet-footer-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border-light);
+  background: #F8FAFC;
+  gap: 12px;
+  margin-top: 8px;
+  border-radius: 0 0 10px 10px;
+}
+
+.btn-sheet-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: #FFFFFF;
+  color: var(--ink-secondary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.btn-sheet-step:hover {
+  background: var(--brand-cobalt-soft);
+  color: var(--brand-cobalt);
+  border-color: #93C5FD;
+}
+
+.btn-sheet-step.next {
+  background: var(--brand-cobalt);
+  color: #FFFFFF;
+  border-color: var(--brand-cobalt);
+  margin-left: auto;
+}
+
+.btn-sheet-step.next:hover {
+  background: #1D4ED8;
 }
 
 .criterion-header {
@@ -874,7 +1266,7 @@ body {
 /* ADMIN DASHBOARD */
 .admin-dashboard {
   padding: 20px;
-  height: calc(100vh - 56px);
+  flex: 1;
   overflow-y: auto;
 }
 
@@ -884,6 +1276,373 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding-bottom: 32px;
+}
+
+.admin-view-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ADMIN DOSSIER TABS */
+.admin-dossier-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px 14px 2px;
+  border-bottom: 1.5px solid var(--border-strong);
+  margin-bottom: 4px;
+}
+
+.admin-sheet-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 1.5px solid var(--border-strong);
+  background: #FFFFFF;
+  color: var(--ink-secondary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.admin-sheet-tab:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: var(--ink-primary);
+}
+
+.admin-sheet-tab.active {
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: #1D4ED8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.admin-tab-pill {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #EFF6FF;
+  color: #1D4ED8;
+}
+
+.admin-sheet-tab.active .admin-tab-pill {
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+}
+
+/* TEACHER DOSSIER HERO BANNER */
+.teacher-dossier-hero {
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-strong);
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dossier-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.dossier-hero-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #EFF6FF;
+  color: #2563EB;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #BFDBFE;
+}
+
+.dossier-hero-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink-primary);
+}
+
+.dossier-hero-meta {
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+.dossier-hero-meta code {
+  font-family: var(--font-mono);
+  background: #F1F5F9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.dossier-hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-stat-badge {
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.hero-stat-badge.done {
+  background: #DCFCE7;
+  color: #065F46;
+}
+
+.hero-stat-badge.draft {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.btn-act-as-teacher {
+  background: #2563EB;
+  color: #FFFFFF;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-act-as-teacher:hover {
+  background: #1D4ED8;
+}
+
+/* EXPANDABLE LESSON CARDS (OPTION A) */
+.dossier-lesson-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-strong);
+  overflow: hidden;
+  transition: box-shadow 0.15s ease;
+}
+
+.dossier-lesson-card.expanded {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.dossier-card-head {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  background: #FFFFFF;
+  transition: background-color 0.12s ease;
+  user-select: none;
+}
+
+.dossier-card-head:hover {
+  background: #F8FAFC;
+}
+
+.dossier-head-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dossier-chevron {
+  font-size: 11px;
+  color: var(--ink-muted);
+  transition: transform 0.2s ease;
+  display: inline-block;
+  width: 14px;
+}
+
+.dossier-lesson-card.expanded .dossier-chevron {
+  transform: rotate(90deg);
+}
+
+.dossier-lesson-code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1D4ED8;
+  background: #EFF6FF;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.dossier-lesson-grade {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748B;
+  background: #F1F5F9;
+  padding: 2px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.dossier-lesson-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dossier-head-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.dossier-mini-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mini-tag {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: #F1F5F9;
+  color: #334155;
+}
+
+.mini-tag.c1 { background: #ECFDF5; color: #065F46; }
+.mini-tag.c2 { background: #FFFBEB; color: #92400E; }
+.mini-tag.c3 { background: #EFF6FF; color: #1E40AF; }
+.mini-tag.c4 { background: #FFF1F2; color: #9F1239; }
+
+.dossier-card-body {
+  padding: 16px 18px;
+  border-top: 1px solid var(--border-light);
+  background: #FAFBFC;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dossier-lesson-card.collapsed .dossier-card-body {
+  display: none !important;
+}
+
+.dossier-crit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 800px) {
+  .dossier-crit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dossier-crit-box {
+  background: #FFFFFF;
+  border-radius: 9px;
+  border: 1px solid var(--border-strong);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dossier-crit-head {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dossier-crit-content {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.dossier-point-row {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 7px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dossier-point-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dossier-slide-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #2563EB;
+  color: #FFFFFF;
+}
+
+.dossier-point-text {
+  font-size: 13px;
+  color: var(--ink-primary);
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.dossier-footer-link {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.btn-dossier-open-tab {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #2563EB;
+  text-decoration: none;
+}
+
+.btn-dossier-open-tab:hover {
+  text-decoration: underline;
 }
 
 .admin-top-bar {

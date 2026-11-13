@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body>
   <!-- AUTHENTICATION SCREEN (LOGIN PORTAL) -->
@@ -73,9 +73,12 @@
   <!-- COMPACT TOP BAR -->
   <header class="topbar hidden" id="mainTopBar">
     <div class="topbar-left">
+      <button type="button" class="btn-sidebar-toggle" id="btnToggleSidebar" title="Đóng/mở danh sách bài" aria-label="Đóng/mở danh sách bài">
+        ☰
+      </button>
       <div class="brand-mark" aria-hidden="true">NS</div>
       <h1 class="brand-title">Phiếu Nhận Xét Bài Giảng</h1>
-      <nav class="lesson-nav" id="lessonNav" aria-label="Chọn bài giảng"></nav>
+      <nav class="lesson-nav hidden" id="lessonNav" aria-label="Chọn bài giảng"></nav>
     </div>
 
     <div class="topbar-right">
@@ -93,81 +96,123 @@
     </div>
   </header>
 
-  <!-- MAIN WORKSPACE: SINGLE CLEAN SCREEN -->
-  <main class="single-workspace" id="teacherWorkspace">
-    <div class="workspace-container">
-      <!-- LESSON HEADER -->
-      <section class="editor-header" aria-label="Thông tin bài giảng và nút mở Slide thật">
-        <div class="editor-lesson-info">
-          <span class="lesson-code-tag" id="lblCurrentLessonCode">4.23.CL</span>
-          <div>
-            <h2 class="editor-lesson-title" id="lblCurrentLessonTitle">Ý tưởng chiếc máy thông minh giúp ích trường em</h2>
-            <p class="editor-lesson-sub" id="lblCurrentLessonMeta">Khối 4 · 19 slides trên HD Tương tác</p>
+  <!-- APP SHELL: SIDEBAR + WORKSPACE VIEWPORT -->
+  <div class="app-shell hidden" id="appShell">
+    <!-- 1. VERTICAL LESSON SIDEBAR -->
+    <aside class="lesson-sidebar" id="lessonSidebar" aria-label="Danh sách bài giảng">
+      <div class="sidebar-header">
+        <div class="sidebar-header-top">
+          <span class="sidebar-heading">📚 Danh Sách Bài</span>
+          <span class="sidebar-count-badge" id="lblSidebarTotalLessons">5 bài</span>
+        </div>
+        <div class="sidebar-search-wrap">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input type="text" id="sidebarSearchInput" class="sidebar-search-input" placeholder="Tìm theo mã, tên bài..." autocomplete="off">
+          <button type="button" class="btn-clear-search hidden" id="btnSidebarClearSearch" title="Xóa tìm kiếm">✕</button>
+        </div>
+      </div>
+
+      <div class="sidebar-lessons-scroll" id="sidebarLessonsList">
+        <!-- Rendered by JS: Grouped by Grade with status badges -->
+      </div>
+    </aside>
+
+    <!-- BACKDROP FOR MOBILE SIDEBAR -->
+    <div class="sidebar-backdrop hidden" id="sidebarBackdrop"></div>
+
+    <!-- 2. MAIN WORKSPACE VIEWPORT -->
+    <div class="workspace-viewport" id="workspaceViewport">
+      <!-- MAIN WORKSPACE: SINGLE CLEAN SCREEN (TEACHER VIEW) -->
+      <main class="single-workspace" id="teacherWorkspace">
+        <div class="workspace-container">
+          <!-- LESSON HEADER -->
+          <section class="editor-header" aria-label="Thông tin bài giảng và nút mở Slide thật">
+            <div class="editor-lesson-info">
+              <span class="lesson-code-tag" id="lblCurrentLessonCode">4.23.CL</span>
+              <div>
+                <h2 class="editor-lesson-title" id="lblCurrentLessonTitle">Ý tưởng chiếc máy thông minh giúp ích trường em</h2>
+                <p class="editor-lesson-sub" id="lblCurrentLessonMeta">Khối 4 · 19 slides trên HD Tương tác</p>
+              </div>
+            </div>
+
+            <div class="editor-actions">
+              <a href="#" target="_blank" rel="noopener" class="btn-open-tab" id="linkOpenHdTab" title="Mở Slide thật trên 1 tab mới">
+                ↗ Mở Slide bài giảng trên HD Tương tác
+              </a>
+
+              <span class="divider-v" aria-hidden="true"></span>
+
+              <span class="status-pill" id="reviewStatusPill">Đang soạn</span>
+              <button type="button" class="btn-submit-review" id="btnSubmitReview">
+                ✓ Nộp nhận xét
+              </button>
+            </div>
+          </section>
+
+          <!-- QUICK SLIDE TAGGER STRIP -->
+          <section class="quick-slide-bar" aria-label="Gắn nhanh số Slide">
+            <span class="quick-bar-label" id="lblQuickBarTarget">
+              📌 Bấm số Slide để gán cho <strong>Ý 1</strong>:
+            </span>
+            <div class="slide-num-strip" id="slideNumStrip"></div>
+          </section>
+
+          <!-- EXCEL-STYLE 4 SHEET TABS -->
+          <div class="excel-sheet-nav" id="excelSheetNav" role="tablist" aria-label="4 Sheet nhận xét"></div>
+
+          <!-- 4 CRITERIA CARDS (CONTROLLED AS EXCEL SHEETS) -->
+          <section class="criteria-grid" id="criteriaStack" aria-label="4 mục nhận xét"></section>
+        </div>
+      </main>
+
+      <!-- ADMIN / MANAGER VIEW (STREAMLINED & DOSSIER TABS) -->
+      <section class="admin-dashboard hidden" id="adminWorkspace" aria-label="Trang Quản lý">
+        <div class="admin-container">
+          <div class="admin-top-bar">
+            <div>
+              <h2 class="admin-title">Tổng hợp Nhận xét của Giáo viên</h2>
+              <p class="admin-subtitle">Chọn tab từng Cô để xem toàn bộ hồ sơ nhận xét hoặc tab Tổng hợp để xem ma trận tiến độ.</p>
+            </div>
+            <div class="admin-btns">
+              <button type="button" class="btn-secondary" id="btnRefreshCloud" title="Tải ngay nhận xét mới nhất từ tất cả Giáo viên">🔄 Làm mới dữ liệu</button>
+              <button type="button" class="btn-secondary" id="btnOpenManageModal">⚙️ Quản lý GV &amp; Bài giảng</button>
+              <button type="button" class="btn-primary-export" id="btnExportExcel">📊 Xuất file Excel (.xlsx)</button>
+            </div>
+          </div>
+
+          <!-- ADMIN DOSSIER TABS: MATRIX TAB + TEACHER TABS -->
+          <div class="admin-dossier-tab-bar" id="adminDossierTabBar" role="tablist" aria-label="Hồ sơ nhận xét từng giáo viên"></div>
+
+          <!-- VIEW 1: MATRIX VIEW (PROGRESS MATRIX + LESSON COMPARISON) -->
+          <div class="admin-view-panel" id="adminPanelMatrix">
+            <!-- PROGRESS MATRIX -->
+            <div class="admin-card">
+              <h3>1. Tiến độ nộp nhận xét</h3>
+              <div class="table-responsive">
+                <table class="progress-matrix-table" id="progressMatrixTable"></table>
+              </div>
+            </div>
+
+            <!-- ALL TEACHER REVIEWS FOR SELECTED LESSON -->
+            <div class="admin-card">
+              <div class="admin-card-head">
+                <h3 id="adminComparisonTitle">2. Chi tiết nhận xét — Bài 4.23.CL</h3>
+                <select id="adminTeacherFilter" class="select-control">
+                  <option value="ALL">Tất cả Giáo viên</option>
+                </select>
+              </div>
+              <div class="admin-comparison-grid" id="adminComparisonGrid"></div>
+            </div>
+          </div>
+
+          <!-- VIEW 2: TEACHER DOSSIER VIEW (EXPANDABLE LESSON CARDS - OPTION A) -->
+          <div class="admin-view-panel hidden" id="adminPanelTeacherDossier">
+            <!-- Rendered by JS: Profile Banner + List of Expandable Lesson Dossier Cards -->
           </div>
         </div>
-
-        <div class="editor-actions">
-          <a href="#" target="_blank" rel="noopener" class="btn-open-tab" id="linkOpenHdTab" title="Mở Slide thật trên 1 tab mới">
-            ↗ Mở Slide bài giảng trên HD Tương tác
-          </a>
-
-          <span class="divider-v" aria-hidden="true"></span>
-
-          <span class="status-pill" id="reviewStatusPill">Đang soạn</span>
-          <button type="button" class="btn-submit-review" id="btnSubmitReview">
-            ✓ Nộp nhận xét
-          </button>
-        </div>
       </section>
-
-      <!-- QUICK SLIDE TAGGER STRIP -->
-      <section class="quick-slide-bar" aria-label="Gắn nhanh số Slide">
-        <span class="quick-bar-label" id="lblQuickBarTarget">
-          📌 Bấm số Slide để gán cho <strong>Ý 1</strong>:
-        </span>
-        <div class="slide-num-strip" id="slideNumStrip"></div>
-      </section>
-
-      <!-- 4 CLEAN CRITERIA CARDS (2x2 GRID) -->
-      <section class="criteria-grid" id="criteriaStack" aria-label="4 mục nhận xét"></section>
     </div>
-  </main>
-
-  <!-- ADMIN / MANAGER VIEW (STREAMLINED) -->
-  <section class="admin-dashboard hidden" id="adminWorkspace" aria-label="Trang Quản lý">
-    <div class="admin-container">
-      <div class="admin-top-bar">
-        <div>
-          <h2 class="admin-title">Tổng hợp Nhận xét của Giáo viên</h2>
-          <p class="admin-subtitle">Bấm vào từng ô trạng thái để xem bài của giáo viên đó hoặc xuất ra Excel.</p>
-        </div>
-        <div class="admin-btns">
-          <button type="button" class="btn-secondary" id="btnRefreshCloud" title="Tải ngay nhận xét mới nhất từ tất cả Giáo viên">🔄 Làm mới dữ liệu</button>
-          <button type="button" class="btn-secondary" id="btnOpenManageModal">⚙️ Quản lý GV &amp; Bài giảng</button>
-          <button type="button" class="btn-primary-export" id="btnExportExcel">📊 Xuất file Excel (.xlsx)</button>
-        </div>
-      </div>
-
-      <!-- PROGRESS MATRIX -->
-      <div class="admin-card">
-        <h3>1. Tiến độ nộp nhận xét</h3>
-        <div class="table-responsive">
-          <table class="progress-matrix-table" id="progressMatrixTable"></table>
-        </div>
-      </div>
-
-      <!-- ALL TEACHER REVIEWS FOR SELECTED LESSON -->
-      <div class="admin-card">
-        <div class="admin-card-head">
-          <h3 id="adminComparisonTitle">2. Chi tiết nhận xét — Bài 4.23.CL</h3>
-          <select id="adminTeacherFilter" class="select-control">
-            <option value="ALL">Tất cả Giáo viên</option>
-          </select>
-        </div>
-        <div class="admin-comparison-grid" id="adminComparisonGrid"></div>
-      </div>
-    </div>
-  </section>
+  </div>
 
   <!-- MODAL 1: SWITCH TEACHER -->
   <dialog id="loginDialog" closedby="any" aria-labelledby="loginDialogTitle">
@@ -264,7 +309,7 @@
     </div>
   </dialog>
 
-  <script src="data/initial_data.js?v=12"></script>
-  <script src="app.js?v=12"></script>
+  <script src="data/initial_data.js?v=13"></script>
+  <script src="app.js?v=13"></script>
 </body>
 </html>
