@@ -1,15 +1,29 @@
 :root {
-  --bg-studio: #F4F6F9;
-  --surface-card: #FFFFFF;
-  --ink-primary: #0F172A;
-  --ink-secondary: #334155;
-  --ink-muted: #64748B;
-  --border-light: #E2E8F0;
-  --border-strong: #CBD5E1;
+  /* HỆ MÀU HỒNG TỪ ĐẬM ĐẾN NHẠT (Pink Palette Scale) */
+  --pink-950: #4C0519; /* Hồng đen mận cực đậm */
+  --pink-900: #700B33; /* Hồng rượu vang đậm / Topbar */
+  --pink-800: #881337; /* Hồng mận quý phái */
+  --pink-700: #9D174D; /* Hồng cánh sen đậm */
+  --pink-600: #BE185D; /* Hồng sen rực rỡ / Nút bấm hover */
+  --pink-500: #E11D48; /* Hồng tươi chính (Primary Accent) */
+  --pink-400: #F43F5E; /* Hồng đào tươi */
+  --pink-300: #FB7185; /* Hồng san hô */
+  --pink-200: #FBCFE8; /* Hồng phấn viền nét */
+  --pink-100: #FCE7F3; /* Hồng phấn nhạt viền nhẹ */
+  --pink-50:  #FFF1F2; /* Hồng phấn siêu nhạt (Nền app) */
+  --pink-25:  #FFF5F7; /* Hồng phớt kem */
 
-  --brand-cobalt: #2563EB;
-  --brand-cobalt-soft: #EFF6FF;
-  --inspector-crimson: #DC2626;
+  --bg-studio: #FFF5F7;
+  --surface-card: #FFFFFF;
+  --ink-primary: #3B0718;
+  --ink-secondary: #6B1D35;
+  --ink-muted: #9E566B;
+  --border-light: #FCE7F3;
+  --border-strong: #FBCFE8;
+
+  --brand-cobalt: #E11D48;
+  --brand-cobalt-soft: #FFF1F2;
+  --inspector-crimson: #BE123C;
 
   --c1-text: #065F46;
   --c1-bg: #ECFDF5;
@@ -19,12 +33,12 @@
   --c2-bg: #FFFBEB;
   --c2-border: #FCD34D;
 
-  --c3-text: #1E40AF;
-  --c3-bg: #EFF6FF;
-  --c3-border: #93C5FD;
+  --c3-text: #9D174D;
+  --c3-bg: #FFF1F2;
+  --c3-border: #FBCFE8;
 
-  --c4-text: #9F1239;
-  --c4-bg: #FFF1F2;
+  --c4-text: #881337;
+  --c4-bg: #FFE4E6;
   --c4-border: #FDA4AF;
 
   --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -57,7 +71,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: radial-gradient(circle at 50% 20%, #1E293B 0%, #0F172A 70%, #020617 100%);
+  background: radial-gradient(circle at 50% 20%, #700B33 0%, #4C0519 65%, #2A0410 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,7 +84,7 @@ body {
   max-width: 460px;
   background: #FFFFFF;
   border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(76, 5, 25, 0.45), 0 0 0 1px rgba(251, 207, 232, 0.3);
   padding: 32px 28px;
   display: flex;
   flex-direction: column;
@@ -101,7 +115,7 @@ body {
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #2563EB;
+  background: linear-gradient(135deg, #E11D48, #BE185D);
   color: #FFFFFF;
   display: flex;
   align-items: center;
@@ -109,7 +123,7 @@ body {
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 18px;
-  box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 8px 16px -4px rgba(225, 29, 72, 0.45);
   margin-bottom: 4px;
 }
 
@@ -117,22 +131,23 @@ body {
   font-family: var(--font-display);
   font-size: 20px;
   font-weight: 800;
-  color: #0F172A;
+  color: #3B0718;
   letter-spacing: -0.02em;
 }
 
 .auth-sub {
   font-size: 13px;
-  color: #64748B;
+  color: var(--ink-muted);
   line-height: 1.4;
 }
 
 .auth-tabs {
   display: flex;
-  background: #F1F5F9;
+  background: #FFF1F2;
   padding: 4px;
   border-radius: 10px;
   gap: 4px;
+  border: 1px solid #FCE7F3;
 }
 
 .auth-tab-btn {
@@ -140,7 +155,7 @@ body {
   padding: 9px 12px;
   border: none;
   background: transparent;
-  color: #64748B;
+  color: var(--ink-muted);
   font-family: var(--font-body);
   font-size: 13.5px;
   font-weight: 700;
@@ -150,13 +165,13 @@ body {
 }
 
 .auth-tab-btn:hover {
-  color: #0F172A;
+  color: #3B0718;
 }
 
 .auth-tab-btn.active {
   background: #FFFFFF;
-  color: #2563EB;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  color: #E11D48;
+  box-shadow: 0 2px 6px rgba(190, 24, 93, 0.12);
 }
 
 .auth-form {
@@ -174,25 +189,25 @@ body {
 .auth-field label {
   font-size: 13px;
   font-weight: 700;
-  color: #334155;
+  color: var(--ink-secondary);
 }
 
 .auth-input {
   width: 100%;
   padding: 11px 14px;
-  border: 1.5px solid #CBD5E1;
+  border: 1.5px solid #FBCFE8;
   border-radius: 9px;
   font-family: var(--font-body);
   font-size: 14.5px;
-  color: #0F172A;
+  color: #3B0718;
   background: #FFFFFF;
   transition: all 0.15s ease;
 }
 
 .auth-input:focus {
   outline: none;
-  border-color: #2563EB;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  border-color: #E11D48;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
 }
 
 .auth-error-msg {
@@ -208,7 +223,7 @@ body {
 .btn-auth-submit {
   width: 100%;
   padding: 12px 18px;
-  background: #2563EB;
+  background: linear-gradient(135deg, #E11D48, #BE185D);
   color: #FFFFFF;
   border: none;
   border-radius: 9px;
@@ -217,18 +232,18 @@ body {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
   margin-top: 4px;
 }
 
 .btn-auth-submit:hover {
-  background: #1D4ED8;
+  background: linear-gradient(135deg, #BE123C, #9D174D);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 16px rgba(225, 29, 72, 0.45);
 }
 
 .btn-auth-submit.admin {
-  background: #D97706;
+  background: linear-gradient(135deg, #D97706, #B45309);
   box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
@@ -239,17 +254,17 @@ body {
 
 .auth-footer-hint {
   font-size: 12px;
-  color: #64748B;
+  color: var(--ink-muted);
   text-align: center;
   line-height: 1.5;
   padding-top: 8px;
-  border-top: 1px solid #F1F5F9;
+  border-top: 1px solid #FCE7F3;
 }
 
-/* COMPACT TOP BAR */
+/* COMPACT TOP BAR (HỒNG RƯỢU VANG SANG TRỌNG) */
 .topbar {
   height: 56px;
-  background: #0F172A;
+  background: linear-gradient(135deg, #700B33 0%, #881337 50%, #9F1239 100%);
   color: #FFFFFF;
   padding: 0 20px;
   display: flex;
@@ -257,6 +272,8 @@ body {
   justify-content: space-between;
   gap: 12px;
   flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(112, 11, 51, 0.25);
+  border-bottom: 1px solid #BE185D;
 }
 
 .topbar-left,
@@ -270,13 +287,14 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: #2563EB;
+  background: linear-gradient(135deg, #E11D48, #BE185D);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 13px;
+  box-shadow: 0 4px 10px rgba(225, 29, 72, 0.3);
 }
 
 .brand-title {
@@ -294,9 +312,9 @@ body {
 }
 
 .lesson-pill {
-  background: #1E293B;
-  color: #CBD5E1;
-  border: 1px solid #334155;
+  background: #881337;
+  color: #FCE7F3;
+  border: 1px solid #BE185D;
   padding: 6px 14px;
   border-radius: 8px;
   font-family: var(--font-body);
@@ -311,19 +329,19 @@ body {
 }
 
 .lesson-pill:hover {
-  background: #334155;
+  background: #9D174D;
   color: #FFFFFF;
 }
 
 .lesson-pill.active {
-  background: #2563EB;
+  background: #E11D48;
   color: #FFFFFF;
-  border-color: #60A5FA;
+  border-color: #FDA4AF;
 }
 
 .save-badge {
   font-size: 12.5px;
-  color: #6EE7B7;
+  color: #FBCFE8;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -332,8 +350,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #1E293B;
-  border: 1px solid #334155;
+  background: #5E0827;
+  border: 1px solid #881337;
   padding: 5px 12px;
   border-radius: 8px;
   font-size: 13px;
@@ -343,12 +361,12 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #38BDF8;
+  background: #FB7185;
 }
 
 .btn-switch-user,
 .btn-signout {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.15);
   color: #FFFFFF;
   border: none;
   padding: 4px 10px;
@@ -361,7 +379,7 @@ body {
 
 .btn-switch-user:hover,
 .btn-signout:hover {
-  background: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.35);
   color: #FCA5A5;
 }
 
@@ -444,9 +462,9 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  color: #2563EB;
-  background: #EFF6FF;
-  border: 1px solid #BFDBFE;
+  color: #BE185D;
+  background: #FFE4E6;
+  border: 1px solid #FBCFE8;
   padding: 2px 7px;
   border-radius: 6px;
 }
@@ -468,7 +486,7 @@ body {
 .sidebar-search-input {
   width: 100%;
   padding: 8px 30px 8px 32px;
-  border: 1.5px solid var(--border-strong);
+  border: 1.5px solid #FBCFE8;
   border-radius: 8px;
   font-family: var(--font-body);
   font-size: 13px;
@@ -479,8 +497,8 @@ body {
 
 .sidebar-search-input:focus {
   outline: none;
-  border-color: #2563EB;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  border-color: #E11D48;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
 }
 
 .btn-clear-search {
@@ -513,14 +531,14 @@ body {
   font-family: var(--font-display);
   font-size: 11.5px;
   font-weight: 800;
-  color: var(--ink-muted);
+  color: #9D174D;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 4px 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid #FCE7F3;
 }
 
 .grade-lessons-list {
@@ -535,7 +553,7 @@ body {
   gap: 5px;
   padding: 10px 12px;
   border-radius: 9px;
-  border: 1.5px solid var(--border-light);
+  border: 1.5px solid #FCE7F3;
   background: #FFFFFF;
   cursor: pointer;
   text-align: left;
@@ -544,15 +562,15 @@ body {
 }
 
 .sidebar-lesson-item:hover {
-  background: #F8FAFC;
-  border-color: var(--border-strong);
+  background: #FFF5F7;
+  border-color: #FBCFE8;
   transform: translateY(-1px);
 }
 
 .sidebar-lesson-item.active {
-  background: #EFF6FF;
-  border-color: #2563EB;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+  background: #FFF1F2;
+  border-color: #E11D48;
+  box-shadow: 0 3px 10px rgba(225, 29, 72, 0.15);
 }
 
 .sidebar-item-top {
@@ -566,14 +584,14 @@ body {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
-  color: #1D4ED8;
-  background: rgba(37, 99, 235, 0.08);
+  color: #BE185D;
+  background: #FFE4E6;
   padding: 2px 6px;
   border-radius: 5px;
 }
 
 .sidebar-lesson-item.active .sidebar-item-code {
-  background: #2563EB;
+  background: #E11D48;
   color: #FFFFFF;
 }
 
@@ -612,9 +630,9 @@ body {
 
 .btn-sidebar-toggle {
   display: none;
-  background: #1E293B;
+  background: #881337;
   color: #FFFFFF;
-  border: 1px solid #334155;
+  border: 1px solid #BE185D;
   padding: 6px 12px;
   border-radius: 7px;
   font-size: 15px;
@@ -659,7 +677,7 @@ body {
   background: #FFFFFF;
   padding: 14px 18px;
   border-radius: 12px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid #FBCFE8;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -678,11 +696,11 @@ body {
   font-family: var(--font-mono);
   font-size: 13.5px;
   font-weight: 700;
-  background: #EFF6FF;
-  color: #1D4ED8;
+  background: #FFF1F2;
+  color: #BE185D;
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid #93C5FD;
+  border: 1px solid #FBCFE8;
 }
 
 .editor-lesson-title {
@@ -706,9 +724,9 @@ body {
 }
 
 .btn-open-tab {
-  background: #EFF6FF;
-  color: #1D4ED8;
-  border: 1.5px solid #60A5FA;
+  background: #FFF1F2;
+  color: #BE185D;
+  border: 1.5px solid #F472B6;
   padding: 8px 14px;
   border-radius: 8px;
   font-size: 13px;
@@ -722,9 +740,9 @@ body {
 }
 
 .btn-open-tab:hover {
-  background: #2563EB;
+  background: #E11D48;
   color: #FFFFFF;
-  border-color: #2563EB;
+  border-color: #E11D48;
 }
 
 .btn-open-side {
@@ -845,8 +863,8 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  background: #E2E8F0;
-  color: var(--ink-secondary);
+  background: #FCE7F3;
+  color: #881337;
   border: 1.5px solid var(--border-strong);
   border-bottom: none;
   border-radius: 10px 10px 0 0;
@@ -861,18 +879,18 @@ body {
 }
 
 .excel-sheet-tab:hover {
-  background: #F1F5F9;
-  color: var(--ink-primary);
+  background: #FFF1F2;
+  color: #4C0519;
 }
 
 .excel-sheet-tab.active {
   background: #FFFFFF;
-  color: var(--ink-primary);
+  color: #4C0519;
   border-color: var(--border-strong);
   border-bottom: 2px solid #FFFFFF;
   top: 2px;
   z-index: 2;
-  box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -3px 8px rgba(112, 11, 51, 0.06);
 }
 
 .excel-sheet-tab.active.sheet-tab-ung_y {
@@ -886,13 +904,13 @@ body {
 }
 
 .excel-sheet-tab.active.sheet-tab-cai_tien {
-  border-top: 3.5px solid #2563EB;
-  color: #1E40AF;
+  border-top: 3.5px solid #E11D48;
+  color: #9D174D;
 }
 
 .excel-sheet-tab.active.sheet-tab-kho_khan {
-  border-top: 3.5px solid #DC2626;
-  color: #9F1239;
+  border-top: 3.5px solid #BE123C;
+  color: #881337;
 }
 
 .sheet-tab-icon {
@@ -952,7 +970,7 @@ body {
   justify-content: space-between;
   padding: 12px 14px;
   border-top: 1px solid var(--border-light);
-  background: #F8FAFC;
+  background: #FFF5F7;
   gap: 12px;
   margin-top: 8px;
   border-radius: 0 0 10px 10px;
@@ -975,20 +993,21 @@ body {
 }
 
 .btn-sheet-step:hover {
-  background: var(--brand-cobalt-soft);
-  color: var(--brand-cobalt);
-  border-color: #93C5FD;
+  background: #FFF1F2;
+  color: #BE185D;
+  border-color: #FBCFE8;
 }
 
 .btn-sheet-step.next {
-  background: var(--brand-cobalt);
+  background: linear-gradient(135deg, #E11D48, #BE185D);
   color: #FFFFFF;
-  border-color: var(--brand-cobalt);
+  border-color: #BE123C;
   margin-left: auto;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.25);
 }
 
 .btn-sheet-step.next:hover {
-  background: #1D4ED8;
+  background: linear-gradient(135deg, #BE185D, #9D174D);
 }
 
 .criterion-header {
@@ -1073,7 +1092,7 @@ body {
 }
 
 .point-item {
-  background: #F8FAFC;
+  background: #FFFFFF;
   border: 1.5px solid var(--border-light);
   border-radius: 10px;
   padding: 10px 12px;
@@ -1085,8 +1104,8 @@ body {
 
 .point-item.active-point {
   background: #FFFFFF;
-  border-color: #60A5FA;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+  border-color: #FB7185;
+  box-shadow: 0 3px 10px rgba(225, 29, 72, 0.12);
 }
 
 .point-top-row {
@@ -1107,7 +1126,7 @@ body {
   font-size: 11.5px;
   font-weight: 700;
   color: var(--ink-muted);
-  background: #E2E8F0;
+  background: #FFE4E6;
   padding: 2px 7px;
   border-radius: 5px;
 }
@@ -1116,9 +1135,9 @@ body {
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 700;
-  color: #1D4ED8;
-  background: #EFF6FF;
-  border: 1px solid #93C5FD;
+  color: #BE185D;
+  background: #FFF1F2;
+  border: 1px solid #FBCFE8;
   border-radius: 6px;
   padding: 3px 8px;
   cursor: pointer;
@@ -1167,9 +1186,9 @@ body {
 }
 
 .btn-add-point-bottom {
-  background: #F8FAFC;
-  color: var(--brand-cobalt);
-  border: 1px dashed #93C5FD;
+  background: #FFF5F7;
+  color: #BE185D;
+  border: 1px dashed #FBCFE8;
   border-radius: 8px;
   padding: 7px 12px;
   font-size: 12.5px;
@@ -1180,8 +1199,9 @@ body {
 }
 
 .btn-add-point-bottom:hover {
-  background: #EFF6FF;
-  border-color: var(--brand-cobalt);
+  background: #FFF1F2;
+  border-color: #BE185D;
+  color: #9D174D;
 }
 
 .attached-images-list {
@@ -1229,9 +1249,9 @@ body {
 }
 
 .btn-paste-clipboard {
-  background: #EFF6FF;
-  border: 1px solid #93C5FD;
-  color: #1D4ED8;
+  background: #FFF1F2;
+  border: 1px solid #FBCFE8;
+  color: #BE185D;
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 12px;
@@ -1241,13 +1261,13 @@ body {
 }
 
 .btn-paste-clipboard:hover {
-  background: var(--brand-cobalt);
+  background: #E11D48;
   color: #FFFFFF;
-  border-color: var(--brand-cobalt);
+  border-color: #E11D48;
 }
 
 .btn-upload-file {
-  background: #F8FAFC;
+  background: #FFF5F7;
   border: 1px solid var(--border-strong);
   color: var(--ink-secondary);
   padding: 4px 10px;
@@ -1258,9 +1278,9 @@ body {
 }
 
 .btn-upload-file:hover {
-  background: #EFF6FF;
-  color: var(--brand-cobalt);
-  border-color: #93C5FD;
+  background: #FFF1F2;
+  color: #BE185D;
+  border-color: #FBCFE8;
 }
 
 /* ADMIN DASHBOARD */
@@ -1314,16 +1334,16 @@ body {
 }
 
 .admin-sheet-tab:hover {
-  background: #F8FAFC;
-  border-color: #94A3B8;
+  background: #FFF5F7;
+  border-color: #FBCFE8;
   color: var(--ink-primary);
 }
 
 .admin-sheet-tab.active {
-  background: #2563EB;
+  background: linear-gradient(135deg, #E11D48, #BE185D);
   color: #FFFFFF;
-  border-color: #1D4ED8;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  border-color: #BE123C;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
 }
 
 .admin-tab-pill {
@@ -1332,8 +1352,8 @@ body {
   font-weight: 700;
   padding: 1px 7px;
   border-radius: 999px;
-  background: #EFF6FF;
-  color: #1D4ED8;
+  background: #FFE4E6;
+  color: #BE185D;
 }
 
 .admin-sheet-tab.active .admin-tab-pill {
@@ -1364,13 +1384,13 @@ body {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: #EFF6FF;
-  color: #2563EB;
+  background: #FFF1F2;
+  color: #BE185D;
   font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #BFDBFE;
+  border: 1px solid #FBCFE8;
 }
 
 .dossier-hero-name {
@@ -1420,7 +1440,7 @@ body {
 }
 
 .btn-act-as-teacher {
-  background: #2563EB;
+  background: linear-gradient(135deg, #E11D48, #BE185D);
   color: #FFFFFF;
   border: none;
   padding: 8px 16px;
@@ -1430,10 +1450,11 @@ body {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.2);
 }
 
 .btn-act-as-teacher:hover {
-  background: #1D4ED8;
+  background: linear-gradient(135deg, #BE185D, #9D174D);
 }
 
 /* EXPANDABLE LESSON CARDS (OPTION A) */
@@ -1489,8 +1510,8 @@ body {
   font-family: var(--font-mono);
   font-size: 12.5px;
   font-weight: 700;
-  color: #1D4ED8;
-  background: #EFF6FF;
+  color: #BE185D;
+  background: #FFE4E6;
   padding: 3px 8px;
   border-radius: 6px;
   white-space: nowrap;
@@ -1541,8 +1562,8 @@ body {
 
 .mini-tag.c1 { background: #ECFDF5; color: #065F46; }
 .mini-tag.c2 { background: #FFFBEB; color: #92400E; }
-.mini-tag.c3 { background: #EFF6FF; color: #1E40AF; }
-.mini-tag.c4 { background: #FFF1F2; color: #9F1239; }
+.mini-tag.c3 { background: #FFF1F2; color: #9D174D; }
+.mini-tag.c4 { background: #FFE4E6; color: #881337; }
 
 .dossier-card-body {
   padding: 16px 18px;
@@ -1617,7 +1638,7 @@ body {
   font-weight: 700;
   padding: 1px 6px;
   border-radius: 4px;
-  background: #2563EB;
+  background: #BE185D;
   color: #FFFFFF;
 }
 
@@ -1637,12 +1658,13 @@ body {
 .btn-dossier-open-tab {
   font-size: 12.5px;
   font-weight: 600;
-  color: #2563EB;
+  color: #E11D48;
   text-decoration: none;
 }
 
 .btn-dossier-open-tab:hover {
   text-decoration: underline;
+  color: #BE185D;
 }
 
 .admin-top-bar {
@@ -1675,7 +1697,7 @@ body {
 }
 
 .btn-primary-export {
-  background: var(--brand-cobalt);
+  background: linear-gradient(135deg, #E11D48, #BE185D);
   color: #FFFFFF;
   border: none;
   padding: 8px 14px;
@@ -1683,21 +1705,33 @@ body {
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.2);
+  transition: all 0.15s ease;
+}
+
+.btn-primary-export:hover {
+  background: linear-gradient(135deg, #BE185D, #9D174D);
 }
 
 .btn-secondary {
-  background: #F1F5F9;
-  color: var(--ink-primary);
+  background: #FFF1F2;
+  color: var(--ink-secondary);
   border: 1px solid var(--border-strong);
   padding: 8px 12px;
   border-radius: 7px;
   font-weight: 600;
   font-size: 12.5px;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: #FFE4E6;
+  color: var(--ink-primary);
 }
 
 .btn-primary {
-  background: var(--brand-cobalt);
+  background: linear-gradient(135deg, #E11D48, #BE185D);
   color: #FFFFFF;
   border: none;
   padding: 8px 14px;
@@ -1705,6 +1739,12 @@ body {
   font-weight: 700;
   font-size: 12.5px;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.2);
+  transition: all 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #BE185D, #9D174D);
 }
 
 .admin-card {
@@ -1808,7 +1848,7 @@ body {
 
 .teacher-review-name {
   font-weight: 700;
-  color: var(--brand-cobalt);
+  color: #BE185D;
 }
 
 .teacher-review-text {
@@ -1824,7 +1864,7 @@ dialog {
   padding: 0;
   background: #FFFFFF;
   color: var(--ink-primary);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+  box-shadow: 0 20px 50px rgba(76, 5, 25, 0.25);
   max-width: 460px;
   width: calc(100% - 32px);
 }
@@ -1836,7 +1876,7 @@ dialog:modal {
 dialog::backdrop {
   overflow: hidden;
   overscroll-behavior: contain;
-  background-color: rgba(15, 23, 42, 0.55);
+  background-color: rgba(76, 5, 25, 0.55);
   backdrop-filter: blur(3px);
 }
 
@@ -1854,9 +1894,10 @@ dialog::backdrop {
 .modal-tab-bar {
   display: flex;
   gap: 8px;
-  background: #F1F5F9;
+  background: #FFF1F2;
   padding: 5px;
   border-radius: 10px;
+  border: 1px solid #FCE7F3;
 }
 
 .modal-tab-btn {
@@ -1875,8 +1916,8 @@ dialog::backdrop {
 
 .modal-tab-btn.active {
   background: #FFFFFF;
-  color: var(--brand-cobalt);
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  color: #E11D48;
+  box-shadow: 0 2px 6px rgba(190, 24, 93, 0.12);
 }
 
 .modal-tab-panel {
@@ -1894,7 +1935,7 @@ dialog::backdrop {
 
 .btn-copy-card-img {
   flex: 1;
-  background: #2563EB;
+  background: linear-gradient(135deg, #E11D48, #BE185D);
   color: #FFFFFF;
   border: none;
   padding: 9px 14px;
@@ -1904,10 +1945,11 @@ dialog::backdrop {
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s ease;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.2);
 }
 
 .btn-copy-card-img:hover {
-  background: #1D4ED8;
+  background: linear-gradient(135deg, #BE185D, #9D174D);
 }
 
 #lightboxDialog {

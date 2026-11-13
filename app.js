@@ -728,7 +728,7 @@
       btnToggleAdmin.textContent = isAdminView ? "👁️ Xem phiếu GV" : "📊 Về Quản lý";
     } else {
       nameEl.textContent = "👩‍🏫 " + currentUser.name;
-      if (dotEl) dotEl.style.background = "#38BDF8";
+      if (dotEl) dotEl.style.background = "#FB7185";
       // CRITICAL: HIDE ADMIN BUTTON COMPLETELY FOR TEACHERS
       btnToggleAdmin.classList.add("hidden");
     }
@@ -1304,8 +1304,8 @@
         const colors = [
           { bg: "#ECFDF5", text: "#065F46" },
           { bg: "#FFFBEB", text: "#92400E" },
-          { bg: "#EFF6FF", text: "#1E40AF" },
-          { bg: "#FFF1F2", text: "#9F1239" }
+          { bg: "#FFF1F2", text: "#9D174D" },
+          { bg: "#FFE4E6", text: "#881337" }
         ][idx];
 
         let itemsHtml = "";
@@ -1483,8 +1483,8 @@
             const colors = [
               { bg: "#ECFDF5", text: "#065F46" },
               { bg: "#FFFBEB", text: "#92400E" },
-              { bg: "#EFF6FF", text: "#1E40AF" },
-              { bg: "#FFF1F2", text: "#9F1239" }
+              { bg: "#FFF1F2", text: "#9D174D" },
+              { bg: "#FFE4E6", text: "#881337" }
             ][cIdx];
 
             let ptsListHtml = "";
@@ -1931,14 +1931,14 @@
     ctx.scale(scale, scale);
 
     // Background
-    ctx.fillStyle = "#F8FAFC";
+    ctx.fillStyle = "#FFF5F7";
     ctx.fillRect(0, 0, width, height);
 
     // Top Banner
-    ctx.fillStyle = "#0F172A";
+    ctx.fillStyle = "#700B33";
     ctx.fillRect(0, 0, width, headerH);
 
-    ctx.fillStyle = "#38BDF8";
+    ctx.fillStyle = "#FB7185";
     ctx.font = "bold 13px 'Be Vietnam Pro', sans-serif";
     ctx.fillText("NOVASTARS · HỆ THỐNG NHẬN XÉT BÀI GIẢNG", 28, 34);
 
@@ -1946,7 +1946,7 @@
     ctx.font = "bold 22px 'Plus Jakarta Sans', 'Be Vietnam Pro', sans-serif";
     ctx.fillText("BẢNG TÊN & MÃ PIN GIÁO VIÊN", 28, 68);
 
-    ctx.fillStyle = "#93C5FD";
+    ctx.fillStyle = "#FBCFE8";
     ctx.font = "600 14px 'JetBrains Mono', monospace";
     ctx.fillText("🔗 Link web: " + getSharedAppUrl(), 28, 102);
 
@@ -1958,7 +1958,7 @@
     const col2W = tableW - col1W - col3W;
     let curY = headerH + 12;
 
-    ctx.fillStyle = "#2563EB";
+    ctx.fillStyle = "#BE185D";
     ctx.fillRect(tableX, curY, tableW, tableHeadH);
 
     ctx.fillStyle = "#FFFFFF";
@@ -1971,31 +1971,31 @@
 
     // Rows
     teachers.forEach((t, idx) => {
-      ctx.fillStyle = idx % 2 === 0 ? "#FFFFFF" : "#F1F5F9";
+      ctx.fillStyle = idx % 2 === 0 ? "#FFFFFF" : "#FFF1F2";
       ctx.fillRect(tableX, curY, tableW, rowH);
 
-      ctx.strokeStyle = "#CBD5E1";
+      ctx.strokeStyle = "#FBCFE8";
       ctx.lineWidth = 1;
       ctx.strokeRect(tableX, curY, tableW, rowH);
 
       // STT
-      ctx.fillStyle = "#64748B";
+      ctx.fillStyle = "#881337";
       ctx.font = "bold 14px 'JetBrains Mono', monospace";
       ctx.fillText(String(idx + 1), tableX + 24, curY + 29);
 
       // Teacher Name
-      ctx.fillStyle = "#0F172A";
+      ctx.fillStyle = "#3B0718";
       ctx.font = "bold 15px 'Be Vietnam Pro', sans-serif";
       ctx.fillText(t.name, tableX + col1W + 16, curY + 29);
 
       // PIN Pill
       const pinX = tableX + col1W + col2W + 16;
-      ctx.fillStyle = "#EFF6FF";
+      ctx.fillStyle = "#FFE4E6";
       ctx.fillRect(pinX, curY + 9, 96, 28);
-      ctx.strokeStyle = "#93C5FD";
+      ctx.strokeStyle = "#FDA4AF";
       ctx.strokeRect(pinX, curY + 9, 96, 28);
 
-      ctx.fillStyle = "#1D4ED8";
+      ctx.fillStyle = "#BE185D";
       ctx.font = "bold 16px 'JetBrains Mono', monospace";
       ctx.fillText(t.pin, pinX + 24, curY + 29);
 
