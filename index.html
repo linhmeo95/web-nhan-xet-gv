@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=17">
+  <link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
   <!-- AUTHENTICATION SCREEN (LOGIN PORTAL) -->
@@ -73,8 +73,9 @@
   <!-- COMPACT TOP BAR -->
   <header class="topbar hidden" id="mainTopBar">
     <div class="topbar-left">
-      <button type="button" class="btn-sidebar-toggle" id="btnToggleSidebar" title="Đóng/mở danh sách bài" aria-label="Đóng/mở danh sách bài">
-        ☰
+      <button type="button" class="btn-sidebar-toggle" id="btnToggleSidebar" title="Ẩn/hiện danh sách bài (Alt+B)" aria-label="Ẩn/hiện danh sách bài">
+        <span class="toggle-icon" id="btnToggleSidebarIcon">☰</span>
+        <span class="toggle-text" id="btnToggleSidebarText">Danh sách bài</span>
       </button>
       <div class="brand-mark" aria-hidden="true">NS</div>
       <h1 class="brand-title">Phiếu Nhận Xét Bài Giảng</h1>
@@ -104,8 +105,13 @@
     <aside class="lesson-sidebar" id="lessonSidebar" aria-label="Danh sách bài giảng">
       <div class="sidebar-header">
         <div class="sidebar-header-top">
-          <span class="sidebar-heading">📚 Danh Sách Bài</span>
-          <span class="sidebar-count-badge" id="lblSidebarTotalLessons">5 bài</span>
+          <div class="sidebar-title-group">
+            <span class="sidebar-heading">📚 Danh Sách Bài</span>
+            <span class="sidebar-count-badge" id="lblSidebarTotalLessons">5 bài</span>
+          </div>
+          <button type="button" class="btn-collapse-sidebar" id="btnCollapseSidebar" title="Thu gọn danh sách sang bên trái" aria-label="Thu gọn danh sách bài">
+            ◀ Thu gọn
+          </button>
         </div>
         <div class="sidebar-search-wrap">
           <span class="search-icon" aria-hidden="true">🔍</span>
@@ -145,6 +151,9 @@
           <!-- LESSON HEADER -->
           <section class="editor-header" aria-label="Thông tin bài giảng và nút mở Slide thật">
             <div class="editor-lesson-info">
+              <button type="button" class="btn-inline-open-sidebar hidden" id="btnInlineOpenSidebar" title="Mở danh sách để chọn bài giảng khác (Alt+B)">
+                📚 Chọn bài khác
+              </button>
               <span class="lesson-code-tag" id="lblCurrentLessonCode">4.23.CL</span>
               <div>
                 <h2 class="editor-lesson-title" id="lblCurrentLessonTitle">Ý tưởng chiếc máy thông minh giúp ích trường em</h2>
@@ -400,7 +409,7 @@
     </div>
   </dialog>
 
-  <script src="data/initial_data.js?v=17"></script>
-  <script src="app.js?v=17"></script>
+  <script src="data/initial_data.js?v=18"></script>
+  <script src="app.js?v=18"></script>
 </body>
 </html>

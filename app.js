@@ -39,6 +39,7 @@
   let sidebarSearchQuery = "";
   let activeAdminTab = "matrix";
   let expandedDossierLessons = {};
+  let isSidebarCollapsed = localStorage.getItem("novastars_sidebar_collapsed") === "true";
 
   // SMART SLIDE FLOW STATE (v15 OPT-IN UPDATE)
   let currentViewMode = localStorage.getItem("novastars_ui_view_mode") || "classic";
@@ -759,6 +760,66 @@
     });
   }
 
+  function updateSidebarUI() {
+    const sidebar = document.getElementById("lessonSidebar");
+    const toggleBtn = document.getElementById("btnToggleSidebar");
+    const toggleIcon = document.getElementById("btnToggleSidebarIcon");
+    const toggleText = document.getElementById("btnToggleSidebarText");
+    const inlineOpenBtn = document.getElementById("btnInlineOpenSidebar");
+    const isMobile = window.innerWidth <= 900;
+
+    if (isMobile) {
+      if (sidebar) sidebar.classList.remove("collapsed");
+      if (inlineOpenBtn) inlineOpenBtn.classList.add("hidden");
+      if (toggleBtn) {
+        toggleBtn.classList.remove("is-collapsed");
+        toggleBtn.title = "Đóng/mở danh sách bài";
+      }
+      if (toggleIcon) toggleIcon.textContent = "☰";
+      if (toggleText) toggleText.textContent = "Danh sách bài";
+    } else {
+      if (sidebar) {
+        sidebar.classList.toggle("collapsed", isSidebarCollapsed);
+      }
+      if (toggleBtn) {
+        toggleBtn.classList.toggle("is-collapsed", isSidebarCollapsed);
+        toggleBtn.title = isSidebarCollapsed ? "Mở danh sách bài (Alt+B)" : "Ẩn danh sách bài sang bên (Alt+B)";
+      }
+      if (toggleIcon) {
+        toggleIcon.textContent = isSidebarCollapsed ? "📚" : "☰";
+      }
+      if (toggleText) {
+        toggleText.textContent = isSidebarCollapsed ? "Hiện danh sách" : "Ẩn danh sách";
+      }
+      if (inlineOpenBtn) {
+        inlineOpenBtn.classList.toggle("hidden", !isSidebarCollapsed);
+      }
+    }
+  }
+
+  function toggleSidebar(forceOpen) {
+    const isMobile = window.innerWidth <= 900;
+    const sidebar = document.getElementById("lessonSidebar");
+    const backdrop = document.getElementById("sidebarBackdrop");
+
+    if (isMobile) {
+      if (!sidebar) return;
+      const willOpen = typeof forceOpen === "boolean" ? forceOpen : !sidebar.classList.contains("open");
+      sidebar.classList.toggle("open", willOpen);
+      if (backdrop) backdrop.classList.toggle("hidden", !willOpen);
+    } else {
+      if (typeof forceOpen === "boolean") {
+        isSidebarCollapsed = !forceOpen;
+      } else {
+        isSidebarCollapsed = !isSidebarCollapsed;
+      }
+      try {
+        localStorage.setItem("novastars_sidebar_collapsed", isSidebarCollapsed ? "true" : "false");
+      } catch (e) {}
+      updateSidebarUI();
+    }
+  }
+
   function setupSidebar() {
     const searchInput = document.getElementById("sidebarSearchInput");
     const clearBtn = document.getElementById("btnSidebarClearSearch");
@@ -777,12 +838,24 @@
       });
     }
     const toggleBtn = document.getElementById("btnToggleSidebar");
+    const collapseBtn = document.getElementById("btnCollapseSidebar");
+    const inlineOpenBtn = document.getElementById("btnInlineOpenSidebar");
     const sidebar = document.getElementById("lessonSidebar");
     const backdrop = document.getElementById("sidebarBackdrop");
-    if (toggleBtn && sidebar) {
+
+    if (toggleBtn) {
       toggleBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("open");
-        if (backdrop) backdrop.classList.toggle("hidden", !sidebar.classList.contains("open"));
+        toggleSidebar();
+      });
+    }
+    if (collapseBtn) {
+      collapseBtn.addEventListener("click", () => {
+        toggleSidebar(false);
+      });
+    }
+    if (inlineOpenBtn) {
+      inlineOpenBtn.addEventListener("click", () => {
+        toggleSidebar(true);
       });
     }
     if (backdrop && sidebar) {
@@ -791,6 +864,20 @@
         backdrop.classList.add("hidden");
       });
     }
+
+    // Hotkey: Alt + B
+    document.addEventListener("keydown", (e) => {
+      if (e.altKey && (e.key === "b" || e.key === "B")) {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      updateSidebarUI();
+    });
+
+    updateSidebarUI();
   }
 
   function renderTopBar() {
@@ -3022,6 +3109,7 @@
 
     renderLessonSidebar();
     renderTopBar();
+    updateSidebarUI();
 
     if (currentUser.role === "admin") {
       if (isAdminView) {
