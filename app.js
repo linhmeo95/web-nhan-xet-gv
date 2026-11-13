@@ -1228,9 +1228,9 @@
                   <button type="button" class="btn-paste-clipboard" data-paste-btn="${cm.key}:${pIdx}" title="Chụp màn hình xong bấm nút này để dán ảnh ngay vào Ý ${pIdx + 1}">
                     📋 Dán ảnh vừa chụp
                   </button>
-                  <label class="btn-upload-file" title="Chọn file ảnh có sẵn trong máy tính">
+                  <label class="btn-upload-file" title="Chọn file ảnh có sẵn trong máy tính (có thể chọn nhiều ảnh)">
                     📁 Chọn ảnh từ máy
-                    <input type="file" accept="image/*" hidden data-upload-pt="${cm.key}:${pIdx}">
+                    <input type="file" accept="image/*" multiple hidden data-upload-pt="${cm.key}:${pIdx}">
                   </label>
                 </div>
               </div>
@@ -1395,15 +1395,17 @@
         });
       });
 
-      // File upload per point
+      // File upload per point (Hỗ trợ chọn 1 hoặc nhiều ảnh cùng lúc)
       card.querySelectorAll("[data-upload-pt]").forEach(fInp => {
         fInp.addEventListener("change", async e => {
           const [, idxStr] = fInp.dataset.uploadPt.split(":");
           const pIdx = Number(idxStr);
-          const file = e.target.files && e.target.files[0];
-          if (file) {
-            const compressed = await compressImageFile(file);
-            points[pIdx].images.push(compressed);
+          const files = Array.from(e.target.files || []).filter(f => f.type && f.type.startsWith("image/"));
+          if (files.length > 0) {
+            for (const file of files) {
+              const compressed = await compressImageFile(file);
+              points[pIdx].images.push(compressed);
+            }
             syncCriterionSummaryFromPoints(cData);
             rev.updatedAt = new Date().toISOString();
             triggerAutoSave();
@@ -1759,9 +1761,9 @@
               <button type="button" class="btn-paste-clipboard" id="btnPasteSmartImg" title="Chụp màn hình xong bấm nút này để dán ảnh ngay">
                 📋 Dán ảnh vừa chụp
               </button>
-              <label class="btn-upload-file" title="Chọn file ảnh từ máy tính">
+              <label class="btn-upload-file" title="Chọn file ảnh từ máy tính (có thể chọn nhiều ảnh)">
                 📁 Chọn ảnh từ máy
-                <input type="file" accept="image/*" hidden id="inputUploadSmartImg">
+                <input type="file" accept="image/*" multiple hidden id="inputUploadSmartImg">
               </label>
             </div>
 
@@ -2043,10 +2045,12 @@
     const inputUpload = container.querySelector("#inputUploadSmartImg");
     if (inputUpload) {
       inputUpload.addEventListener("change", async e => {
-        const file = e.target.files && e.target.files[0];
-        if (file) {
-          const compressed = await compressImageFile(file);
-          stagedSmartImages.push(compressed);
+        const files = Array.from(e.target.files || []).filter(f => f.type && f.type.startsWith("image/"));
+        if (files.length > 0) {
+          for (const file of files) {
+            const compressed = await compressImageFile(file);
+            stagedSmartImages.push(compressed);
+          }
           renderSmartSlideFlow();
         }
       });
