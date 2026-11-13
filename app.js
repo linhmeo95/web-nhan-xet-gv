@@ -63,6 +63,48 @@
       kho_khan: 0
     };
 
+    // 0. EXPLICIT NEGATION & CRITIQUE PHRASES (Ưu tiên số 1: Xử lý từ phủ định để không bị nhận nhầm thành Khen)
+    const caiTienNegations = [
+      "không hay", "chưa hay", "chẳng hay", "chả hay", "kém hay",
+      "không đẹp", "chưa đẹp", "hơi xấu", "xấu quá", "xấu", "chưa bắt mắt",
+      "không thích", "chưa thích", "không ưng", "chưa ưng", "không ưng ý",
+      "không hợp lý", "chưa hợp lý", "bất hợp lý", "vô lý", "chưa thuyết phục", "không thuyết phục",
+      "không tốt", "chưa tốt", "chưa ổn", "không ổn", "chưa đạt", "kém",
+      "không hấp dẫn", "chưa hấp dẫn", "kém hấp dẫn",
+      "không sinh động", "chưa sinh động", "kém sinh động", "thiếu sinh động",
+      "không cuốn hút", "chưa cuốn hút", "kém cuốn hút",
+      "nhàm chán", "đơn điệu", "tẻ nhạt", "dài dòng", "rườm rà", "lủng củng",
+      "không phù hợp", "chưa phù hợp", "thiếu thực tế", "không thực tế",
+      "không cần thiết", "thừa thãi", "bị thừa"
+    ];
+    caiTienNegations.forEach(kw => {
+      if (text.includes(kw)) scores.cai_tien += 5;
+    });
+
+    const chuaHieuNegations = [
+      "chưa hiểu", "không hiểu", "khó hiểu", "chưa rõ", "không rõ", 
+      "chưa rõ ràng", "không rõ ràng", "mơ hồ", "chưa thấy", "chưa biết",
+      "lúng túng", "ý nghĩa gì", "mục đích gì", "tại sao", "vì sao",
+      "chưa hiểu rõ", "chưa nắm được"
+    ];
+    chuaHieuNegations.forEach(kw => {
+      if (text.includes(kw)) scores.chua_hieu += 5;
+    });
+
+    const khoKhanNegations = [
+      "không kịp", "cháy giáo án", "không đủ thời gian", "thiếu thời gian",
+      "khó dạy", "khó quản lý", "khó theo dõi", "khó thực hiện", "khó thao tác",
+      "quá tải", "quá dài", "quá sức", "quá nặng", "nặng quá", "rối quá",
+      "mất thời gian", "mất trật tự", "bị vướng", "áp lực", "loay hoay",
+      "học sinh khó", "học sinh không hiểu", "học sinh lúng túng"
+    ];
+    khoKhanNegations.forEach(kw => {
+      if (text.includes(kw)) scores.kho_khan += 5;
+    });
+
+    // Detect if text has negation before a positive word (e.g. "không ... hay", "chưa ... đẹp")
+    const hasNegatedPositive = /(không|chưa|chẳng|chả|kém|thiếu)\s+(rất\s+|quá\s+)?(hay|đẹp|thích|ưng|tốt|rõ|hợp lý|sinh động|hấp dẫn|cuốn hút|ổn|chuẩn|ấn tượng|tuyệt)/i.test(text);
+
     // 1. Cai Tien (Đề xuất cải tiến)
     const caiTienKeywords = [
       "nên ", "nên đổi", "cần thêm", "thay bằng", "thay vì", "sửa lại", "chỉnh sửa", 
@@ -100,17 +142,25 @@
       scores.chua_hieu += 2;
     }
 
-    // 4. Ung Y (Điểm ưng ý)
-    const ungYKeywords = [
-      "hay", "đẹp", "thích", "sinh động", "rõ ràng", "hợp lý", "hấp dẫn",
-      "lôi cuốn", "sáng tạo", "ấn tượng", "chuẩn", "tốt", "tuyệt vời",
-      "cuốn hút", "rất thích", "dễ hiểu", "dễ dạy", "hứng thú", "rất hay",
-      "trực quan", "thông minh", "tinh tế", "khen", "ưng ý", "bổ ích",
-      "rất ổn", "rất đẹp", "rất sinh động", "rất thích thú", "thích nhất"
-    ];
-    ungYKeywords.forEach(kw => {
-      if (text.includes(kw)) scores.ung_y += 3;
-    });
+    // 4. Ung Y (Điểm ưng ý - CHỈ CỘNG ĐIỂM KHI KHÔNG CÓ TỪ PHỦ ĐỊNH PHÍA TRƯỚC)
+    if (!hasNegatedPositive) {
+      const ungYKeywords = [
+        "đẹp", "sinh động", "hợp lý", "hấp dẫn", "lôi cuốn", "sáng tạo",
+        "ấn tượng", "chuẩn", "tốt", "tuyệt vời", "cuốn hút", "rất thích",
+        "dễ hiểu", "dễ dạy", "hứng thú", "rất hay", "trực quan", "thông minh",
+        "tinh tế", "khen", "ưng ý", "bổ ích", "rất ổn", "rất đẹp", "rất sinh động",
+        "rất thích thú", "thích nhất"
+      ];
+      ungYKeywords.forEach(kw => {
+        if (text.includes(kw)) scores.ung_y += 3;
+      });
+
+      // Match "hay" as a standalone word (tránh nhầm với "thay", "chạy", "nháy")
+      const words = text.split(/[\s,.;:!?()"-]+/);
+      if (words.includes("hay") && !text.includes("không hay") && !text.includes("chưa hay") && !text.includes("chẳng hay")) {
+        scores.ung_y += 3;
+      }
+    }
 
     let maxKey = "cai_tien";
     let maxScore = scores.cai_tien;
