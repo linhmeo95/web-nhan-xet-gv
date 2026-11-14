@@ -305,12 +305,11 @@
     const pinParam = params.get("pin");
     const adminPin = (db.meta && db.meta.adminPin) ? String(db.meta.adminPin).trim() : "8888";
 
-    // Direct URL for BTV (Editor / Guest - Strictly Read-only, no PIN required):
+    // Direct URL for BTV (Editor / Guest - Strictly Read-only, no PIN required, never overwrite saved session):
     if (roleParam === "btv" || roleParam === "editor" || viewParam === "btv" || viewParam === "tong-hop") {
       isAdminView = false;
-      const btvUser = { id: "btv", name: "Biên tập viên", role: "btv" };
-      localStorage.setItem(SESSION_KEY, JSON.stringify(btvUser));
-      return btvUser;
+      isAdminPreviewingBtv = false;
+      return { id: "btv", name: "Biên tập viên", role: "btv" };
     }
 
     // Direct URL login for admin: ?gv=admin&pin=8888
@@ -333,11 +332,9 @@
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed && parsed.id) {
+        if (parsed && parsed.id && parsed.role !== "btv") {
           if (parsed.role === "admin") {
             isAdminView = true;
-          } else if (parsed.role === "btv") {
-            isAdminView = false;
           } else {
             isAdminView = false;
           }
