@@ -30,7 +30,7 @@ CANONICAL_LESSONS = {
         "id": "ai-1-02-cl",
         "title": "Nụ cười của Robot do con người tạo ra",
         "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-1-nu-cuoi-robot-minh-hoa-rev03",
-        "totalSlides": 31,
+        "totalSlides": 25,
     },
     "2.22.CL": {
         "id": "ai-2-22-cl",
@@ -48,7 +48,7 @@ CANONICAL_LESSONS = {
         "id": "ai-4-23-cl",
         "title": "Ý tưởng chiếc máy thông minh giúp ích trường em",
         "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-4-23-cl",
-        "totalSlides": 19,
+        "totalSlides": 18,
     },
     "5.24.CL": {
         "id": "ai-5-24-cl",
@@ -111,6 +111,10 @@ def check_dataset(db, source_name, errors):
         if "totalSlides" in canon and l.get("totalSlides") != canon["totalSlides"]:
             errors.append(
                 f"[{source_name}] Lesson '{canon_code}' totalSlides mismatch: expected {canon['totalSlides']}, found {l.get('totalSlides')}"
+            )
+        if "totalSlides" in canon and isinstance(l.get("slides"), list) and len(l.get("slides")) != canon["totalSlides"]:
+            errors.append(
+                f"[{source_name}] Lesson '{canon_code}' slides[] length mismatch: expected {canon['totalSlides']}, found {len(l.get('slides'))}"
             )
             
     print(f"    - Lessons verified: {len(lessons)} found (all 5 canonical lessons intact with correct URLs).")

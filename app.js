@@ -419,8 +419,13 @@
           });
           const mergedLessons = Array.from(lessonMap.values());
           const hasNewLocalLessons = mergedLessons.length > cloudConfig.lessons.length;
+          const hasStaleCloudSlides = cloudConfig.lessons.some(cl => {
+            const canon = (window.INITIAL_APP_DATA && window.INITIAL_APP_DATA.lessons || []).find(sl => sl.id === cl.id || sl.code === cl.code);
+            return canon && canon.totalSlides && cl.totalSlides !== canon.totalSlides;
+          });
           db.lessons = mergedLessons;
-          if (hasNewLocalLessons) {
+          syncLatestLessons(db);
+          if (hasNewLocalLessons || hasStaleCloudSlides) {
             triggerAutoSave(true, true);
           }
         }
@@ -2985,11 +2990,12 @@
     sortedKeys.forEach(sKey => {
       const grp = groupsMap.get(sKey);
       const slideMeta = sKey !== "CHUNG" && Array.isArray(lesson.slides)
-        ? lesson.slides.find(s => String(s.number) === sKey)
+        ? lesson.slides.find(s => String(s.so ?? s.number) === sKey)
         : null;
+      const slideTitleText = slideMeta ? (slideMeta.tieuDe || slideMeta.title) : "";
       const slideTitle = sKey === "CHUNG"
         ? "Nhận xét chung toàn bài"
-        : (slideMeta && slideMeta.title ? slideMeta.title : `Slide ${sKey} — Bài ${lesson.code}`);
+        : (slideTitleText || `Slide ${sKey} — Bài ${lesson.code}`);
 
       const card = document.createElement("div");
       card.className = "slide-group-card";
