@@ -4043,6 +4043,36 @@ dialog::backdrop {
   line-height: 1.4;
 }
 
+.btv-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-btv-back-admin {
+  background: #F59E0B;
+  color: #1E293B;
+  border: 1px solid #FBBF24;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  transition: all 0.15s ease;
+}
+
+.btn-btv-back-admin:hover {
+  background: #FBBF24;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.45);
+}
+
 .btn-btv-download {
   background: #059669;
   color: #FFFFFF;

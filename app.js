@@ -32,6 +32,7 @@
 
   let db = loadInitialDb();
   let isAdminView = false;
+  let isAdminPreviewingBtv = false;
   let currentUser = loadInitialUser();
   let currentLessonId = db.lessons[0] ? db.lessons[0].id : "";
   let activeCritKey = "ung_y";
@@ -1017,12 +1018,13 @@
       // Allow admin to toggle between viewing the admin panel and previewing the teacher form
       btnToggleAdmin.classList.remove("hidden");
       btnToggleAdmin.textContent = isAdminView ? "👁️ Xem phiếu GV" : "📊 Về Quản lý";
-      if (btnToggleSidebar) btnToggleSidebar.classList.remove("hidden");
+      if (btnToggleSidebar) btnToggleSidebar.classList.toggle("hidden", isAdminPreviewingBtv);
       if (btnTopSave) btnTopSave.classList.add("hidden");
 
       if (btnTopOpenSynthesis) {
         btnTopOpenSynthesis.classList.remove("hidden");
         btnTopOpenSynthesis.onclick = () => {
+          isAdminPreviewingBtv = false;
           isAdminView = true;
           activeAdminTab = "synthesis";
           renderAll();
@@ -2272,6 +2274,18 @@
   }
 
   function renderBtvSpreadsheet() {
+    const btnBackAdmin = document.getElementById("btnBackToAdminFromBtv");
+    if (btnBackAdmin) {
+      const canReturnAdmin = Boolean(currentUser && currentUser.role === "admin" && isAdminPreviewingBtv);
+      btnBackAdmin.classList.toggle("hidden", !canReturnAdmin);
+      btnBackAdmin.onclick = () => {
+        isAdminPreviewingBtv = false;
+        isAdminView = true;
+        activeAdminTab = "synthesis";
+        renderAll();
+      };
+    }
+
     const reports = db.synthesis_reports || [];
     if (!reports.length) return;
 
@@ -2839,7 +2853,8 @@
     const btnPreview = document.getElementById("btnPreviewBtvView");
     if (btnPreview) {
       btnPreview.onclick = () => {
-        currentUser = { id: "btv", name: "Biên tập viên", role: "btv" };
+        if (!currentUser || currentUser.role !== "admin") return;
+        isAdminPreviewingBtv = true;
         isAdminView = false;
         renderAll();
       };
@@ -3558,7 +3573,12 @@
   if (btnToggleAdmin) {
     btnToggleAdmin.addEventListener("click", async () => {
       if (!currentUser || currentUser.role !== "admin") return;
-      isAdminView = !isAdminView;
+      if (isAdminPreviewingBtv) {
+        isAdminPreviewingBtv = false;
+        isAdminView = true;
+      } else {
+        isAdminView = !isAdminView;
+      }
       renderAll();
       if (isAdminView) {
         await fetchCloudDb(true);
@@ -3808,6 +3828,7 @@
           localStorage.removeItem(SESSION_KEY);
           currentUser = null;
           isAdminView = false;
+          isAdminPreviewingBtv = false;
           const teacherPinInp = document.getElementById("authTeacherPin");
           if (teacherPinInp) teacherPinInp.value = "";
           const adminPinInp = document.getElementById("authAdminPin");
@@ -4224,8 +4245,8 @@
     renderTopBar();
     updateSidebarUI();
 
-    // STRICT ROLE ISOLATION FOR BTV (READ-ONLY)
-    if (currentUser.role === "btv") {
+    // STRICT ROLE ISOLATION FOR BTV (OR ADMIN PREVIEWING BTV VIEW)
+    if (currentUser.role === "btv" || (currentUser.role === "admin" && isAdminPreviewingBtv)) {
       isAdminView = false;
       if (teacherWorkspace) teacherWorkspace.classList.add("hidden");
       if (adminWorkspace) adminWorkspace.classList.add("hidden");
