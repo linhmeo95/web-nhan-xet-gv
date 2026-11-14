@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=19">
+  <link rel="stylesheet" href="styles.css?v=20">
 </head>
 <body>
   <!-- AUTHENTICATION SCREEN (LOGIN PORTAL) -->
@@ -228,6 +228,9 @@
             </div>
           </div>
 
+          <!-- ADMIN KPI SUMMARY BAR (OVERVIEW STATS) -->
+          <div class="admin-kpi-bar" id="adminKpiBar"></div>
+
           <!-- ADMIN DOSSIER TABS: MATRIX TAB + TEACHER TABS -->
           <div class="admin-dossier-tab-bar" id="adminDossierTabBar" role="tablist" aria-label="Hồ sơ nhận xét từng giáo viên"></div>
 
@@ -235,19 +238,49 @@
           <div class="admin-view-panel" id="adminPanelMatrix">
             <!-- PROGRESS MATRIX -->
             <div class="admin-card">
-              <h3>1. Tiến độ nộp nhận xét</h3>
+              <div class="admin-card-head" style="margin-bottom: 10px;">
+                <div>
+                  <h3 style="margin: 0; font-size: 16px;">1. Bảng ma trận tiến độ nộp bài</h3>
+                  <p style="margin: 3px 0 0 0; font-size: 12.5px; color: var(--ink-muted);">Bấm vào từng ô để xem nhanh chi tiết nhận xét mà không bị đăng xuất khỏi tài khoản Quản trị.</p>
+                </div>
+                <div class="matrix-legend">
+                  <span class="legend-chip done">✓ Đã nộp</span>
+                  <span class="legend-chip draft">✎ Đang soạn</span>
+                  <span class="legend-chip empty">Chưa gõ</span>
+                </div>
+              </div>
               <div class="table-responsive">
                 <table class="progress-matrix-table" id="progressMatrixTable"></table>
               </div>
             </div>
 
             <!-- ALL TEACHER REVIEWS FOR SELECTED LESSON -->
-            <div class="admin-card">
-              <div class="admin-card-head">
-                <h3 id="adminComparisonTitle">2. Chi tiết nhận xét — Bài 4.23.CL</h3>
-                <select id="adminTeacherFilter" class="select-control">
-                  <option value="ALL">Tất cả Giáo viên</option>
-                </select>
+            <div class="admin-card" id="adminComparisonCard">
+              <div class="admin-card-head" style="flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+                <div class="admin-comparison-titles">
+                  <h3 id="adminComparisonTitle" style="margin: 0; font-size: 16px;">2. Chi tiết nhận xét theo bài</h3>
+                  <p class="admin-comparison-sub" id="adminComparisonSub" style="margin: 3px 0 0 0; font-size: 12.5px; color: var(--ink-muted);">So sánh đa chiều ý kiến đóng góp của giáo viên</p>
+                </div>
+                <div class="admin-comparison-controls">
+                  <div class="comp-control-group">
+                    <label for="adminLessonSelect" class="comp-control-label">📚 Xem bài giảng:</label>
+                    <select id="adminLessonSelect" class="select-control comp-lesson-select"></select>
+                  </div>
+                  <div class="comp-control-group">
+                    <label for="adminTeacherFilter" class="comp-control-label">👩‍🏫 Giáo viên:</label>
+                    <select id="adminTeacherFilter" class="select-control comp-teacher-select">
+                      <option value="ALL">Tất cả Giáo viên</option>
+                    </select>
+                  </div>
+                  <div class="admin-view-mode-toggle" role="group" aria-label="Chế độ hiển thị ý kiến">
+                    <button type="button" class="btn-comp-view active" id="btnCompViewByTeacher" data-comp-mode="teacher" title="Xem danh sách ý kiến xếp theo từng giáo viên">
+                      👤 Theo Giáo viên
+                    </button>
+                    <button type="button" class="btn-comp-view" id="btnCompViewBySlide" data-comp-mode="slide" title="Gom nhóm tất cả ý kiến của các giáo viên theo từng số Slide">
+                      📌 Gom theo Slide
+                    </button>
+                  </div>
+                </div>
               </div>
               <div class="admin-comparison-grid" id="adminComparisonGrid"></div>
             </div>
@@ -265,10 +298,16 @@
                 <div>
                   <h3 style="margin: 0; font-size: 16px; color: var(--ink-primary);">📋 Biên tập Báo cáo Tổng hợp (Bản hiển thị cho BTV)</h3>
                   <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--ink-muted);">
-                    Quản lý có thể trực tiếp chỉnh sửa nội dung nhận xét và dẫn chứng slide của 3 bài. Bấm "Lưu xuất bản" để link BTV nhận được bản mới tức thì.
+                    Quản lý có thể trực tiếp chỉnh sửa nội dung nhận xét và dẫn chứng slide của từng bài. Bấm "Lưu xuất bản" để link BTV nhận được bản mới tức thì.
                   </p>
                 </div>
                 <div class="synthesis-admin-actions">
+                  <button type="button" class="btn-auto-synthesize" id="btnAutoSynthesize" title="Tự động quét nhận xét của 6 giáo viên và đúc kết thành các gạch đầu dòng">
+                    🤖 Tự động đúc kết từ GV
+                  </button>
+                  <button type="button" class="btn-toggle-raw-ref" id="btnToggleRawRef" title="Mở/đóng khung xem ý kiến gốc của các cô giáo bên cạnh để đối chiếu">
+                    👁️ Đối chiếu ý kiến gốc
+                  </button>
                   <button type="button" class="btn-copy-btv-link" id="btnCopyBtvLink" title="Sao chép link gửi Biên tập viên">
                     🔗 Sao chép link gửi BTV
                   </button>
@@ -281,11 +320,25 @@
                 </div>
               </div>
 
-              <!-- ADMIN SYNTHESIS SHEET SELECTOR -->
-              <div class="synthesis-sheet-pills" id="adminSynthesisSheetPills"></div>
+              <!-- ADMIN SYNTHESIS SHEET SELECTOR & ADD LESSON BUTTON -->
+              <div class="synthesis-sheet-bar-wrap">
+                <div class="synthesis-sheet-pills" id="adminSynthesisSheetPills"></div>
+                <button type="button" class="btn-add-synth-sheet" id="btnAddSynthSheet" title="Thêm một bài giảng khác vào danh sách Báo cáo BTV">
+                  ➕ Thêm bài vào báo cáo BTV
+                </button>
+              </div>
 
-              <!-- SYNTHESIS EDITING FORM -->
-              <div class="synthesis-form-rows" id="adminSynthesisFormRows"></div>
+              <!-- SYNTHESIS WORKSPACE (FORM ROWS + OPTIONAL RAW REFERENCE SPLIT PANEL) -->
+              <div class="synthesis-split-container" id="synthesisSplitContainer">
+                <div class="synthesis-form-rows" id="adminSynthesisFormRows"></div>
+                <aside class="synthesis-raw-drawer hidden" id="synthesisRawDrawer">
+                  <div class="raw-drawer-head">
+                    <span class="raw-drawer-title">📝 Ý kiến gốc của các Cô</span>
+                    <button type="button" class="btn-close-raw-drawer" id="btnCloseRawDrawer" title="Đóng khung đối chiếu">✕</button>
+                  </div>
+                  <div class="raw-drawer-body" id="synthesisRawDrawerBody"></div>
+                </aside>
+              </div>
             </div>
           </div>
         </div>
@@ -344,6 +397,30 @@
       </div>
       <div class="lightbox-body">
         <img src="" alt="Slide dẫn chứng" id="lightboxImage" class="lightbox-img">
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: QUICK INSPECT TEACHER REVIEW (CHO QUẢN LÝ XEM NHANH KHÔNG BỊ VĂNG QUYỀN ADMIN) -->
+  <dialog class="admin-quick-inspect-dialog" id="adminQuickInspectModal" closedby="any" aria-label="Xem chi tiết nhận xét">
+    <div class="dialog-inner inspect-dialog-inner">
+      <div class="dialog-header">
+        <div>
+          <h2 id="quickInspectTitle" style="font-size: 16px; margin: 0; color: var(--ink-primary);">Hồ sơ nhận xét của Giáo viên</h2>
+          <p id="quickInspectMeta" style="font-size: 12.5px; color: var(--ink-muted); margin: 3px 0 0 0;"></p>
+        </div>
+        <button type="button" class="btn-close-dialog" data-close-dialog="adminQuickInspectModal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="inspect-dialog-body" id="quickInspectBody">
+        <!-- Rendered by JS: 4 criteria cards with points and thumbnails -->
+      </div>
+      <div class="dialog-footer inspect-dialog-footer">
+        <button type="button" class="btn-act-as-teacher-inspect" id="btnInspectActAsTeacher" title="Chuyển sang giao diện của cô giáo này nếu cần chỉnh sửa nội dung">
+          🔑 Đăng nhập xem/sửa dưới quyền cô này ➔
+        </button>
+        <button type="button" class="btn-primary" data-close-dialog="adminQuickInspectModal" style="padding: 8px 18px;">
+          Đóng (Esc)
+        </button>
       </div>
     </div>
   </dialog>
@@ -500,7 +577,7 @@
     </div>
   </dialog>
 
-  <script src="data/initial_data.js?v=24"></script>
-  <script src="app.js?v=24"></script>
+  <script src="data/initial_data.js?v=25"></script>
+  <script src="app.js?v=25"></script>
 </body>
 </html>

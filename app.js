@@ -38,6 +38,10 @@
   let activePointIdxByCrit = { ung_y: 0, chua_hieu: 0, cai_tien: 0, kho_khan: 0 };
   let sidebarSearchQuery = "";
   let activeAdminTab = "matrix";
+  let activeDossierTeacherId = null;
+  let adminSelectedLessonId = null;
+  let adminComparisonViewMode = "teacher";
+  let isRawRefDrawerOpen = false;
   let expandedDossierLessons = {};
   let isSidebarCollapsed = localStorage.getItem("novastars_sidebar_collapsed") === "true";
   let activeBtvSheetIdx = 0;
@@ -2350,6 +2354,240 @@
     dialog.showModal();
   }
 
+  function findTeacherLessonReview(teacher, lessonId) {
+    if (!teacher || !db.reviews) return null;
+    return db.reviews.find(rev => rev.lessonId === lessonId && (
+      rev.teacherId === teacher.id ||
+      (rev.teacherName && teacher.name && (
+        rev.teacherName.trim().toLowerCase() === teacher.name.trim().toLowerCase() ||
+        rev.teacherName.toLowerCase().includes(teacher.name.toLowerCase()) ||
+        teacher.name.toLowerCase().includes(rev.teacherName.toLowerCase())
+      ))
+    )) || null;
+  }
+
+  function hasReviewContent(rev) {
+    if (!rev || !rev.criteria) return false;
+    return CRITERIA_META.some(cm => {
+      const cData = rev.criteria[cm.key];
+      if (!cData) return false;
+      const pts = ensureCriterionPoints(cData);
+      return pts.some(p => (p.text && p.text.trim().length > 0) || (p.images && p.images.length > 0));
+    });
+  }
+
+  function renderAdminKpiBar() {
+    const kpiBar = document.getElementById("adminKpiBar");
+    if (!kpiBar) return;
+
+    const teachers = db.teachers || [];
+    const lessons = db.lessons || [];
+    const totalCells = teachers.length * lessons.length;
+
+    let submittedCells = 0;
+    let draftCells = 0;
+    const critPointCounts = { ung_y: 0, chua_hieu: 0, cai_tien: 0, kho_khan: 0 };
+    const unfinishedByLesson = [];
+    let completedLessonsCount = 0;
+
+    lessons.forEach(l => {
+      let lessonSubmitted = 0;
+      const missingNames = [];
+      teachers.forEach(t => {
+        const rev = findTeacherLessonReview(t, l.id);
+        const hasContent = hasReviewContent(rev);
+        if (rev && rev.status === "submitted" && hasContent) {
+          submittedCells++;
+          lessonSubmitted++;
+        } else {
+          if (hasContent) draftCells++;
+          const shortName = t.name.split(" ").slice(-2).join(" ");
+          missingNames.push(`Cô ${shortName}`);
+        }
+        if (rev && rev.criteria) {
+          CRITERIA_META.forEach(cm => {
+            const cData = rev.criteria[cm.key];
+            if (!cData) return;
+            const pts = ensureCriterionPoints(cData).filter(p => (p.text && p.text.trim().length > 0) || (p.images && p.images.length > 0));
+            critPointCounts[cm.key] += pts.length;
+          });
+        }
+      });
+      if (lessonSubmitted === teachers.length && teachers.length > 0) {
+        completedLessonsCount++;
+      } else if (missingNames.length > 0) {
+        unfinishedByLesson.push(`• Bài ${l.code} (${l.title}): Còn thiếu ${missingNames.join(", ")}`);
+      }
+    });
+
+    const pct = totalCells > 0 ? Math.round((submittedCells / totalCells) * 100) : 0;
+    const totalPoints = Object.values(critPointCounts).reduce((a, b) => a + b, 0);
+    const missingCells = Math.max(0, totalCells - submittedCells);
+
+    kpiBar.innerHTML = `
+      <div class="kpi-card c-green">
+        <div class="kpi-top-row">
+          <span class="kpi-label">Tiến độ nộp bài</span>
+          <span class="kpi-icon">📈</span>
+        </div>
+        <div class="kpi-number-row">
+          <span class="kpi-main-number">${submittedCells}/${totalCells}</span>
+          <span class="kpi-sub-text">(${pct}% đã nộp · ${draftCells} đang soạn)</span>
+        </div>
+        <div class="kpi-progress-bar">
+          <div class="kpi-progress-fill" style="width: ${pct}%;"></div>
+        </div>
+      </div>
+
+      <div class="kpi-card c-blue">
+        <div class="kpi-top-row">
+          <span class="kpi-label">Bài hoàn tất 100%</span>
+          <span class="kpi-icon">📚</span>
+        </div>
+        <div class="kpi-number-row">
+          <span class="kpi-main-number">${completedLessonsCount}/${lessons.length}</span>
+          <span class="kpi-sub-text">bài đủ ${teachers.length}/${teachers.length} GV nộp</span>
+        </div>
+        <div class="kpi-sub-text" style="margin-top: 4px;">
+          ${lessons.length - completedLessonsCount > 0
+            ? `Còn ${lessons.length - completedLessonsCount} bài đang thu thập ý kiến`
+            : "Tất cả bài giảng đã thu thập đủ!"}
+        </div>
+      </div>
+
+      <div class="kpi-card c-amber">
+        <div class="kpi-top-row">
+          <span class="kpi-label">Tổng ý kiến đóng góp</span>
+          <span class="kpi-icon">💬</span>
+        </div>
+        <div class="kpi-number-row">
+          <span class="kpi-main-number">${totalPoints}</span>
+          <span class="kpi-sub-text">ý kiến chi tiết</span>
+        </div>
+        <div class="kpi-chips-row">
+          <span class="kpi-mini-chip c1" title="Ưng ý">🟢 ${critPointCounts.ung_y}</span>
+          <span class="kpi-mini-chip c2" title="Chưa hiểu">🟡 ${critPointCounts.chua_hieu}</span>
+          <span class="kpi-mini-chip c3" title="Đề xuất cải tiến">🔵 ${critPointCounts.cai_tien}</span>
+          <span class="kpi-mini-chip c4" title="Khó khăn thực tế">🔴 ${critPointCounts.kho_khan}</span>
+        </div>
+      </div>
+
+      <div class="kpi-card c-rose">
+        <div class="kpi-top-row">
+          <span class="kpi-label">Theo dõi &amp; Nhắc việc</span>
+          <span class="kpi-icon">🔔</span>
+        </div>
+        <div class="kpi-number-row">
+          <span class="kpi-main-number">${missingCells}</span>
+          <span class="kpi-sub-text">lượt chưa nộp bài</span>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+          <button type="button" class="kpi-action-btn" id="btnKpiCopyMissing" title="Chép danh sách các cô chưa nộp bài để gửi nhắc nhở Zalo/nhóm">
+            📋 Chép DS chưa nộp
+          </button>
+        </div>
+      </div>
+    `;
+
+    const btnCopyMissing = document.getElementById("btnKpiCopyMissing");
+    if (btnCopyMissing) {
+      btnCopyMissing.addEventListener("click", () => {
+        const msg = unfinishedByLesson.length > 0
+          ? `📋 DANH SÁCH GIÁO VIÊN CHƯA NỘP NHẬN XÉT:\n${unfinishedByLesson.join("\n")}`
+          : "✅ Tất cả giáo viên đã nộp đầy đủ 100% các bài giảng!";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(msg).then(() => {
+            const orig = btnCopyMissing.innerHTML;
+            btnCopyMissing.innerHTML = "✓ Đã chép danh sách!";
+            setTimeout(() => { btnCopyMissing.innerHTML = orig; }, 2200);
+          }).catch(() => alert(msg));
+        } else {
+          alert(msg);
+        }
+      });
+    }
+  }
+
+  function findLessonForSynthesisSheet(sheet) {
+    if (!sheet || !db.lessons) return null;
+    if (sheet.lesson_code) {
+      const exact = db.lessons.find(l => l.code === sheet.lesson_code);
+      if (exact) return exact;
+    }
+    const haystack = `${sheet.sheet_name || ""} ${sheet.title || ""}`.toLowerCase();
+    return db.lessons.find(l => l.code && haystack.includes(l.code.toLowerCase())) || null;
+  }
+
+  function renderSynthesisRawDrawer(currentSheet) {
+    const drawer = document.getElementById("synthesisRawDrawer");
+    const body = document.getElementById("synthesisRawDrawerBody");
+    const btnToggle = document.getElementById("btnToggleRawRef");
+    if (!drawer || !body) return;
+
+    drawer.classList.toggle("hidden", !isRawRefDrawerOpen);
+    if (btnToggle) btnToggle.classList.toggle("active", isRawRefDrawerOpen);
+    if (!isRawRefDrawerOpen || !currentSheet) return;
+
+    const lesson = findLessonForSynthesisSheet(currentSheet);
+    if (!lesson) {
+      body.innerHTML = `<p style="font-size:12.5px;color:#64748B;">Không tìm thấy bài giảng khớp mã ${escapeHtml(currentSheet.lesson_code || currentSheet.sheet_name || "")}.</p>`;
+      return;
+    }
+
+    const critBadges = {
+      ung_y: { icon: "🟢", label: "Ưng ý", bg: "#ECFDF5", color: "#065F46" },
+      chua_hieu: { icon: "🟡", label: "Cần làm rõ", bg: "#FFFBEB", color: "#92400E" },
+      cai_tien: { icon: "🔵", label: "Cải tiến", bg: "#FFF1F2", color: "#9D174D" },
+      kho_khan: { icon: "🔴", label: "Khó khăn", bg: "#FFE4E6", color: "#881337" }
+    };
+
+    let html = `<div style="font-size:12px;color:#475569;font-weight:700;padding-bottom:4px;">📚 Bài ${escapeHtml(lesson.code)}: ${escapeHtml(lesson.title)}</div>`;
+    let countCards = 0;
+
+    (db.teachers || []).forEach(t => {
+      const rev = findTeacherLessonReview(t, lesson.id);
+      if (!rev || !hasReviewContent(rev)) return;
+
+      let ptsHtml = "";
+      let totalPts = 0;
+      CRITERIA_META.forEach(cm => {
+        const cData = rev.criteria[cm.key];
+        if (!cData) return;
+        const pts = ensureCriterionPoints(cData).filter(p => (p.text && p.text.trim().length > 0) || (p.images && p.images.length > 0));
+        const badge = critBadges[cm.key];
+        pts.forEach(pt => {
+          totalPts++;
+          const sChip = pt.slide ? `<span class="slide-tag-chip">Slide ${escapeHtml(pt.slide)}</span>` : `<span class="slide-tag-chip">Chung</span>`;
+          ptsHtml += `
+            <div class="raw-drawer-pt">
+              <span class="raw-drawer-crit-badge" style="background:${badge.bg};color:${badge.color};">${badge.icon} ${badge.label}</span>
+              ${sChip}
+              <div style="margin-top:3px;color:#1E293B;">${escapeHtml(pt.text || "(Chỉ có ảnh đính kèm)")}</div>
+            </div>
+          `;
+        });
+      });
+
+      if (totalPts > 0) {
+        countCards++;
+        html += `
+          <div class="raw-drawer-teacher-card">
+            <div class="raw-drawer-teacher-head">
+              <span>👩‍🏫 Cô ${escapeHtml(t.name)}</span>
+              <span style="font-size:11px;color:#64748B;">${totalPts} ý</span>
+            </div>
+            ${ptsHtml}
+          </div>
+        `;
+      }
+    });
+
+    if (countCards === 0) {
+      html += `<p style="font-size:12.5px;color:#64748B;">Chưa có giáo viên nào ghi nhận xét cho bài này.</p>`;
+    }
+    body.innerHTML = html;
+  }
+
   function renderAdminSynthesisEditor() {
     const reports = db.synthesis_reports || [];
     if (!reports.length) return;
@@ -2377,6 +2615,10 @@
       });
     }
 
+    // Remove stale inline picker if any
+    const oldPicker = document.getElementById("addSynthSheetPicker");
+    if (oldPicker) oldPicker.remove();
+
     // 2. Render rows
     const rowsWrap = document.getElementById("adminSynthesisFormRows");
     if (rowsWrap) {
@@ -2389,7 +2631,7 @@
         card.innerHTML = `
           <div class="synthesis-crit-title">
             <span class="btv-crit-badge ${critClass}">${escapeHtml(row.tieu_chi)}</span>
-            <span style="font-size: 12px; color: var(--ink-muted); font-weight: 600;">Ảnh: ${escapeHtml(row.img)}</span>
+            <span style="font-size: 12px; color: var(--ink-muted); font-weight: 600;">Ảnh: ${escapeHtml(row.img || "Chưa gán")}</span>
           </div>
 
           <div class="synthesis-input-group">
@@ -2408,6 +2650,147 @@
     }
 
     // 3. Actions
+    const btnAddSheet = document.getElementById("btnAddSynthSheet");
+    if (btnAddSheet) {
+      btnAddSheet.onclick = () => {
+        const existingCodes = new Set(
+          reports.map(s => {
+            const matched = findLessonForSynthesisSheet(s);
+            return matched ? matched.code : s.lesson_code;
+          }).filter(Boolean)
+        );
+        const missingLessons = (db.lessons || []).filter(l => !existingCodes.has(l.code));
+        if (missingLessons.length === 0) {
+          const orig = btnAddSheet.innerHTML;
+          btnAddSheet.innerHTML = "✓ Đã đủ tất cả bài giảng!";
+          setTimeout(() => { btnAddSheet.innerHTML = orig; }, 2200);
+          return;
+        }
+
+        const existingPicker = document.getElementById("addSynthSheetPicker");
+        if (existingPicker) {
+          existingPicker.remove();
+          return;
+        }
+
+        const barWrap = btnAddSheet.closest(".synthesis-sheet-bar-wrap");
+        if (!barWrap) return;
+
+        const picker = document.createElement("div");
+        picker.id = "addSynthSheetPicker";
+        picker.style.cssText = "display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;background:#FFFBEB;border:1.5px dashed #F59E0B;border-radius:9px;margin-bottom:12px;";
+        picker.innerHTML = `<span style="font-size:12.5px;font-weight:700;color:#92400E;">Chọn bài cần thêm vào Báo cáo BTV:</span>`;
+
+        missingLessons.forEach(l => {
+          const optBtn = document.createElement("button");
+          optBtn.type = "button";
+          optBtn.className = "synthesis-pill";
+          optBtn.textContent = `➕ ${l.code} — ${l.title}`;
+          optBtn.onclick = () => {
+            const newSheet = {
+              lesson_code: l.code,
+              sheet_name: `Bài ${l.code}${l.grade ? ` (${l.grade})` : ""}`,
+              title: `Báo cáo tổng hợp — ${l.title}`,
+              rows: CRITERIA_META.map((cm, idx) => ({
+                stt: idx + 1,
+                tieu_chi: cm.title,
+                nhan_xet: "",
+                dan_chung: "",
+                img: ""
+              }))
+            };
+            db.synthesis_reports.push(newSheet);
+            adminSynthesisSheetIdx = db.synthesis_reports.length - 1;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+            triggerAutoSave(true, true);
+            renderAdminSynthesisEditor();
+          };
+          picker.appendChild(optBtn);
+        });
+
+        const cancelBtn = document.createElement("button");
+        cancelBtn.type = "button";
+        cancelBtn.className = "btn-secondary";
+        cancelBtn.style.cssText = "padding:4px 10px;font-size:12px;margin-left:auto;";
+        cancelBtn.textContent = "Hủy";
+        cancelBtn.onclick = () => picker.remove();
+        picker.appendChild(cancelBtn);
+
+        barWrap.insertAdjacentElement("afterend", picker);
+      };
+    }
+
+    const btnAutoSynth = document.getElementById("btnAutoSynthesize");
+    if (btnAutoSynth) {
+      btnAutoSynth.onclick = () => {
+        const lesson = findLessonForSynthesisSheet(currentSheet);
+        if (!lesson) return;
+
+        const critKeys = ["ung_y", "chua_hieu", "cai_tien", "kho_khan"];
+        let totalCollected = 0;
+
+        (currentSheet.rows || []).forEach((row, rIdx) => {
+          const cKey = critKeys[(row.stt || rIdx + 1) - 1] || critKeys[rIdx];
+          const bullets = [];
+          const slideSet = new Set();
+          let hasGeneralSlide = false;
+
+          (db.teachers || []).forEach(t => {
+            const rev = findTeacherLessonReview(t, lesson.id);
+            if (!rev || !rev.criteria || !rev.criteria[cKey]) return;
+            const pts = ensureCriterionPoints(rev.criteria[cKey]).filter(p => p.text && p.text.trim().length > 0);
+            const shortName = t.name.split(" ").slice(-2).join(" ");
+            pts.forEach(pt => {
+              totalCollected++;
+              bullets.push(`• ${pt.text.trim()} (Cô ${shortName})`);
+              if (pt.slide && String(pt.slide).trim() !== "") {
+                slideSet.add(Number(pt.slide) || pt.slide);
+              } else {
+                hasGeneralSlide = true;
+              }
+            });
+          });
+
+          const sortedSlides = Array.from(slideSet).sort((a, b) => Number(a) - Number(b));
+          const slideLabels = sortedSlides.map(s => `Slide ${s}`);
+          if (hasGeneralSlide) slideLabels.push("Tổng thể bài");
+
+          row.nhan_xet = bullets.length > 0 ? bullets.join("\n") : "• Chưa có ý kiến đóng góp từ giáo viên ở mục này.";
+          row.dan_chung = slideLabels.length > 0 ? slideLabels.join(", ") : "Chưa có dẫn chứng slide cụ thể";
+
+          const nxEl = document.getElementById(`synthNhanXet_${rIdx}`);
+          const dcEl = document.getElementById(`synthDanChung_${rIdx}`);
+          if (nxEl) nxEl.value = row.nhan_xet;
+          if (dcEl) dcEl.value = row.dan_chung;
+        });
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        triggerAutoSave(true, true);
+
+        const orig = btnAutoSynth.innerHTML;
+        btnAutoSynth.innerHTML = `✓ Đã đúc kết ${totalCollected} ý kiến!`;
+        setTimeout(() => { btnAutoSynth.innerHTML = orig; }, 2500);
+      };
+    }
+
+    const btnToggleRaw = document.getElementById("btnToggleRawRef");
+    if (btnToggleRaw) {
+      btnToggleRaw.onclick = () => {
+        isRawRefDrawerOpen = !isRawRefDrawerOpen;
+        renderSynthesisRawDrawer(currentSheet);
+      };
+    }
+
+    const btnCloseRaw = document.getElementById("btnCloseRawDrawer");
+    if (btnCloseRaw) {
+      btnCloseRaw.onclick = () => {
+        isRawRefDrawerOpen = false;
+        renderSynthesisRawDrawer(currentSheet);
+      };
+    }
+
+    renderSynthesisRawDrawer(currentSheet);
+
     const btnSave = document.getElementById("btnSaveSynthesis");
     if (btnSave) {
       btnSave.onclick = async () => {
@@ -2458,8 +2841,212 @@
     }
   }
 
+  function openQuickInspectModal(gvId, lessonId) {
+    const dialog = document.getElementById("adminQuickInspectModal");
+    const titleEl = document.getElementById("quickInspectTitle");
+    const metaEl = document.getElementById("quickInspectMeta");
+    const bodyEl = document.getElementById("quickInspectBody");
+    const btnActAs = document.getElementById("btnInspectActAsTeacher");
+    if (!dialog || !bodyEl) return;
+
+    const teacher = (db.teachers || []).find(t => t.id === gvId);
+    const lesson = (db.lessons || []).find(l => l.id === lessonId);
+    if (!teacher || !lesson) return;
+
+    const rev = findTeacherLessonReview(teacher, lesson.id);
+    const hasContent = hasReviewContent(rev);
+
+    if (titleEl) {
+      titleEl.textContent = `👩‍🏫 Cô ${teacher.name} — Bài ${lesson.code}: ${lesson.title}`;
+    }
+
+    let statusText = "Chưa có nhận xét";
+    if (rev && rev.status === "submitted" && hasContent) {
+      statusText = "✓ Đã nộp chính thức";
+    } else if (hasContent) {
+      statusText = "✎ Đang soạn (Nháp)";
+    }
+
+    let totalPoints = 0;
+    const critColors = [
+      { bg: "#ECFDF5", text: "#065F46" },
+      { bg: "#FFFBEB", text: "#92400E" },
+      { bg: "#FFF1F2", text: "#9D174D" },
+      { bg: "#FFE4E6", text: "#881337" }
+    ];
+
+    let bodyHtml = "";
+    CRITERIA_META.forEach((cm, idx) => {
+      const pts = (rev && rev.criteria && rev.criteria[cm.key])
+        ? ensureCriterionPoints(rev.criteria[cm.key]).filter(p => (p.text && p.text.trim().length > 0) || (p.images && p.images.length > 0))
+        : [];
+      totalPoints += pts.length;
+      const color = critColors[idx];
+
+      let ptsHtml = "";
+      if (pts.length === 0) {
+        ptsHtml = `<p style="font-size:12.5px;color:#64748B;margin:0;">Chưa ghi ý kiến ở tiêu chí này.</p>`;
+      } else {
+        ptsHtml = pts.map((pt, pIdx) => {
+          const sBadge = pt.slide ? `<span class="slide-tag-chip">Slide ${escapeHtml(pt.slide)}</span>` : `<span class="slide-tag-chip">Chung</span>`;
+          const imgs = (pt.images || [])
+            .map(src => `<div class="attached-thumb-wrap"><img src="${src}" data-preview-img="${src}" alt="Ảnh"></div>`)
+            .join("");
+          return `
+            <div class="inspect-point-item">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                <strong style="font-size:12px;color:#475569;">Ý ${pIdx + 1}:</strong>
+                ${sBadge}
+              </div>
+              <div class="teacher-review-text">${escapeHtml(pt.text || "(Chỉ có ảnh đính kèm)")}</div>
+              ${imgs ? `<div class="attached-images-list" style="margin-top:6px;">${imgs}</div>` : ""}
+            </div>
+          `;
+        }).join("");
+      }
+
+      bodyHtml += `
+        <div class="inspect-crit-card">
+          <div class="inspect-crit-head" style="background:${color.bg};color:${color.text};">
+            <span>${escapeHtml(cm.title)}</span>
+            <span style="font-size:12px;">${pts.length} ý</span>
+          </div>
+          <div class="inspect-crit-points">${ptsHtml}</div>
+        </div>
+      `;
+    });
+
+    if (metaEl) {
+      metaEl.textContent = `Trạng thái: ${statusText} · Tổng cộng: ${totalPoints} ý nhận xét · Mã PIN GV: ${teacher.pin}`;
+    }
+
+    bodyEl.innerHTML = bodyHtml;
+    bodyEl.querySelectorAll("[data-preview-img]").forEach(imgEl => {
+      imgEl.addEventListener("click", () => {
+        document.getElementById("lightboxImg").src = imgEl.dataset.previewImg;
+        document.getElementById("lightboxDialog").showModal();
+      });
+    });
+
+    if (btnActAs) {
+      btnActAs.onclick = () => {
+        dialog.close();
+        currentUser = { id: teacher.id, name: teacher.name, role: "teacher" };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+        currentLessonId = lesson.id;
+        isAdminView = false;
+        document.getElementById("teacherWorkspace").classList.remove("hidden");
+        document.getElementById("adminWorkspace").classList.add("hidden");
+        renderAll();
+      };
+    }
+
+    dialog.showModal();
+  }
+
+  function renderComparisonBySlide(grid, lesson, lessonReviews) {
+    const groupsMap = new Map();
+    const critLabels = {
+      ung_y: "🟢 Điểm ưng ý",
+      chua_hieu: "🟡 Chưa hiểu / Cần làm rõ",
+      cai_tien: "🔵 Đề xuất cải tiến",
+      kho_khan: "🔴 Khó khăn thực tế"
+    };
+
+    lessonReviews.forEach(r => {
+      const shortName = r.teacherName ? `Cô ${r.teacherName.split(" ").slice(-2).join(" ")}` : r.teacherId;
+      CRITERIA_META.forEach(cm => {
+        const cData = r.criteria && r.criteria[cm.key];
+        if (!cData) return;
+        const pts = ensureCriterionPoints(cData).filter(p => (p.text && p.text.trim().length > 0) || (p.images && p.images.length > 0));
+        pts.forEach(pt => {
+          const slideKey = (pt.slide && String(pt.slide).trim() !== "") ? String(Number(pt.slide) || pt.slide) : "CHUNG";
+          if (!groupsMap.has(slideKey)) {
+            groupsMap.set(slideKey, { key: slideKey, byCrit: { ung_y: [], chua_hieu: [], cai_tien: [], kho_khan: [] }, total: 0 });
+          }
+          const grp = groupsMap.get(slideKey);
+          grp.byCrit[cm.key].push({ author: shortName, pt });
+          grp.total++;
+        });
+      });
+    });
+
+    if (groupsMap.size === 0) {
+      grid.innerHTML = `<p style="font-size:13px;color:#64748B;padding:12px;">Chưa có ý kiến đóng góp nào cho bài giảng này theo bộ lọc đã chọn.</p>`;
+      return;
+    }
+
+    const sortedKeys = Array.from(groupsMap.keys()).sort((a, b) => {
+      if (a === "CHUNG") return 1;
+      if (b === "CHUNG") return -1;
+      return (Number(a) || 9999) - (Number(b) || 9999);
+    });
+
+    sortedKeys.forEach(sKey => {
+      const grp = groupsMap.get(sKey);
+      const slideMeta = sKey !== "CHUNG" && Array.isArray(lesson.slides)
+        ? lesson.slides.find(s => String(s.number) === sKey)
+        : null;
+      const slideTitle = sKey === "CHUNG"
+        ? "Nhận xét chung toàn bài"
+        : (slideMeta && slideMeta.title ? slideMeta.title : `Slide ${sKey} — Bài ${lesson.code}`);
+
+      const card = document.createElement("div");
+      card.className = "slide-group-card";
+
+      let colsHtml = "";
+      CRITERIA_META.forEach(cm => {
+        const list = grp.byCrit[cm.key];
+        if (!list || list.length === 0) return;
+
+        const itemsHtml = list.map(item => {
+          const imgs = (item.pt.images || [])
+            .map(src => `<div class="attached-thumb-wrap"><img src="${src}" data-preview-img="${src}" alt="Ảnh"></div>`)
+            .join("");
+          return `
+            <div class="slide-feedback-item">
+              <span class="feedback-author-tag">${escapeHtml(item.author)}</span>
+              <div class="teacher-review-text">${escapeHtml(item.pt.text || "(Chỉ có ảnh đính kèm)")}</div>
+              ${imgs ? `<div class="attached-images-list" style="margin-top:6px;">${imgs}</div>` : ""}
+            </div>
+          `;
+        }).join("");
+
+        colsHtml += `
+          <div class="slide-col-crit">
+            <div class="slide-col-title ${cm.key}">${critLabels[cm.key]} (${list.length})</div>
+            ${itemsHtml}
+          </div>
+        `;
+      });
+
+      card.innerHTML = `
+        <div class="slide-group-head">
+          <div class="slide-group-title-wrap">
+            <span class="slide-group-pill">${sKey === "CHUNG" ? "Chung" : `Slide ${escapeHtml(sKey)}`}</span>
+            <span class="slide-group-title">${escapeHtml(slideTitle)}</span>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:#475569;">${grp.total} ý kiến</span>
+        </div>
+        <div class="slide-group-body">${colsHtml}</div>
+      `;
+
+      card.querySelectorAll("[data-preview-img]").forEach(imgEl => {
+        imgEl.addEventListener("click", () => {
+          document.getElementById("lightboxImg").src = imgEl.dataset.previewImg;
+          document.getElementById("lightboxDialog").showModal();
+        });
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
   function renderAdminDashboard() {
-    // 0. Wire Prominent Admin Synthesis Button
+    // 0. Render Overview KPI Summary Bar
+    renderAdminKpiBar();
+
+    // 0b. Wire Prominent Admin Synthesis Button
     const btnAdminSynth = document.getElementById("btnAdminOpenSynthesis");
     if (btnAdminSynth) {
       btnAdminSynth.onclick = () => {
@@ -2470,23 +3057,30 @@
       };
     }
 
-    // 1. Render Admin Dossier Tab Bar
+    // Normalize legacy teacher-id tab state
+    const isTeacherTabId = (db.teachers || []).some(t => t.id === activeAdminTab);
+    if (isTeacherTabId) {
+      activeDossierTeacherId = activeAdminTab;
+      activeAdminTab = "dossier";
+    }
+
+    // 1. Render Streamlined 3-Tab Bar
     const tabBar = document.getElementById("adminDossierTabBar");
     if (tabBar) {
       tabBar.innerHTML = "";
 
-      // Tab 1: Progress Matrix
+      // Tab 1: Progress Matrix & Slide/Teacher Comparison
       const matrixBtn = document.createElement("button");
       matrixBtn.type = "button";
       matrixBtn.className = "admin-sheet-tab" + (activeAdminTab === "matrix" ? " active" : "");
-      matrixBtn.innerHTML = `📊 Tổng hợp Tiến độ`;
+      matrixBtn.innerHTML = `📊 Tổng hợp Tiến độ & Nhận xét`;
       matrixBtn.addEventListener("click", () => {
         activeAdminTab = "matrix";
         renderAdminDashboard();
       });
       tabBar.appendChild(matrixBtn);
 
-      // Tab 2: Synthesis Editor for BTV (Prominent Position right after Matrix)
+      // Tab 2: Synthesis Editor for BTV
       const synthBtn = document.createElement("button");
       synthBtn.type = "button";
       synthBtn.className = "admin-sheet-tab tab-btv-synthesis" + (activeAdminTab === "synthesis" ? " active" : "");
@@ -2498,35 +3092,20 @@
       });
       tabBar.appendChild(synthBtn);
 
-      // Teacher Tabs (Tabs 3..8)
-      db.teachers.forEach(t => {
-        const submittedCount = db.lessons.filter(l => {
-          const r = db.reviews.find(rev => rev.lessonId === l.id && (
-            rev.teacherId === t.id ||
-            (rev.teacherName && t.name && (
-              rev.teacherName.trim().toLowerCase() === t.name.trim().toLowerCase() ||
-              rev.teacherName.toLowerCase().includes(t.name.toLowerCase()) ||
-              t.name.toLowerCase().includes(rev.teacherName.toLowerCase())
-            ))
-          ));
-          return r && r.status === "submitted";
-        }).length;
-
-        const tBtn = document.createElement("button");
-        tBtn.type = "button";
-        tBtn.className = "admin-sheet-tab" + (activeAdminTab === t.id ? " active" : "");
-        const shortName = t.name.split(" ").slice(-2).join(" ");
-        tBtn.innerHTML = `
-          👩‍🏫 Cô ${escapeHtml(shortName)}
-          <span class="admin-tab-pill">${submittedCount}/${db.lessons.length}</span>
-        `;
-        tBtn.title = `Hồ sơ nhận xét của Cô ${t.name}`;
-        tBtn.addEventListener("click", () => {
-          activeAdminTab = t.id;
-          renderAdminDashboard();
-        });
-        tabBar.appendChild(tBtn);
+      // Tab 3: Individual Teacher Dossiers (with inner 6-teacher switcher)
+      const dossierBtn = document.createElement("button");
+      dossierBtn.type = "button";
+      dossierBtn.className = "admin-sheet-tab" + (activeAdminTab === "dossier" ? " active" : "");
+      dossierBtn.innerHTML = `👩‍🏫 Hồ sơ từng Giáo viên <span class="admin-tab-pill">${(db.teachers || []).length} GV</span>`;
+      dossierBtn.title = "Xem toàn bộ hồ sơ nhận xét chi tiết của từng cô giáo";
+      dossierBtn.addEventListener("click", () => {
+        activeAdminTab = "dossier";
+        if (!activeDossierTeacherId && db.teachers && db.teachers.length > 0) {
+          activeDossierTeacherId = db.teachers[0].id;
+        }
+        renderAdminDashboard();
       });
+      tabBar.appendChild(dossierBtn);
     }
 
     const panelMatrix = document.getElementById("adminPanelMatrix");
@@ -2558,20 +3137,8 @@
       db.teachers.forEach(t => {
         tbody += `<tr><td><strong>${escapeHtml(t.name)}</strong></td><td><code>${escapeHtml(t.pin)}</code></td>`;
         db.lessons.forEach(l => {
-          const rev = db.reviews.find(r => r.lessonId === l.id && (
-            r.teacherId === t.id ||
-            (r.teacherName && t.name && (
-              r.teacherName.trim().toLowerCase() === t.name.trim().toLowerCase() ||
-              r.teacherName.toLowerCase().includes(t.name.toLowerCase()) ||
-              t.name.toLowerCase().includes(r.teacherName.toLowerCase())
-            ))
-          ));
-          if (rev) {
-            CRITERIA_META.forEach(cm => {
-              if (rev.criteria[cm.key]) ensureCriterionPoints(rev.criteria[cm.key]);
-            });
-          }
-          const hasContent = rev && CRITERIA_META.some(cm => rev.criteria[cm.key] && rev.criteria[cm.key].text.trim().length > 0);
+          const rev = findTeacherLessonReview(t, l.id);
+          const hasContent = hasReviewContent(rev);
           let statusClass = "empty";
           let statusLabel = "Chưa gõ";
           if (rev && rev.status === "submitted" && hasContent) {
@@ -2582,7 +3149,7 @@
             statusLabel = "✎ Đang soạn";
           }
           tbody += `<td>
-            <button type="button" class="matrix-cell-btn ${statusClass}" data-inspect-gv="${t.id}" data-inspect-lesson="${l.id}">
+            <button type="button" class="matrix-cell-btn ${statusClass}" data-inspect-gv="${t.id}" data-inspect-lesson="${l.id}" title="Bấm xem chi tiết nhận xét của Cô ${escapeHtml(t.name)}">
               ${statusLabel}
             </button>
           </td>`;
@@ -2594,39 +3161,90 @@
 
       matrixTable.querySelectorAll("[data-inspect-gv]").forEach(btn => {
         btn.addEventListener("click", () => {
-          const gvId = btn.dataset.inspectGv;
-          const lId = btn.dataset.inspectLesson;
-          const foundT = db.teachers.find(x => x.id === gvId);
-          if (foundT) {
-            currentUser = { id: foundT.id, name: foundT.name, role: "teacher" };
-            localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
-            currentLessonId = lId;
-            isAdminView = false;
-            document.getElementById("teacherWorkspace").classList.remove("hidden");
-            document.getElementById("adminWorkspace").classList.add("hidden");
-            renderAll();
-          }
+          openQuickInspectModal(btn.dataset.inspectGv, btn.dataset.inspectLesson);
         });
       });
 
-      const lesson = getCurrentLesson();
-      document.getElementById("adminComparisonTitle").textContent =
-        `2. Chi tiết nhận xét — Bài ${lesson.code}: ${lesson.title}`;
+      // Populate Lesson Switcher for Section 2 Comparison
+      const lessonSel = document.getElementById("adminLessonSelect");
+      if (!adminSelectedLessonId || !(db.lessons || []).some(l => l.id === adminSelectedLessonId)) {
+        adminSelectedLessonId = currentLessonId || (db.lessons[0] && db.lessons[0].id);
+      }
+      if (lessonSel) {
+        lessonSel.innerHTML = "";
+        (db.lessons || []).forEach(l => {
+          const opt = document.createElement("option");
+          opt.value = l.id;
+          opt.textContent = `${l.code} — ${l.title} (${l.totalSlides || 0} slide)`;
+          lessonSel.appendChild(opt);
+        });
+        lessonSel.value = adminSelectedLessonId;
+        lessonSel.onchange = () => {
+          adminSelectedLessonId = lessonSel.value;
+          renderAdminDashboard();
+        };
+      }
+
+      const lesson = (db.lessons || []).find(l => l.id === adminSelectedLessonId) || getCurrentLesson();
+      const titleEl = document.getElementById("adminComparisonTitle");
+      if (titleEl) {
+        titleEl.textContent = `2. Chi tiết nhận xét — Bài ${lesson.code}: ${lesson.title}`;
+      }
 
       const filterSel = document.getElementById("adminTeacherFilter");
-      const curVal = filterSel.value || "ALL";
-      filterSel.innerHTML = `<option value="ALL">Tất cả Giáo viên</option>`;
-      db.teachers.forEach(t => {
-        const opt = document.createElement("option");
-        opt.value = t.id;
-        opt.textContent = t.name;
-        filterSel.appendChild(opt);
-      });
-      filterSel.value = curVal;
+      const curVal = filterSel ? (filterSel.value || "ALL") : "ALL";
+      if (filterSel) {
+        filterSel.innerHTML = `<option value="ALL">Tất cả Giáo viên</option>`;
+        db.teachers.forEach(t => {
+          const opt = document.createElement("option");
+          opt.value = t.id;
+          opt.textContent = t.name;
+          filterSel.appendChild(opt);
+        });
+        filterSel.value = curVal;
+      }
+
+      // View mode toggle buttons (By Teacher vs By Slide)
+      const btnByTeacher = document.getElementById("btnCompViewByTeacher");
+      const btnBySlide = document.getElementById("btnCompViewBySlide");
+      if (btnByTeacher) {
+        btnByTeacher.classList.toggle("active", adminComparisonViewMode === "teacher");
+        btnByTeacher.onclick = () => {
+          adminComparisonViewMode = "teacher";
+          renderAdminDashboard();
+        };
+      }
+      if (btnBySlide) {
+        btnBySlide.classList.toggle("active", adminComparisonViewMode === "slide");
+        btnBySlide.onclick = () => {
+          adminComparisonViewMode = "slide";
+          renderAdminDashboard();
+        };
+      }
 
       const grid = document.getElementById("adminComparisonGrid");
       grid.innerHTML = "";
-      const lessonReviews = db.reviews.filter(r => r.lessonId === lesson.id && (curVal === "ALL" || r.teacherId === curVal));
+      grid.className = adminComparisonViewMode === "slide"
+        ? "admin-slides-comparison-grid"
+        : "admin-comparison-grid";
+
+      const selectedTeacherObj = curVal === "ALL" ? null : (db.teachers || []).find(t => t.id === curVal);
+      const lessonReviews = db.reviews.filter(r => {
+        if (r.lessonId !== lesson.id) return false;
+        if (curVal === "ALL") return true;
+        if (r.teacherId === curVal) return true;
+        if (selectedTeacherObj && r.teacherName) {
+          const rn = r.teacherName.trim().toLowerCase();
+          const tn = selectedTeacherObj.name.trim().toLowerCase();
+          return rn === tn || rn.includes(tn) || tn.includes(rn);
+        }
+        return false;
+      });
+
+      if (adminComparisonViewMode === "slide") {
+        renderComparisonBySlide(grid, lesson, lessonReviews);
+        return;
+      }
 
       CRITERIA_META.forEach((cm, idx) => {
         const box = document.createElement("div");
@@ -2695,36 +3313,48 @@
         grid.appendChild(box);
       });
     } else {
-      // 3. Teacher Dossier View (Option A: Expandable Lesson Cards)
+      // 3. Teacher Dossier View (with inner 6-Teacher Selector Pills + Expandable Lesson Cards)
       if (panelMatrix) panelMatrix.classList.add("hidden");
       if (panelDossier) panelDossier.classList.remove("hidden");
 
-      const teacher = db.teachers.find(t => t.id === activeAdminTab) || db.teachers[0];
+      const teacher = (db.teachers || []).find(t => t.id === activeDossierTeacherId) || (db.teachers || [])[0];
       if (!teacher || !panelDossier) return;
+      activeDossierTeacherId = teacher.id;
+
+      // Build inner selector pills for the 6 teachers
+      let selectorHtml = `<div class="dossier-teacher-selector" role="tablist" aria-label="Chọn giáo viên để xem hồ sơ">`;
+      (db.teachers || []).forEach(t => {
+        const subCount = (db.lessons || []).filter(l => {
+          const rev = findTeacherLessonReview(t, l.id);
+          return rev && rev.status === "submitted" && hasReviewContent(rev);
+        }).length;
+        const shortName = t.name.split(" ").slice(-2).join(" ");
+        const isActive = t.id === teacher.id;
+        selectorHtml += `
+          <button type="button" class="dossier-teacher-pill${isActive ? " active" : ""}" data-select-dossier-gv="${escapeHtml(t.id)}">
+            👩‍🏫 Cô ${escapeHtml(shortName)}
+            <span class="admin-tab-pill">${subCount}/${(db.lessons || []).length}</span>
+          </button>
+        `;
+      });
+      selectorHtml += `</div>`;
 
       let submittedCount = 0;
       let draftCount = 0;
       let totalPoints = 0;
 
       db.lessons.forEach(l => {
-        const r = db.reviews.find(rev => rev.lessonId === l.id && (
-          rev.teacherId === teacher.id ||
-          (rev.teacherName && teacher.name && (
-            rev.teacherName.trim().toLowerCase() === teacher.name.trim().toLowerCase() ||
-            rev.teacherName.toLowerCase().includes(teacher.name.toLowerCase()) ||
-            teacher.name.toLowerCase().includes(rev.teacherName.toLowerCase())
-          ))
-        ));
-        const hasContent = r && CRITERIA_META.some(cm => r.criteria[cm.key] && r.criteria[cm.key].text.trim().length > 0);
+        const r = findTeacherLessonReview(teacher, l.id);
+        const hasContent = hasReviewContent(r);
         if (r && r.status === "submitted" && hasContent) {
           submittedCount++;
         } else if (hasContent) {
           draftCount++;
         }
-        if (r) {
+        if (r && r.criteria) {
           CRITERIA_META.forEach(cm => {
             if (r.criteria[cm.key]) {
-              const pts = ensureCriterionPoints(r.criteria[cm.key]).filter(p => p.text.trim().length > 0 || (p.images && p.images.length > 0));
+              const pts = ensureCriterionPoints(r.criteria[cm.key]).filter(p => (p.text && p.text.trim().length > 0) || (p.images && p.images.length > 0));
               totalPoints += pts.length;
             }
           });
@@ -2732,6 +3362,7 @@
       });
 
       panelDossier.innerHTML = `
+        ${selectorHtml}
         <div class="teacher-dossier-hero">
           <div class="dossier-hero-left">
             <div class="dossier-hero-avatar">👩‍🏫</div>
@@ -2754,6 +3385,14 @@
         <div class="dossier-lesson-cards-list" id="dossierLessonCardsList"></div>
       `;
 
+      panelDossier.querySelectorAll("[data-select-dossier-gv]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          activeDossierTeacherId = btn.dataset.selectDossierGv;
+          activeAdminTab = "dossier";
+          renderAdminDashboard();
+        });
+      });
+
       const actBtn = document.getElementById("btnActAsTeacher");
       if (actBtn) {
         actBtn.addEventListener("click", () => {
@@ -2768,15 +3407,8 @@
       if (!cardsList) return;
 
       db.lessons.forEach(l => {
-        const r = db.reviews.find(rev => rev.lessonId === l.id && (
-          rev.teacherId === teacher.id ||
-          (rev.teacherName && teacher.name && (
-            rev.teacherName.trim().toLowerCase() === teacher.name.trim().toLowerCase() ||
-            rev.teacherName.toLowerCase().includes(teacher.name.toLowerCase()) ||
-            teacher.name.toLowerCase().includes(rev.teacherName.toLowerCase())
-          ))
-        ));
-        const hasContent = r && CRITERIA_META.some(cm => r.criteria[cm.key] && r.criteria[cm.key].text.trim().length > 0);
+        const r = findTeacherLessonReview(teacher, l.id);
+        const hasContent = hasReviewContent(r);
 
         let statusBadge = `<span class="hero-stat-badge" style="background:#F1F5F9;color:#64748B;">Chưa nhận xét</span>`;
         if (r && r.status === "submitted" && hasContent) {
