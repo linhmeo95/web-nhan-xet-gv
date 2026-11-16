@@ -192,6 +192,22 @@
     return { ...meta[maxKey], score: maxScore };
   }
 
+  function extractOrderKey(item) {
+    const code = String(item && (item.code || item.lessonCode || item.lesson_code || item.sheet_name || "")).trim();
+    const m = code.match(/(\d+(?:\.\d+)?)/);
+    return m ? parseFloat(m[1]) : 9999;
+  }
+
+  function sortLessonsAndReports(targetDb) {
+    if (targetDb && Array.isArray(targetDb.lessons)) {
+      targetDb.lessons.sort((a, b) => extractOrderKey(a) - extractOrderKey(b));
+    }
+    if (targetDb && Array.isArray(targetDb.synthesis_reports)) {
+      targetDb.synthesis_reports.sort((a, b) => extractOrderKey(a) - extractOrderKey(b));
+    }
+    return targetDb;
+  }
+
   function syncLatestLessons(targetDb) {
     if (!targetDb.lessons || targetDb.lessons.length === 0) {
       if (window.INITIAL_APP_DATA && Array.isArray(window.INITIAL_APP_DATA.lessons)) {
@@ -224,7 +240,7 @@
         targetDb.synthesis_reports = JSON.parse(JSON.stringify(window.INITIAL_APP_DATA.synthesis_reports));
       }
     }
-    return targetDb;
+    return sortLessonsAndReports(targetDb);
   }
 
   function loadInitialDb() {
@@ -449,6 +465,7 @@
             db.synthesis_reports = JSON.parse(JSON.stringify(window.INITIAL_APP_DATA.synthesis_reports));
           }
         }
+        sortLessonsAndReports(db);
       }
 
       if (cloudReviews.length > 0) {
