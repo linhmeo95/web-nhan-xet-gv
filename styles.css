@@ -4007,15 +4007,16 @@ dialog::backdrop {
 }
 
 .btv-top-banner {
-  background: linear-gradient(135deg, #0F172A, #1E293B);
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FDF2F8 60%, #FCE7F3 100%);
+  color: #1E293B;
+  border: 1.5px solid #FBCFE8;
   border-radius: 14px;
   padding: 18px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.08);
 }
 
 .btv-banner-left {
@@ -4027,9 +4028,9 @@ dialog::backdrop {
 .btv-role-badge {
   display: inline-flex;
   align-items: center;
-  background: rgba(56, 189, 248, 0.18);
-  color: #38BDF8;
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: #FCE7F3;
+  color: #DB2777;
+  border: 1px solid #F9A8D4;
   padding: 3px 10px;
   border-radius: 999px;
   font-size: 11.5px;
@@ -4043,13 +4044,13 @@ dialog::backdrop {
   font-weight: 800;
   font-family: var(--font-display);
   letter-spacing: -0.01em;
-  color: #FFFFFF;
+  color: #1E293B;
 }
 
 .btv-subtitle {
   margin: 0;
   font-size: 13px;
-  color: #94A3B8;
+  color: #475569;
   line-height: 1.4;
 }
 
@@ -4061,9 +4062,9 @@ dialog::backdrop {
 }
 
 .btn-btv-back-admin {
-  background: #F59E0B;
-  color: #1E293B;
-  border: 1px solid #FBBF24;
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FCD34D;
   padding: 9px 16px;
   border-radius: 8px;
   font-weight: 800;
@@ -4073,20 +4074,20 @@ dialog::backdrop {
   align-items: center;
   gap: 6px;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.14);
   transition: all 0.15s ease;
 }
 
 .btn-btv-back-admin:hover {
-  background: #FBBF24;
+  background: #FDE68A;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.45);
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.22);
 }
 
 .btn-btv-download {
-  background: #059669;
+  background: #10B981;
   color: #FFFFFF;
-  border: 1px solid #10B981;
+  border: 1px solid #34D399;
   padding: 9px 18px;
   border-radius: 8px;
   font-weight: 700;
@@ -4096,14 +4097,14 @@ dialog::backdrop {
   align-items: center;
   gap: 7px;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.22);
   transition: all 0.15s ease;
 }
 
 .btn-btv-download:hover {
-  background: #047857;
+  background: #059669;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 /* EXCEL-STYLE SHEET TABS FOR BTV */
@@ -4111,15 +4112,15 @@ dialog::backdrop {
   display: flex;
   align-items: center;
   gap: 8px;
-  border-bottom: 2px solid #CBD5E1;
+  border-bottom: 2px solid #FBCFE8;
   padding: 0 6px;
   overflow-x: auto;
 }
 
 .btv-sheet-tab {
-  background: #E2E8F0;
-  color: #475569;
-  border: 1.5px solid #CBD5E1;
+  background: #FDF2F8;
+  color: #64748B;
+  border: 1.5px solid #FBCFE8;
   border-bottom: none;
   padding: 9px 18px;
   border-radius: 9px 9px 0 0;
@@ -4137,25 +4138,25 @@ dialog::backdrop {
 }
 
 .btv-sheet-tab:hover {
-  background: #F1F5F9;
-  color: #0F172A;
+  background: #FCE7F3;
+  color: #DB2777;
 }
 
 .btv-sheet-tab.active {
   background: #FFFFFF;
-  color: #0F172A;
-  border-color: #94A3B8 #94A3B8 #FFFFFF #94A3B8;
+  color: #DB2777;
+  border-color: #F9A8D4 #F9A8D4 #FFFFFF #F9A8D4;
   border-bottom: 2px solid #FFFFFF;
-  border-top: 3px solid #059669; /* Excel Green accent on active sheet */
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  border-top: 3px solid #EC4899;
+  box-shadow: 0 -2px 8px rgba(236, 72, 153, 0.08);
 }
 
 /* BTV EXCEL SPREADSHEET CARD */
 .btv-excel-card {
   background: #FFFFFF;
   border-radius: 12px;
-  border: 1px solid #CBD5E1;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  border: 1px solid #FBCFE8;
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.06);
   overflow: hidden;
 }
 
@@ -4164,20 +4165,20 @@ dialog::backdrop {
   border-collapse: collapse;
   font-size: 13.5px;
   line-height: 1.55;
-  color: #0F172A;
+  color: #1E293B;
 }
 
 .btv-excel-table th {
-  background: #0F172A;
-  color: #FFFFFF;
+  background: linear-gradient(180deg, #FDF2F8 0%, #FCE7F3 100%);
+  color: #1E293B;
   padding: 12px 14px;
   font-family: var(--font-display);
   font-size: 12.5px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  border-right: 1px solid #334155;
-  border-bottom: 2px solid #0284C7;
+  border-right: 1px solid #FBCFE8;
+  border-bottom: 2px solid #F472B6;
   text-align: left;
 }
 
@@ -4384,9 +4385,9 @@ dialog::backdrop {
 }
 
 .btv-strip-btn {
-  background: #0F172A;
-  color: #FFFFFF;
-  border: none;
+  background: #FFFFFF;
+  color: #065F46;
+  border: 1px solid #86EFAC;
   border-radius: 7px;
   padding: 6px 12px;
   font-size: 12px;
@@ -4395,7 +4396,7 @@ dialog::backdrop {
 }
 
 .btv-strip-btn:hover {
-  background: #1E293B;
+  background: #DCFCE7;
 }
 
 .btv-presence-panel {
@@ -4485,8 +4486,8 @@ dialog::backdrop {
 }
 
 .btv-name-dialog::backdrop {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(4px);
+  background: rgba(253, 242, 248, 0.72);
+  backdrop-filter: blur(6px);
 }
 
 .btv-name-dialog-inner {
@@ -4644,13 +4645,13 @@ dialog::backdrop {
 }
 
 .admin-tool-btn.primary {
-  background: #0F172A;
+  background: linear-gradient(135deg, #F472B6, #EC4899);
   color: #FFFFFF;
-  border-color: #0F172A;
+  border-color: #EC4899;
 }
 
 .admin-tool-btn.primary:hover {
-  background: #1E293B;
+  background: linear-gradient(135deg, #EC4899, #DB2777);
 }
 
 .admin-main-area {
