@@ -2331,7 +2331,17 @@
           }).join("")}</ul>`;
         };
 
-        const imgSrc = `data/slide_imgs/${escapeHtml(row.img)}`;
+        const rawImg = String(row.img || "").trim();
+        const imgSrc = !rawImg
+          ? ""
+          : (/^(data:|https?:|\/|data\/)/i.test(rawImg) ? rawImg : `data/slide_imgs/${escapeHtml(rawImg)}`);
+
+        const imgCellHtml = imgSrc
+          ? `<div class="btv-thumb-wrap">
+              <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(row.tieu_chi)}" class="btv-slide-thumb" data-full-src="${escapeHtml(imgSrc)}" data-title="${escapeHtml(currentSheet.sheet_name)} — ${escapeHtml(row.tieu_chi)}">
+              <span class="btv-thumb-hint">🔍 Bấm ảnh để phóng to</span>
+            </div>`
+          : `<div style="padding:18px 10px;border:1.5px dashed #CBD5E1;border-radius:8px;color:#64748B;font-size:12px;background:#F8FAFC;">🖼️ Chưa gắn ảnh dẫn chứng</div>`;
 
         tr.innerHTML = `
           <td style="text-align: center; font-weight: 800; font-family: var(--font-mono); font-size: 14px;">${escapeHtml(row.stt)}</td>
@@ -2341,10 +2351,7 @@
           <td>${formatBullets(row.nhan_xet)}</td>
           <td>${formatBullets(row.dan_chung)}</td>
           <td style="text-align: center;">
-            <div class="btv-thumb-wrap">
-              <img src="${imgSrc}" alt="${escapeHtml(row.tieu_chi)}" class="btv-slide-thumb" data-full-src="${imgSrc}" data-title="${escapeHtml(currentSheet.sheet_name)} — ${escapeHtml(row.tieu_chi)}">
-              <span class="btv-thumb-hint">🔍 Bấm ảnh để phóng to</span>
-            </div>
+            ${imgCellHtml}
           </td>
         `;
 
@@ -2703,13 +2710,24 @@
           optBtn.className = "synthesis-pill";
           optBtn.textContent = `➕ ${l.code} — ${l.title}`;
           optBtn.onclick = () => {
+            const btvCritLabels = [
+              "1. Điểm ưng ý",
+              "2. Điểm chưa hiểu\n(Cần làm rõ)",
+              "3. Đề xuất bổ sung,\ncải tiến",
+              "4. Khó khăn\nkhi giảng dạy"
+            ];
             const newSheet = {
+              lessonId: l.id,
+              lessonCode: l.code,
               lesson_code: l.code,
+              grade: l.grade || "",
               sheet_name: `Bài ${l.code}${l.grade ? ` (${l.grade})` : ""}`,
-              title: `Báo cáo tổng hợp — ${l.title}`,
+              title: `NHẬN XÉT BÀI ${l.code}: ${(l.title || "").toUpperCase()}${l.grade ? ` (${l.grade.toUpperCase()})` : ""}`,
+              subtitle: `Link: ${l.editorUrl || ""}  |  Quy mô: ${l.totalSlides || 0} slide hiển thị`,
               rows: CRITERIA_META.map((cm, idx) => ({
-                stt: idx + 1,
-                tieu_chi: cm.title,
+                stt: String(idx + 1),
+                tieu_chi: btvCritLabels[idx] || cm.title,
+                style_idx: 5 + idx,
                 nhan_xet: "",
                 dan_chung: "",
                 img: ""
@@ -2742,37 +2760,145 @@
         const lesson = findLessonForSynthesisSheet(currentSheet);
         if (!lesson) return;
 
+        // Helper: Chuẩn hóa & gom nhóm ý kiến ẨN DANH (gộp ý giống nhau giữa các GV, giữ nguyên ý riêng số ít, TUYỆT ĐỐI không ghi tên GV)
+        const stripLeadingPrefix = (str) => String(str || "")
+          .replace(/^[\s•\-\*]+/, "")
+          .replace(/^\[?Slide\s*\d+\]?\s*[:\-–.]?\s*/i, "")
+          .replace(/^(Cô|Thầy)\s+[^:()]+:\s*/i, "")
+          .replace(/\s*\((Cô|Thầy)\s+[^)]+\)\s*$/gi, "")
+          .trim();
+
+        const tokenizeVi = (str) => {
+          const stop = new Set(["là", "và", "của", "cho", "với", "các", "những", "một", "này", "đó", "nên", "cần", "rất", "khá", "học", "sinh", "giáo", "viên", "slide", "bài", "khi", "thì", "để", "có", "chưa", "không", "được", "trong", "ở", "tại", "về", "hơn", "như"]);
+          return String(str || "")
+            .toLowerCase()
+            .replace(/[^\p{L}\p{N}\s]/gu, " ")
+            .split(/\s+/)
+            .filter(w => w.length > 1 && !stop.has(w));
+        };
+
+        const tokenSimilarity = (aTokens, bTokens) => {
+          if (!aTokens.length || !bTokens.length) return 0;
+          const setA = new Set(aTokens);
+          const setB = new Set(bTokens);
+          let inter = 0;
+          setA.forEach(t => { if (setB.has(t)) inter++; });
+          const union = setA.size + setB.size - inter;
+          return union > 0 ? inter / union : 0;
+        };
+
+        const slideTitleMap = {};
+        (lesson.slides || []).forEach(s => {
+          slideTitleMap[Number(s.so)] = s.tieuDe || "";
+        });
+
         const critKeys = ["ung_y", "chua_hieu", "cai_tien", "kho_khan"];
         let totalCollected = 0;
+        let mergedClustersCount = 0;
 
         (currentSheet.rows || []).forEach((row, rIdx) => {
-          const cKey = critKeys[(row.stt || rIdx + 1) - 1] || critKeys[rIdx];
-          const bullets = [];
-          const slideSet = new Set();
-          let hasGeneralSlide = false;
+          const cKey = critKeys[(Number(row.stt) || rIdx + 1) - 1] || critKeys[rIdx];
+          const rawItems = [];
+          const slideEvidenceMap = {};
+          let firstAttachedImg = "";
 
           (db.teachers || []).forEach(t => {
             const rev = findTeacherLessonReview(t, lesson.id);
             if (!rev || !rev.criteria || !rev.criteria[cKey]) return;
-            const pts = ensureCriterionPoints(rev.criteria[cKey]).filter(p => p.text && p.text.trim().length > 0);
-            const shortName = t.name.split(" ").slice(-2).join(" ");
+            const pts = ensureCriterionPoints(rev.criteria[cKey]);
             pts.forEach(pt => {
-              totalCollected++;
-              bullets.push(`• ${pt.text.trim()} (Cô ${shortName})`);
-              if (pt.slide && String(pt.slide).trim() !== "") {
-                slideSet.add(Number(pt.slide) || pt.slide);
-              } else {
-                hasGeneralSlide = true;
+              if (!firstAttachedImg && Array.isArray(pt.images) && pt.images.length > 0) {
+                const im = pt.images[0];
+                const src = typeof im === "string" ? im : (im.dataUrl || im.src || "");
+                if (src) firstAttachedImg = src;
               }
+              const rawTxt = String(pt.text || "").trim();
+              if (!rawTxt || /^\(Đính kèm ảnh\)$/i.test(rawTxt)) return;
+
+              // Hỗ trợ tách nhiều dòng gạch đầu dòng trong 1 ô classic
+              const subLines = rawTxt.split(/\n+/).map(l => l.trim()).filter(l => l.length > 0 && !/^\(Đính kèm ảnh\)$/i.test(l));
+              subLines.forEach(line => {
+                const slideMatch = line.match(/^\[?Slide\s*(\d+)\]?/i);
+                const sNum = pt.slide ? (Number(pt.slide) || null) : (slideMatch ? Number(slideMatch[1]) : null);
+                const clean = stripLeadingPrefix(line);
+                if (!clean) return;
+                totalCollected++;
+                rawItems.push({
+                  teacherId: t.id,
+                  slide: sNum,
+                  text: clean,
+                  tokens: tokenizeVi(clean)
+                });
+                if (sNum) {
+                  if (!slideEvidenceMap[sNum]) slideEvidenceMap[sNum] = [];
+                  if (slideEvidenceMap[sNum].length < 2) {
+                    const snippet = clean.length > 90 ? clean.slice(0, 87).trim() + "..." : clean;
+                    slideEvidenceMap[sNum].push(snippet);
+                  }
+                }
+              });
             });
           });
 
-          const sortedSlides = Array.from(slideSet).sort((a, b) => Number(a) - Number(b));
-          const slideLabels = sortedSlides.map(s => `Slide ${s}`);
-          if (hasGeneralSlide) slideLabels.push("Tổng thể bài");
+          // Gom cụm ý trùng lặp / cùng chủ đề (ưu tiên cùng slide + độ tương đồng từ khóa, hoặc tương đồng cao toàn bài)
+          const clusters = [];
+          rawItems.forEach(item => {
+            let matched = null;
+            for (const cl of clusters) {
+              const sameSlide = (cl.slide && item.slide && cl.slide === item.slide);
+              const sim = tokenSimilarity(cl.tokens, item.tokens);
+              if ((sameSlide && sim >= 0.28) || sim >= 0.48) {
+                matched = cl;
+                break;
+              }
+            }
+            if (matched) {
+              matched.items.push(item);
+              matched.teacherIds.add(item.teacherId);
+              if (item.slide && !matched.slides.includes(item.slide)) matched.slides.push(item.slide);
+              // Chọn câu diễn đạt đầy đủ nhưng cô đọng nhất làm đại diện; bổ sung vế ngắn nếu khác biệt đáng kể
+              if (item.text.length > matched.repText.length && item.text.length <= 240) {
+                matched.repText = item.text;
+              }
+            } else {
+              clusters.push({
+                slide: item.slide,
+                slides: item.slide ? [item.slide] : [],
+                repText: item.text,
+                tokens: item.tokens,
+                items: [item],
+                teacherIds: new Set([item.teacherId])
+              });
+            }
+          });
+
+          // Sắp xếp: ý có nhiều GV đồng thuận lên trước, sau đó theo thứ tự slide
+          clusters.sort((a, b) => {
+            if (b.teacherIds.size !== a.teacherIds.size) return b.teacherIds.size - a.teacherIds.size;
+            return (a.slide || 999) - (b.slide || 999);
+          });
+
+          mergedClustersCount += clusters.length;
+
+          const bullets = clusters.map(cl => {
+            const slideTag = cl.slides.length
+              ? ` (${cl.slides.sort((a, b) => a - b).map(n => `Slide ${n}`).join(", ")})`
+              : "";
+            const txt = cl.repText.endsWith(".") ? cl.repText.slice(0, -1) : cl.repText;
+            return `• ${txt}${slideTag}.`;
+          });
+
+          const slideNums = Object.keys(slideEvidenceMap).map(Number).sort((a, b) => a - b);
+          const evidenceLines = slideNums.map(n => {
+            const title = slideTitleMap[n] ? ` (${slideTitleMap[n]})` : "";
+            return `• Slide ${n}${title}: ${slideEvidenceMap[n][0]}`;
+          });
 
           row.nhan_xet = bullets.length > 0 ? bullets.join("\n") : "• Chưa có ý kiến đóng góp từ giáo viên ở mục này.";
-          row.dan_chung = slideLabels.length > 0 ? slideLabels.join(", ") : "Chưa có dẫn chứng slide cụ thể";
+          row.dan_chung = evidenceLines.length > 0 ? evidenceLines.join("\n") : "• Nhận xét tổng thể toàn bài.";
+          if (!row.img && firstAttachedImg) {
+            row.img = firstAttachedImg;
+          }
 
           const nxEl = document.getElementById(`synthNhanXet_${rIdx}`);
           const dcEl = document.getElementById(`synthDanChung_${rIdx}`);
@@ -2784,8 +2910,8 @@
         triggerAutoSave(true, true);
 
         const orig = btnAutoSynth.innerHTML;
-        btnAutoSynth.innerHTML = `✓ Đã đúc kết ${totalCollected} ý kiến!`;
-        setTimeout(() => { btnAutoSynth.innerHTML = orig; }, 2500);
+        btnAutoSynth.innerHTML = `✓ Đã tổng hợp ${totalCollected} ý → ${mergedClustersCount} ý ẩn danh!`;
+        setTimeout(() => { btnAutoSynth.innerHTML = orig; }, 2800);
       };
     }
 
