@@ -307,6 +307,18 @@
 
     // Direct URL for BTV (Editor / Guest - Strictly Read-only, no PIN required, never overwrite saved session):
     if (roleParam === "btv" || roleParam === "editor" || viewParam === "btv" || viewParam === "tong-hop") {
+      // Nếu trình duyệt hiện tại ĐÃ đăng nhập Quản lý trước đó, giữ quyền Admin ở chế độ Xem thử BTV để luôn có nút Quay lại Quản lý
+      try {
+        const savedRaw = localStorage.getItem(SESSION_KEY);
+        if (savedRaw) {
+          const parsedSaved = JSON.parse(savedRaw);
+          if (parsedSaved && parsedSaved.role === "admin") {
+            isAdminView = false;
+            isAdminPreviewingBtv = true;
+            return parsedSaved;
+          }
+        }
+      } catch (e) {}
       isAdminView = false;
       isAdminPreviewingBtv = false;
       return { id: "btv", name: "Biên tập viên", role: "btv" };
@@ -1024,6 +1036,7 @@
           isAdminPreviewingBtv = false;
           isAdminView = true;
           activeAdminTab = "synthesis";
+          clearBtvUrlParam();
           renderAll();
           const pSynth = document.getElementById("adminPanelSynthesis");
           if (pSynth) pSynth.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2270,6 +2283,22 @@
     });
   }
 
+  function clearBtvUrlParam() {
+    try {
+      const url = new URL(window.location.href);
+      let changed = false;
+      ["role", "view"].forEach(k => {
+        if (url.searchParams.has(k)) {
+          url.searchParams.delete(k);
+          changed = true;
+        }
+      });
+      if (changed) {
+        window.history.replaceState({}, "", url.pathname + (url.search ? url.search : "") + url.hash);
+      }
+    } catch (e) {}
+  }
+
   function renderBtvSpreadsheet() {
     const btnBackAdmin = document.getElementById("btnBackToAdminFromBtv");
     if (btnBackAdmin) {
@@ -2279,6 +2308,7 @@
         isAdminPreviewingBtv = false;
         isAdminView = true;
         activeAdminTab = "synthesis";
+        clearBtvUrlParam();
         renderAll();
       };
     }
@@ -3699,6 +3729,7 @@
       if (isAdminPreviewingBtv) {
         isAdminPreviewingBtv = false;
         isAdminView = true;
+        clearBtvUrlParam();
       } else {
         isAdminView = !isAdminView;
       }
@@ -3952,6 +3983,7 @@
           currentUser = null;
           isAdminView = false;
           isAdminPreviewingBtv = false;
+          clearBtvUrlParam();
           const teacherPinInp = document.getElementById("authTeacherPin");
           if (teacherPinInp) teacherPinInp.value = "";
           const adminPinInp = document.getElementById("authAdminPin");
@@ -4364,13 +4396,17 @@
     if (mainTopBar) mainTopBar.classList.remove("hidden");
     if (appShell) appShell.classList.remove("hidden");
 
+    const isBtvScreen = Boolean(currentUser.role === "btv" || (currentUser.role === "admin" && isAdminPreviewingBtv));
+    if (isBtvScreen) {
+      isAdminView = false;
+    }
+
     renderLessonSidebar();
     renderTopBar();
     updateSidebarUI();
 
     // STRICT ROLE ISOLATION FOR BTV (OR ADMIN PREVIEWING BTV VIEW)
-    if (currentUser.role === "btv" || (currentUser.role === "admin" && isAdminPreviewingBtv)) {
-      isAdminView = false;
+    if (isBtvScreen) {
       if (teacherWorkspace) teacherWorkspace.classList.add("hidden");
       if (adminWorkspace) adminWorkspace.classList.add("hidden");
       if (lessonSidebar) lessonSidebar.classList.add("hidden");
