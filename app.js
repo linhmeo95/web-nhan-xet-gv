@@ -44,10 +44,10 @@
   let sidebarSearchQuery = "";
   let activeAdminTab = "matrix";
   let activeDossierTeacherId = null;
+  let activeDossierLessonId = null;
   let adminSelectedLessonId = null;
   let adminComparisonViewMode = "teacher";
   let isRawRefDrawerOpen = false;
-  let expandedDossierLessons = {};
   let isSidebarCollapsed = localStorage.getItem("novastars_sidebar_collapsed") === "true";
   let activeBtvSheetIdx = 0;
   let adminSynthesisSheetIdx = 0;
@@ -2489,6 +2489,7 @@
   function renderBtvPresenceMonitor() {
     if (!currentUser || currentUser.role !== "admin") return;
     const strip = document.getElementById("adminBtvPresenceStrip");
+    if (strip) strip.classList.add("hidden");
     const panel = document.getElementById("btvPresencePanel");
 
     const sorted = [...(btvPresenceRecords || [])].sort((a, b) => {
@@ -2499,35 +2500,6 @@
     });
 
     const onlineList = sorted.filter(isViewerOnline);
-
-    if (strip) {
-      strip.classList.remove("hidden");
-      strip.classList.toggle("idle", onlineList.length === 0);
-      const onlineChips = onlineList.length > 0
-        ? onlineList.map(v => `<span class="btv-strip-chip">🟢 ${escapeHtml(v.name)}${v.currentSheet ? ` (${escapeHtml(v.currentSheet)})` : ""}</span>`).join("")
-        : `<span style="color:#64748B;font-size:12.5px;">Hiện chưa có ai đang mở trang BTV · Tổng <strong>${sorted.length}</strong> người đã từng xem</span>`;
-
-      strip.innerHTML = `
-        <div class="btv-strip-left">
-          <span class="btv-live-dot${onlineList.length === 0 ? " idle" : ""}"></span>
-          <strong>Đang xem trang BTV: ${onlineList.length} người</strong>
-          ${onlineChips}
-        </div>
-        <button type="button" class="btv-strip-btn" id="btnJumpBtvPresence">
-          👁️ Xem lịch sử truy cập (${sorted.length}) ➔
-        </button>
-      `;
-
-      const btnJump = document.getElementById("btnJumpBtvPresence");
-      if (btnJump) {
-        btnJump.onclick = () => {
-          activeAdminTab = "synthesis";
-          renderAdminDashboard();
-          const p = document.getElementById("btvPresencePanel");
-          if (p) p.scrollIntoView({ behavior: "smooth", block: "start" });
-        };
-      }
-    }
 
     if (panel) {
       const rowsHtml = sorted.length === 0
@@ -2611,6 +2583,16 @@
     }
   }
 
+  function formatBtvBullets(txt) {
+    if (!txt) return "";
+    const lines = String(txt).split("\n").filter(l => l.trim().length > 0);
+    if (!lines.length) return "";
+    return `<ul class="btv-text-bullet">${lines.map(l => {
+      const clean = l.replace(/^[•\-\*]\s*/, "");
+      return `<li>${escapeHtml(clean)}</li>`;
+    }).join("")}</ul>`;
+  }
+
   function renderBtvSpreadsheet() {
     const btnBackAdmin = document.getElementById("btnBackToAdminFromBtv");
     if (btnBackAdmin) {
@@ -2663,15 +2645,6 @@
       (currentSheet.rows || []).forEach((row, rowIdx) => {
         const critClass = `c${row.stt}`;
 
-        const formatBullets = (txt) => {
-          if (!txt) return "";
-          const lines = txt.split("\n").filter(l => l.trim().length > 0);
-          return `<ul class="btv-text-bullet">${lines.map(l => {
-            const clean = l.replace(/^[•\-\*]\s*/, "");
-            return `<li>${escapeHtml(clean)}</li>`;
-          }).join("")}</ul>`;
-        };
-
         const resolveImgUrl = (raw) => {
           const v = String(raw || "").trim();
           if (!v) return "";
@@ -2711,8 +2684,8 @@
             const lbTitle = `${currentSheet.sheet_name} — ${row.tieu_chi}${item.caption ? " (" + item.caption + ")" : ""}`;
             tr.innerHTML = `
               ${mergedCols}
-              <td>${formatBullets(item.nhan_xet)}</td>
-              <td>${formatBullets(item.dan_chung)}</td>
+              <td>${formatBtvBullets(item.nhan_xet)}</td>
+              <td>${formatBtvBullets(item.dan_chung)}</td>
               <td style="text-align: center;">
                 ${renderImgCell(item.img, item.caption || "", lbTitle)}
               </td>
@@ -2727,8 +2700,8 @@
             <td class="cell-crit">
               <span class="btv-crit-badge ${critClass}">${escapeHtml(row.tieu_chi)}</span>
             </td>
-            <td>${formatBullets(row.nhan_xet)}</td>
-            <td>${formatBullets(row.dan_chung)}</td>
+            <td>${formatBtvBullets(row.nhan_xet)}</td>
+            <td>${formatBtvBullets(row.dan_chung)}</td>
             <td style="text-align: center;">
               ${renderImgCell(row.img, "", `${currentSheet.sheet_name} — ${row.tieu_chi}`)}
             </td>
@@ -3798,7 +3771,7 @@
         grid.appendChild(box);
       });
     } else {
-      // 3. Teacher Dossier View (with inner 6-Teacher Selector Pills + Expandable Lesson Cards)
+      // 3. Teacher Dossier View (BTV-style Excel Sheet Tabs + 5-column Table per Teacher)
       if (panelMatrix) panelMatrix.classList.add("hidden");
       if (panelDossier) panelDossier.classList.remove("hidden");
 
@@ -3806,10 +3779,15 @@
       if (!teacher || !panelDossier) return;
       activeDossierTeacherId = teacher.id;
 
+      const lessonsList = db.lessons || [];
+      if (!activeDossierLessonId || !lessonsList.some(l => l.id === activeDossierLessonId)) {
+        activeDossierLessonId = lessonsList[0] ? lessonsList[0].id : null;
+      }
+
       // Build inner selector pills for the 6 teachers
       let selectorHtml = `<div class="dossier-teacher-selector" role="tablist" aria-label="Chọn giáo viên để xem hồ sơ">`;
       (db.teachers || []).forEach(t => {
-        const subCount = (db.lessons || []).filter(l => {
+        const subCount = lessonsList.filter(l => {
           const rev = findTeacherLessonReview(t, l.id);
           return rev && rev.status === "submitted" && hasReviewContent(rev);
         }).length;
@@ -3818,7 +3796,7 @@
         selectorHtml += `
           <button type="button" class="dossier-teacher-pill${isActive ? " active" : ""}" data-select-dossier-gv="${escapeHtml(t.id)}">
             👩‍🏫 Cô ${escapeHtml(shortName)}
-            <span class="admin-tab-pill">${subCount}/${(db.lessons || []).length}</span>
+            <span class="admin-tab-pill">${subCount}/${lessonsList.length}</span>
           </button>
         `;
       });
@@ -3827,24 +3805,193 @@
       let submittedCount = 0;
       let draftCount = 0;
       let totalPoints = 0;
+      const lessonMetaById = new Map();
 
-      db.lessons.forEach(l => {
+      lessonsList.forEach(l => {
         const r = findTeacherLessonReview(teacher, l.id);
         const hasContent = hasReviewContent(r);
-        if (r && r.status === "submitted" && hasContent) {
+        const isSubmitted = Boolean(r && r.status === "submitted" && hasContent);
+        if (isSubmitted) {
           submittedCount++;
         } else if (hasContent) {
           draftCount++;
         }
-        if (r && r.criteria) {
-          CRITERIA_META.forEach(cm => {
-            if (r.criteria[cm.key]) {
-              const pts = ensureCriterionPoints(r.criteria[cm.key]).filter(p => (p.text && p.text.trim().length > 0) || (p.images && p.images.length > 0));
-              totalPoints += pts.length;
-            }
-          });
-        }
+
+        const critCounts = {};
+        let lessonTotalPts = 0;
+        CRITERIA_META.forEach(cm => {
+          let pts = [];
+          if (r && r.criteria && r.criteria[cm.key]) {
+            pts = ensureCriterionPoints(r.criteria[cm.key]).filter(
+              p => (p.text && p.text.trim().length > 0) || (p.images && p.images.length > 0)
+            );
+          }
+          critCounts[cm.key] = pts;
+          lessonTotalPts += pts.length;
+        });
+        totalPoints += lessonTotalPts;
+        lessonMetaById.set(l.id, {
+          review: r,
+          hasContent,
+          isSubmitted,
+          critCounts,
+          lessonTotalPts
+        });
       });
+
+      // Build Excel-style Sheet Tabs for each lesson
+      let sheetTabsHtml = `<div class="btv-sheet-tabs-bar dossier-sheet-tabs-bar" role="tablist" aria-label="Các bài giảng của giáo viên">`;
+      lessonsList.forEach(l => {
+        const meta = lessonMetaById.get(l.id);
+        const isSheetActive = l.id === activeDossierLessonId;
+        let tabStateClass = "empty";
+        let tabStateText = "0 ý";
+        if (meta.isSubmitted) {
+          tabStateClass = "done";
+          tabStateText = `✓ ${meta.lessonTotalPts} ý`;
+        } else if (meta.hasContent) {
+          tabStateClass = "draft";
+          tabStateText = `✎ ${meta.lessonTotalPts} ý`;
+        }
+        sheetTabsHtml += `
+          <button type="button" class="btv-sheet-tab${isSheetActive ? " active" : ""}" data-select-dossier-lesson="${escapeHtml(l.id)}">
+            <span>📊 ${escapeHtml(l.code)}</span>
+            <span class="dossier-sheet-tab-badge ${tabStateClass}">${tabStateText}</span>
+          </button>
+        `;
+      });
+      sheetTabsHtml += `</div>`;
+
+      const activeLesson = lessonsList.find(l => l.id === activeDossierLessonId) || lessonsList[0];
+      let sheetCardHtml = "";
+
+      if (activeLesson) {
+        const meta = lessonMetaById.get(activeLesson.id);
+        let statusBadge = `<span class="hero-stat-badge" style="background:#F1F5F9;color:#64748B;">Chưa nhận xét</span>`;
+        if (meta.isSubmitted) {
+          statusBadge = `<span class="hero-stat-badge done">✓ Đã nộp</span>`;
+        } else if (meta.hasContent) {
+          statusBadge = `<span class="hero-stat-badge draft">✎ Đang soạn</span>`;
+        }
+
+        const shortTeacherName = teacher.name.split(" ").slice(-2).join(" ");
+        const resolveDossierImg = (raw) => {
+          const v = String(raw || "").trim();
+          if (!v) return "";
+          return /^(data:|https?:|\/|data\/)/i.test(v) ? v : `data/slide_imgs/${v}`;
+        };
+
+        let tableRowsHtml = "";
+        CRITERIA_META.forEach((cm, cIdx) => {
+          const stt = cIdx + 1;
+          const critClass = `c${stt}`;
+          const pts = meta.critCounts[cm.key] || [];
+
+          if (pts.length === 0) {
+            tableRowsHtml += `
+              <tr class="btv-row-${critClass} btv-group-first btv-group-last">
+                <td class="btv-merged-stt">${stt}</td>
+                <td class="cell-crit btv-merged-crit">
+                  <span class="btv-crit-badge ${critClass}">${escapeHtml(cm.title)}</span>
+                </td>
+                <td><span class="dossier-no-opinion">Không có ý kiến</span></td>
+                <td><span class="dossier-muted-dash">—</span></td>
+                <td style="text-align: center;"><span class="dossier-muted-dash">—</span></td>
+              </tr>
+            `;
+            return;
+          }
+
+          const span = pts.length;
+          pts.forEach((pt, pIdx) => {
+            const isFirst = pIdx === 0;
+            const isLast = pIdx === span - 1;
+            const mergedCols = isFirst
+              ? `<td rowspan="${span}" class="btv-merged-stt">${stt}</td>
+                 <td rowspan="${span}" class="cell-crit btv-merged-crit">
+                   <span class="btv-crit-badge ${critClass}">${escapeHtml(cm.title)}</span>
+                 </td>`
+              : "";
+
+            const contentHtml = (pt.text && pt.text.trim())
+              ? formatBtvBullets(pt.text)
+              : `<span class="dossier-muted-dash">(Chỉ đính kèm ảnh minh họa)</span>`;
+
+            const slideNum = pt.slide ? String(pt.slide).trim() : "";
+            let slideTitleText = "";
+            if (slideNum && Array.isArray(activeLesson.slides)) {
+              const foundSlide =
+                activeLesson.slides.find(s => String(s.so ?? s.number) === slideNum) ||
+                activeLesson.slides[Number(slideNum) - 1];
+              if (foundSlide && (foundSlide.tieuDe || foundSlide.title)) {
+                slideTitleText = foundSlide.tieuDe || foundSlide.title;
+              }
+            }
+
+            const evidenceHtml = slideNum
+              ? `<ul class="btv-text-bullet"><li><strong>Slide ${escapeHtml(slideNum)}</strong>${slideTitleText ? `: ${escapeHtml(slideTitleText)}` : ""}</li></ul>`
+              : `<ul class="btv-text-bullet"><li>Nhận xét chung toàn bài</li></ul>`;
+
+            const imgs = (pt.images || []).map(resolveDossierImg).filter(Boolean);
+            const capLabel = slideNum ? `Slide ${slideNum}` : "Nhận xét chung";
+            const lbTitle = `Cô ${shortTeacherName} · ${activeLesson.code} — ${cm.title} (${capLabel})`;
+
+            let imgCellHtml = `<span class="dossier-empty-img">Không đính kèm ảnh</span>`;
+            if (imgs.length > 0) {
+              imgCellHtml = `<div class="dossier-multi-thumbs">` + imgs.map(src => `
+                <div class="btv-thumb-wrap">
+                  <img src="${escapeHtml(src)}" alt="${escapeHtml(capLabel)}" class="btv-slide-thumb" data-full-src="${escapeHtml(src)}" data-title="${escapeHtml(lbTitle)}">
+                  <span class="btv-slide-cap">${escapeHtml(capLabel)}</span>
+                  <span class="btv-thumb-hint">🔍 Bấm ảnh để phóng to</span>
+                </div>
+              `).join("") + `</div>`;
+            }
+
+            tableRowsHtml += `
+              <tr class="btv-row-${critClass} ${isFirst ? "btv-group-first" : "btv-group-sub"}${isLast ? " btv-group-last" : ""}">
+                ${mergedCols}
+                <td>${contentHtml}</td>
+                <td>${evidenceHtml}</td>
+                <td style="text-align: center;">${imgCellHtml}</td>
+              </tr>
+            `;
+          });
+        });
+
+        sheetCardHtml = `
+          ${sheetTabsHtml}
+          <div class="btv-excel-card dossier-excel-card">
+            <div class="dossier-sheet-info-bar">
+              <div class="dossier-sheet-info-left">
+                <span class="dossier-lesson-code">${escapeHtml(activeLesson.code)}</span>
+                <span class="dossier-lesson-grade">${escapeHtml(activeLesson.grade)}</span>
+                <h4 class="dossier-lesson-title">${escapeHtml(activeLesson.title)}</h4>
+                ${statusBadge}
+                <span class="dossier-sheet-points-count">${meta.lessonTotalPts} ý nhận xét</span>
+              </div>
+              <a href="${escapeHtml(activeLesson.editorUrl || "#")}" target="_blank" rel="noopener" class="btn-dossier-open-tab">
+                ↗ Mở Slide trên HD Tương tác
+              </a>
+            </div>
+            <div class="table-responsive">
+              <table class="btv-excel-table dossier-btv-table">
+                <thead>
+                  <tr>
+                    <th style="width: 55px; text-align: center;">STT</th>
+                    <th style="width: 210px;">Tiêu chí đánh giá</th>
+                    <th style="min-width: 360px;">Nội dung</th>
+                    <th style="width: 260px;">Dẫn chứng slide cụ thể</th>
+                    <th style="width: 290px; text-align: center;">Hình ảnh minh họa slide</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${tableRowsHtml}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
 
       panelDossier.innerHTML = `
         ${selectorHtml}
@@ -3859,7 +4006,7 @@
             </div>
           </div>
           <div class="dossier-hero-stats">
-            <span class="hero-stat-badge done">✓ Đã nộp: ${submittedCount}/${db.lessons.length} bài</span>
+            <span class="hero-stat-badge done">✓ Đã nộp: ${submittedCount}/${lessonsList.length} bài</span>
             <span class="hero-stat-badge draft">✎ Đang soạn: ${draftCount} bài</span>
             <button type="button" class="btn-act-as-teacher" id="btnActAsTeacher">
               🔑 Đăng nhập xem trực tiếp ➔
@@ -3867,12 +4014,22 @@
           </div>
         </div>
 
-        <div class="dossier-lesson-cards-list" id="dossierLessonCardsList"></div>
+        <div class="dossier-btv-sheet-wrap">
+          ${sheetCardHtml}
+        </div>
       `;
 
       panelDossier.querySelectorAll("[data-select-dossier-gv]").forEach(btn => {
         btn.addEventListener("click", () => {
           activeDossierTeacherId = btn.dataset.selectDossierGv;
+          activeAdminTab = "dossier";
+          renderAdminDashboard();
+        });
+      });
+
+      panelDossier.querySelectorAll("[data-select-dossier-lesson]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          activeDossierLessonId = btn.dataset.selectDossierLesson;
           activeAdminTab = "dossier";
           renderAdminDashboard();
         });
@@ -3888,131 +4045,10 @@
         });
       }
 
-      const cardsList = document.getElementById("dossierLessonCardsList");
-      if (!cardsList) return;
-
-      db.lessons.forEach(l => {
-        const r = findTeacherLessonReview(teacher, l.id);
-        const hasContent = hasReviewContent(r);
-
-        let statusBadge = `<span class="hero-stat-badge" style="background:#F1F5F9;color:#64748B;">Chưa nhận xét</span>`;
-        if (r && r.status === "submitted" && hasContent) {
-          statusBadge = `<span class="hero-stat-badge done">✓ Đã nộp</span>`;
-        } else if (hasContent) {
-          statusBadge = `<span class="hero-stat-badge draft">✎ Đang soạn</span>`;
-        }
-
-        const critCounts = {};
-        let lessonTotalPts = 0;
-        CRITERIA_META.forEach(cm => {
-          let pts = [];
-          if (r && r.criteria[cm.key]) {
-            pts = ensureCriterionPoints(r.criteria[cm.key]).filter(p => p.text.trim().length > 0 || (p.images && p.images.length > 0));
-          }
-          critCounts[cm.key] = pts;
-          lessonTotalPts += pts.length;
+      panelDossier.querySelectorAll(".btv-slide-thumb").forEach(imgEl => {
+        imgEl.addEventListener("click", () => {
+          openImageLightbox(imgEl.dataset.fullSrc, imgEl.dataset.title);
         });
-
-        // Default expanded if lesson has points or previously expanded
-        const isExpanded = expandedDossierLessons[l.id] !== undefined ? expandedDossierLessons[l.id] : (lessonTotalPts > 0);
-
-        const card = document.createElement("div");
-        card.className = "dossier-lesson-card" + (isExpanded ? " expanded" : " collapsed");
-        card.dataset.dossierLessonId = l.id;
-
-        let critGridHtml = "";
-        if (lessonTotalPts === 0) {
-          critGridHtml = `<div style="padding:16px;text-align:center;color:#64748B;font-size:13px;background:#FFFFFF;border-radius:8px;border:1px dashed #CBD5E1;">Cô chưa có ý kiến nhận xét nào cho bài học này.</div>`;
-        } else {
-          critGridHtml = `<div class="dossier-crit-grid">`;
-          CRITERIA_META.forEach((cm, cIdx) => {
-            const pts = critCounts[cm.key] || [];
-            const colors = [
-              { bg: "#ECFDF5", text: "#065F46" },
-              { bg: "#FFFBEB", text: "#92400E" },
-              { bg: "#FFF1F2", text: "#9D174D" },
-              { bg: "#FFE4E6", text: "#881337" }
-            ][cIdx];
-
-            let ptsListHtml = "";
-            if (pts.length === 0) {
-              ptsListHtml = `<div style="font-size:12px;color:#94A3B8;font-style:italic;padding:4px 0;">Không có ý kiến</div>`;
-            } else {
-              ptsListHtml = pts.map((pt, pIdx) => {
-                const slideBadge = pt.slide ? `<span class="dossier-slide-badge">Slide ${escapeHtml(pt.slide)}</span>` : `<span class="dossier-slide-badge" style="background:#64748B;">Chung</span>`;
-                const imgsHtml = (pt.images || []).map(src => `<div class="attached-thumb-wrap"><img src="${src}" data-preview-img="${src}" alt="Ảnh"></div>`).join("");
-                return `
-                  <div class="dossier-point-row">
-                    <div class="dossier-point-top">
-                      <strong style="font-size:11.5px;color:#475569;">Ý ${pIdx + 1}:</strong>
-                      ${slideBadge}
-                    </div>
-                    <div class="dossier-point-text">${escapeHtml(pt.text)}</div>
-                    ${imgsHtml ? `<div class="attached-images-list" style="margin-top:6px;">${imgsHtml}</div>` : ""}
-                  </div>
-                `;
-              }).join("");
-            }
-
-            critGridHtml += `
-              <div class="dossier-crit-box">
-                <div class="dossier-crit-head" style="background:${colors.bg};color:${colors.text};">
-                  <span>${escapeHtml(cm.title)}</span>
-                  <span style="font-size:11px;font-weight:700;">${pts.length} ý</span>
-                </div>
-                <div class="dossier-crit-content">
-                  ${ptsListHtml}
-                </div>
-              </div>
-            `;
-          });
-          critGridHtml += `</div>`;
-        }
-
-        card.innerHTML = `
-          <div class="dossier-card-head" data-toggle-dossier-lesson="${l.id}">
-            <div class="dossier-head-left">
-              <span class="dossier-chevron">▶</span>
-              <span class="dossier-lesson-code">${escapeHtml(l.code)}</span>
-              <span class="dossier-lesson-grade">${escapeHtml(l.grade)}</span>
-              <h4 class="dossier-lesson-title">${escapeHtml(l.title)}</h4>
-            </div>
-            <div class="dossier-head-right">
-              ${statusBadge}
-              <div class="dossier-mini-tags">
-                <span class="mini-tag c1" title="Ưng ý">🟢 ${critCounts.ung_y.length}</span>
-                <span class="mini-tag c2" title="Cần làm rõ">🟡 ${critCounts.chua_hieu.length}</span>
-                <span class="mini-tag c3" title="Cải tiến">🔵 ${critCounts.cai_tien.length}</span>
-                <span class="mini-tag c4" title="Khó khăn">🔴 ${critCounts.kho_khan.length}</span>
-              </div>
-            </div>
-          </div>
-          <div class="dossier-card-body">
-            ${critGridHtml}
-            <div class="dossier-footer-link">
-              <a href="${l.editorUrl}" target="_blank" rel="noopener" class="btn-dossier-open-tab">
-                ↗ Mở Slide "${escapeHtml(l.title)}" trên HD Tương tác
-              </a>
-            </div>
-          </div>
-        `;
-
-        card.querySelector("[data-toggle-dossier-lesson]").addEventListener("click", () => {
-          const nowExp = card.classList.contains("expanded");
-          card.classList.toggle("expanded", !nowExp);
-          card.classList.toggle("collapsed", nowExp);
-          expandedDossierLessons[l.id] = !nowExp;
-        });
-
-        card.querySelectorAll("[data-preview-img]").forEach(imgEl => {
-          imgEl.addEventListener("click", (e) => {
-            e.stopPropagation();
-            document.getElementById("lightboxImg").src = imgEl.dataset.previewImg;
-            document.getElementById("lightboxDialog").showModal();
-          });
-        });
-
-        cardsList.appendChild(card);
       });
     }
   }
