@@ -4508,6 +4508,241 @@ dialog::backdrop {
   line-height: 1.45;
 }
 
+/* OPTION B: 2-COLUMN FOCUSED ADMIN DASHBOARD */
+.admin-dashboard {
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+  background: #F8FAFC;
+}
+
+.admin-shell-layout {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.admin-nav-sidebar {
+  width: 245px;
+  flex-shrink: 0;
+  background: #FFFFFF;
+  border-right: 1px solid #E2E8F0;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.admin-nav-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #64748B;
+  padding: 0 8px;
+}
+
+.admin-nav-sidebar .admin-dossier-tab-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: #334155;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.admin-nav-btn:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+.admin-nav-btn.active {
+  background: #FFF1F2;
+  color: #9F1239;
+  border-color: #FDA4AF;
+  font-weight: 800;
+}
+
+.admin-nav-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #F1F5F9;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+.admin-nav-btn.active .admin-nav-badge {
+  background: #FFE4E6;
+  color: #9F1239;
+}
+
+.admin-nav-badge.live {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.admin-sidebar-tools {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-tool-btn {
+  width: 100%;
+  padding: 8px 11px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  color: #334155;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.admin-tool-btn:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+.admin-tool-btn.primary {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+.admin-tool-btn.primary:hover {
+  background: #1E293B;
+}
+
+.admin-main-area {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 16px 22px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-kpi-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+}
+
+.kpi-strip-metrics {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.kpi-pill-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #334155;
+}
+
+.kpi-pill-item strong {
+  color: #0F172A;
+  font-size: 13px;
+}
+
+.kpi-strip-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kpi-strip-btn {
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 1px solid #CBD5E1;
+  background: #F8FAFC;
+  color: #1E293B;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.kpi-strip-btn:hover {
+  background: #F1F5F9;
+}
+
+.kpi-strip-btn.live {
+  background: #ECFDF5;
+  border-color: #6EE7B7;
+  color: #065F46;
+}
+
+@media (max-width: 900px) {
+  .admin-shell-layout {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .admin-nav-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  .admin-nav-sidebar .admin-dossier-tab-bar {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .admin-nav-btn {
+    width: auto;
+  }
+  .admin-sidebar-tools {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .admin-tool-btn {
+    width: auto;
+  }
+}
+
 /* LIGHTBOX MODAL */
 .image-lightbox-dialog {
   border: none;

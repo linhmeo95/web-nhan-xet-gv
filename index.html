@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=25">
+  <link rel="stylesheet" href="styles.css?v=26">
 </head>
 <body>
   <!-- AUTHENTICATION SCREEN (LOGIN PORTAL) -->
@@ -212,138 +212,137 @@
         </div>
       </main>
 
-      <!-- ADMIN / MANAGER VIEW (STREAMLINED & DOSSIER TABS) -->
+      <!-- ADMIN / MANAGER VIEW (OPTION B: 2-COLUMN FOCUSED DASHBOARD) -->
       <section class="admin-dashboard hidden" id="adminWorkspace" aria-label="Trang Quản lý">
-        <div class="admin-container">
-          <div class="admin-top-bar">
-            <div>
-              <h2 class="admin-title">Tổng hợp Nhận xét của Giáo viên</h2>
-              <p class="admin-subtitle">Chọn tab từng Cô để xem toàn bộ hồ sơ nhận xét hoặc tab Tổng hợp để xem ma trận tiến độ.</p>
+        <div class="admin-shell-layout">
+          <!-- LEFT ADMIN NAVIGATION SIDEBAR -->
+          <aside class="admin-nav-sidebar" aria-label="Điều hướng Quản lý">
+            <div class="admin-nav-label">BẢNG ĐIỀU KHIỂN QUẢN LÝ</div>
+            <nav class="admin-dossier-tab-bar" id="adminDossierTabBar" role="tablist" aria-label="4 mục Quản lý"></nav>
+
+            <div class="admin-sidebar-tools">
+              <div class="admin-nav-label" style="margin-bottom:6px;">CÔNG CỤ NHANH</div>
+              <button type="button" class="admin-tool-btn" id="btnRefreshCloud" title="Tải ngay nhận xét mới nhất từ tất cả Giáo viên">🔄 Làm mới dữ liệu</button>
+              <button type="button" class="admin-tool-btn" id="btnOpenManageModal">⚙️ Quản lý GV &amp; Bài giảng</button>
+              <button type="button" class="admin-tool-btn primary" id="btnExportExcel">📊 Xuất file Excel (.xlsx)</button>
             </div>
-            <div class="admin-btns">
-              <button type="button" class="btn-admin-synthesis" id="btnAdminOpenSynthesis" title="Mở trang biên tập Báo cáo nhận xét tổng hợp dành cho Biên tập viên">📋 Biên tập Báo cáo BTV</button>
-              <button type="button" class="btn-secondary" id="btnRefreshCloud" title="Tải ngay nhận xét mới nhất từ tất cả Giáo viên">🔄 Làm mới dữ liệu</button>
-              <button type="button" class="btn-secondary" id="btnOpenManageModal">⚙️ Quản lý GV &amp; Bài giảng</button>
-              <button type="button" class="btn-primary-export" id="btnExportExcel">📊 Xuất file Excel (.xlsx)</button>
-            </div>
-          </div>
+          </aside>
 
-          <!-- ADMIN KPI SUMMARY BAR (OVERVIEW STATS) -->
-          <div class="admin-kpi-bar" id="adminKpiBar"></div>
+          <!-- RIGHT ADMIN MAIN WORKSPACE -->
+          <div class="admin-main-area">
+            <!-- COMPACT 1-LINE KPI STRIP -->
+            <div class="admin-kpi-strip" id="adminKpiBar"></div>
+            <div class="hidden" id="adminBtvPresenceStrip"></div>
 
-          <!-- BTV LIVE VIEWER PRESENCE STRIP (CHỈ QUẢN LÝ NHÌN THẤY) -->
-          <div class="admin-btv-presence-strip hidden" id="adminBtvPresenceStrip"></div>
-
-          <!-- ADMIN DOSSIER TABS: MATRIX TAB + TEACHER TABS -->
-          <div class="admin-dossier-tab-bar" id="adminDossierTabBar" role="tablist" aria-label="Hồ sơ nhận xét từng giáo viên"></div>
-
-          <!-- VIEW 1: MATRIX VIEW (PROGRESS MATRIX + LESSON COMPARISON) -->
-          <div class="admin-view-panel" id="adminPanelMatrix">
-            <!-- PROGRESS MATRIX -->
-            <div class="admin-card">
-              <div class="admin-card-head" style="margin-bottom: 10px;">
-                <div>
-                  <h3 style="margin: 0; font-size: 16px;">1. Bảng ma trận tiến độ nộp bài</h3>
-                  <p style="margin: 3px 0 0 0; font-size: 12.5px; color: var(--ink-muted);">Bấm vào từng ô để xem nhanh chi tiết nhận xét mà không bị đăng xuất khỏi tài khoản Quản trị.</p>
+            <!-- VIEW 1: PROGRESS MATRIX ONLY -->
+            <div class="admin-view-panel" id="adminPanelMatrix">
+              <div class="admin-card">
+                <div class="admin-card-head" style="margin-bottom: 8px; flex-wrap: wrap; gap: 10px;">
+                  <div>
+                    <h2 class="admin-title" style="margin:0;">📊 Bảng ma trận tiến độ nộp bài</h2>
+                    <p style="margin: 3px 0 0 0; font-size: 12.5px; color: var(--ink-muted);">Bấm vào từng ô để xem nhanh chi tiết nhận xét của cô giáo.</p>
+                  </div>
+                  <div class="matrix-legend">
+                    <span class="legend-chip done">✓ Đã nộp</span>
+                    <span class="legend-chip draft">✎ Đang soạn</span>
+                    <span class="legend-chip empty">Chưa gõ</span>
+                  </div>
                 </div>
-                <div class="matrix-legend">
-                  <span class="legend-chip done">✓ Đã nộp</span>
-                  <span class="legend-chip draft">✎ Đang soạn</span>
-                  <span class="legend-chip empty">Chưa gõ</span>
+                <div class="table-responsive">
+                  <table class="progress-matrix-table" id="progressMatrixTable"></table>
                 </div>
-              </div>
-              <div class="table-responsive">
-                <table class="progress-matrix-table" id="progressMatrixTable"></table>
               </div>
             </div>
 
-            <!-- ALL TEACHER REVIEWS FOR SELECTED LESSON -->
-            <div class="admin-card" id="adminComparisonCard">
-              <div class="admin-card-head" style="flex-wrap: wrap; gap: 12px; align-items: flex-end;">
-                <div class="admin-comparison-titles">
-                  <h3 id="adminComparisonTitle" style="margin: 0; font-size: 16px;">2. Chi tiết nhận xét theo bài</h3>
-                  <p class="admin-comparison-sub" id="adminComparisonSub" style="margin: 3px 0 0 0; font-size: 12.5px; color: var(--ink-muted);">So sánh đa chiều ý kiến đóng góp của giáo viên</p>
+            <!-- VIEW 2: LESSON & SLIDE COMPARISON ONLY -->
+            <div class="admin-view-panel hidden" id="adminPanelComparison">
+              <div class="admin-card" id="adminComparisonCard">
+                <div class="admin-card-head" style="flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+                  <div class="admin-comparison-titles">
+                    <h2 id="adminComparisonTitle" class="admin-title" style="margin: 0;">📌 Đọc nhận xét theo bài</h2>
+                    <p class="admin-comparison-sub" id="adminComparisonSub" style="margin: 3px 0 0 0; font-size: 12.5px; color: var(--ink-muted);">So sánh đa chiều ý kiến đóng góp theo từng Giáo viên hoặc gom nhóm theo số Slide</p>
+                  </div>
+                  <div class="admin-comparison-controls">
+                    <div class="comp-control-group">
+                      <label for="adminLessonSelect" class="comp-control-label">📚 Xem bài giảng:</label>
+                      <select id="adminLessonSelect" class="select-control comp-lesson-select"></select>
+                    </div>
+                    <div class="comp-control-group">
+                      <label for="adminTeacherFilter" class="comp-control-label">👩‍🏫 Giáo viên:</label>
+                      <select id="adminTeacherFilter" class="select-control comp-teacher-select">
+                        <option value="ALL">Tất cả Giáo viên</option>
+                      </select>
+                    </div>
+                    <div class="admin-view-mode-toggle" role="group" aria-label="Chế độ hiển thị ý kiến">
+                      <button type="button" class="btn-comp-view active" id="btnCompViewByTeacher" data-comp-mode="teacher" title="Xem danh sách ý kiến xếp theo từng giáo viên">
+                        👤 Theo Giáo viên
+                      </button>
+                      <button type="button" class="btn-comp-view" id="btnCompViewBySlide" data-comp-mode="slide" title="Gom nhóm tất cả ý kiến của các giáo viên theo từng số Slide">
+                        📌 Gom theo Slide
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div class="admin-comparison-controls">
-                  <div class="comp-control-group">
-                    <label for="adminLessonSelect" class="comp-control-label">📚 Xem bài giảng:</label>
-                    <select id="adminLessonSelect" class="select-control comp-lesson-select"></select>
+                <div class="admin-comparison-grid" id="adminComparisonGrid"></div>
+              </div>
+            </div>
+
+            <!-- VIEW 3: TEACHER DOSSIER VIEW -->
+            <div class="admin-view-panel hidden" id="adminPanelTeacherDossier">
+              <!-- Rendered by JS: Profile Banner + List of Expandable Lesson Dossier Cards -->
+            </div>
+
+            <!-- VIEW 4: SYNTHESIS EDITOR FOR BTV -->
+            <div class="admin-view-panel hidden" id="adminPanelSynthesis">
+              <div class="admin-card">
+                <div class="synthesis-editor-header">
+                  <div>
+                    <h2 class="admin-title" style="margin: 0;">📋 Biên tập Báo cáo BTV</h2>
+                    <p style="margin: 3px 0 0 0; font-size: 12.5px; color: var(--ink-muted);">
+                      Chỉnh sửa nội dung đúc kết &amp; dẫn chứng slide; bấm "Lưu xuất bản BTV" để cập nhật ngay lên link BTV.
+                    </p>
                   </div>
-                  <div class="comp-control-group">
-                    <label for="adminTeacherFilter" class="comp-control-label">👩‍🏫 Giáo viên:</label>
-                    <select id="adminTeacherFilter" class="select-control comp-teacher-select">
-                      <option value="ALL">Tất cả Giáo viên</option>
-                    </select>
-                  </div>
-                  <div class="admin-view-mode-toggle" role="group" aria-label="Chế độ hiển thị ý kiến">
-                    <button type="button" class="btn-comp-view active" id="btnCompViewByTeacher" data-comp-mode="teacher" title="Xem danh sách ý kiến xếp theo từng giáo viên">
-                      👤 Theo Giáo viên
+                  <div class="synthesis-admin-actions">
+                    <button type="button" class="btn-auto-synthesize" id="btnAutoSynthesize" title="Tự động quét nhận xét của 6 giáo viên và đúc kết ẩn danh">
+                      🤖 Đúc kết tự động
                     </button>
-                    <button type="button" class="btn-comp-view" id="btnCompViewBySlide" data-comp-mode="slide" title="Gom nhóm tất cả ý kiến của các giáo viên theo từng số Slide">
-                      📌 Gom theo Slide
+                    <button type="button" class="btn-toggle-raw-ref" id="btnToggleRawRef" title="Mở/đóng khung xem ý kiến gốc của các cô giáo bên cạnh để đối chiếu">
+                      👁️ Ý kiến gốc GV
+                    </button>
+                    <button type="button" class="btn-copy-btv-link" id="btnCopyBtvLink" title="Sao chép link gửi Biên tập viên">
+                      🔗 Chép link BTV
+                    </button>
+                    <button type="button" class="btn-preview-btv" id="btnPreviewBtvView" title="Xem trước giao diện của BTV">
+                      👁️ Xem thử BTV
+                    </button>
+                    <button type="button" class="btn-save-synthesis" id="btnSaveSynthesis">
+                      💾 Lưu xuất bản BTV
                     </button>
                   </div>
                 </div>
-              </div>
-              <div class="admin-comparison-grid" id="adminComparisonGrid"></div>
-            </div>
-          </div>
 
-          <!-- VIEW 2: TEACHER DOSSIER VIEW (EXPANDABLE LESSON CARDS - OPTION A) -->
-          <div class="admin-view-panel hidden" id="adminPanelTeacherDossier">
-            <!-- Rendered by JS: Profile Banner + List of Expandable Lesson Dossier Cards -->
-          </div>
+                <!-- COLLAPSIBLE BTV PRESENCE MONITOR (CHỈ QUẢN LÝ NHÌN THẤY) -->
+                <div class="btv-presence-panel" id="btvPresencePanel"></div>
 
-          <!-- VIEW 3: SYNTHESIS EDITOR FOR ADMIN -->
-          <div class="admin-view-panel hidden" id="adminPanelSynthesis">
-            <div class="admin-card">
-              <div class="synthesis-editor-header">
-                <div>
-                  <h3 style="margin: 0; font-size: 16px; color: var(--ink-primary);">📋 Biên tập Báo cáo Tổng hợp (Bản hiển thị cho BTV)</h3>
-                  <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--ink-muted);">
-                    Quản lý có thể trực tiếp chỉnh sửa nội dung nhận xét và dẫn chứng slide của từng bài. Bấm "Lưu xuất bản" để link BTV nhận được bản mới tức thì.
-                  </p>
-                </div>
-                <div class="synthesis-admin-actions">
-                  <button type="button" class="btn-auto-synthesize" id="btnAutoSynthesize" title="Tự động quét nhận xét của 6 giáo viên và đúc kết thành các gạch đầu dòng">
-                    🤖 Tự động đúc kết từ GV
-                  </button>
-                  <button type="button" class="btn-toggle-raw-ref" id="btnToggleRawRef" title="Mở/đóng khung xem ý kiến gốc của các cô giáo bên cạnh để đối chiếu">
-                    👁️ Đối chiếu ý kiến gốc
-                  </button>
-                  <button type="button" class="btn-copy-btv-link" id="btnCopyBtvLink" title="Sao chép link gửi Biên tập viên">
-                    🔗 Sao chép link gửi BTV
-                  </button>
-                  <button type="button" class="btn-preview-btv" id="btnPreviewBtvView" title="Xem trước giao diện của BTV">
-                    👁️ Xem giao diện BTV
-                  </button>
-                  <button type="button" class="btn-save-synthesis" id="btnSaveSynthesis">
-                    💾 Lưu xuất bản BTV
+                <!-- ADMIN SYNTHESIS SHEET SELECTOR & ADD LESSON BUTTON -->
+                <div class="synthesis-sheet-bar-wrap">
+                  <div class="synthesis-sheet-pills" id="adminSynthesisSheetPills"></div>
+                  <button type="button" class="btn-add-synth-sheet" id="btnAddSynthSheet" title="Thêm một bài giảng khác vào danh sách Báo cáo BTV">
+                    ➕ Thêm bài
                   </button>
                 </div>
-              </div>
 
-              <!-- ADMIN BTV PRESENCE MONITOR (CHỈ QUẢN LÝ NHÌN THẤY) -->
-              <div class="btv-presence-panel" id="btvPresencePanel"></div>
-
-              <!-- ADMIN SYNTHESIS SHEET SELECTOR & ADD LESSON BUTTON -->
-              <div class="synthesis-sheet-bar-wrap">
-                <div class="synthesis-sheet-pills" id="adminSynthesisSheetPills"></div>
-                <button type="button" class="btn-add-synth-sheet" id="btnAddSynthSheet" title="Thêm một bài giảng khác vào danh sách Báo cáo BTV">
-                  ➕ Thêm bài vào báo cáo BTV
-                </button>
-              </div>
-
-              <!-- SYNTHESIS WORKSPACE (FORM ROWS + OPTIONAL RAW REFERENCE SPLIT PANEL) -->
-              <div class="synthesis-split-container" id="synthesisSplitContainer">
-                <div class="synthesis-form-rows" id="adminSynthesisFormRows"></div>
-                <aside class="synthesis-raw-drawer hidden" id="synthesisRawDrawer">
-                  <div class="raw-drawer-head">
-                    <span class="raw-drawer-title">📝 Ý kiến gốc của các Cô</span>
-                    <button type="button" class="btn-close-raw-drawer" id="btnCloseRawDrawer" title="Đóng khung đối chiếu">✕</button>
-                  </div>
-                  <div class="raw-drawer-body" id="synthesisRawDrawerBody"></div>
-                </aside>
+                <!-- SYNTHESIS WORKSPACE (FORM ROWS + OPTIONAL RAW REFERENCE SPLIT PANEL) -->
+                <div class="synthesis-split-container" id="synthesisSplitContainer">
+                  <div class="synthesis-form-rows" id="adminSynthesisFormRows"></div>
+                  <aside class="synthesis-raw-drawer hidden" id="synthesisRawDrawer">
+                    <div class="raw-drawer-head">
+                      <span class="raw-drawer-title">📝 Ý kiến gốc của các Cô</span>
+                      <button type="button" class="btn-close-raw-drawer" id="btnCloseRawDrawer" title="Đóng khung đối chiếu">✕</button>
+                    </div>
+                    <div class="raw-drawer-body" id="synthesisRawDrawerBody"></div>
+                  </aside>
+                </div>
               </div>
             </div>
           </div>
@@ -611,7 +610,7 @@
     </div>
   </dialog>
 
-  <script src="data/initial_data.js?v=34"></script>
-  <script src="app.js?v=34"></script>
+  <script src="data/initial_data.js?v=35"></script>
+  <script src="app.js?v=35"></script>
 </body>
 </html>

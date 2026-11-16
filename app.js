@@ -54,6 +54,7 @@
   let btvPresenceRecords = [];
   let btvHeartbeatTimer = null;
   let isBtvVisitCountedThisLoad = false;
+  let isBtvPresenceExpanded = false;
 
   // SMART SLIDE FLOW STATE (v15 OPT-IN UPDATE)
   let currentViewMode = localStorage.getItem("novastars_ui_view_mode") || "classic";
@@ -1061,11 +1062,11 @@
       // Allow admin to toggle between viewing the admin panel and previewing the teacher form
       btnToggleAdmin.classList.remove("hidden");
       btnToggleAdmin.textContent = isAdminView ? "👁️ Xem phiếu GV" : "📊 Về Quản lý";
-      if (btnToggleSidebar) btnToggleSidebar.classList.toggle("hidden", isAdminPreviewingBtv);
+      if (btnToggleSidebar) btnToggleSidebar.classList.toggle("hidden", isAdminView || isAdminPreviewingBtv);
       if (btnTopSave) btnTopSave.classList.add("hidden");
 
       if (btnTopOpenSynthesis) {
-        btnTopOpenSynthesis.classList.remove("hidden");
+        btnTopOpenSynthesis.classList.toggle("hidden", isAdminView);
         btnTopOpenSynthesis.onclick = () => {
           isAdminPreviewingBtv = false;
           isAdminView = true;
@@ -2530,7 +2531,7 @@
 
     if (panel) {
       const rowsHtml = sorted.length === 0
-        ? `<tr><td colspan="6" style="text-align:center;color:#64748B;padding:14px;">Chưa có Biên tập viên nào mở link BTV. Khi BTV mở link <code>?role=btv</code> và nhập tên, thông tin sẽ hiển thị trực tiếp tại đây.</td></tr>`
+        ? `<tr><td colspan="6" style="text-align:center;color:#64748B;padding:12px;">Chưa có Biên tập viên nào mở link BTV. Khi BTV mở link <code>?role=btv</code> và nhập tên, thông tin sẽ hiển thị trực tiếp tại đây.</td></tr>`
         : sorted.map((v, idx) => {
           const online = isViewerOnline(v);
           const statusHtml = online
@@ -2551,19 +2552,28 @@
           `;
         }).join("");
 
+      const onlinePreview = onlineList.length > 0
+        ? `(${onlineList.map(v => escapeHtml(v.name)).join(", ")})`
+        : "";
+
       panel.innerHTML = `
-        <div class="btv-presence-head">
+        <div class="btv-presence-head" style="margin-bottom:${isBtvPresenceExpanded ? "10px" : "0"};cursor:pointer;" id="btvPresenceToggleHead">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <span class="btv-live-dot${onlineList.length === 0 ? " idle" : ""}"></span>
-            <strong style="font-size:13.5px;color:#0F172A;">Theo dõi người xem trang BTV (chỉ Quản lý thấy):</strong>
-            <span style="font-size:12.5px;color:#065F46;font-weight:700;">${onlineList.length} đang online</span>
-            <span style="font-size:12.5px;color:#475569;">· ${sorted.length} người đã từng mở</span>
+            <strong style="font-size:13px;color:#0F172A;">Theo dõi người xem trang BTV:</strong>
+            <span style="font-size:12.5px;color:#065F46;font-weight:700;">${onlineList.length} đang online ${onlinePreview}</span>
+            <span style="font-size:12px;color:#64748B;">· ${sorted.length} người đã từng mở</span>
           </div>
-          <button type="button" class="btn-secondary" id="btnRefreshBtvPresence" style="padding:5px 10px;font-size:12px;">
-            🔄 Cập nhật danh sách
-          </button>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button type="button" class="btn-secondary" id="btnRefreshBtvPresence" style="padding:4px 9px;font-size:11.5px;">
+              🔄 Làm mới
+            </button>
+            <button type="button" class="btn-secondary" id="btnTogglePresenceBody" style="padding:4px 10px;font-size:11.5px;">
+              ${isBtvPresenceExpanded ? "▴ Thu gọn" : "▾ Xem danh sách"}
+            </button>
+          </div>
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive${isBtvPresenceExpanded ? "" : " hidden"}" id="btvPresenceTableWrap">
           <table class="btv-presence-table">
             <thead>
               <tr>
@@ -2580,15 +2590,22 @@
         </div>
       `;
 
+      const toggleFn = (e) => {
+        if (e && e.target && e.target.closest("#btnRefreshBtvPresence")) return;
+        isBtvPresenceExpanded = !isBtvPresenceExpanded;
+        renderBtvPresenceMonitor();
+      };
+      const headEl = document.getElementById("btvPresenceToggleHead");
+      if (headEl) headEl.onclick = toggleFn;
+
       const btnRef = document.getElementById("btnRefreshBtvPresence");
       if (btnRef) {
-        btnRef.onclick = async () => {
+        btnRef.onclick = async (e) => {
+          e.stopPropagation();
           btnRef.disabled = true;
-          btnRef.textContent = "⏳ Đang tải...";
+          btnRef.textContent = "⏳...";
           await fetchCloudDb(false);
           renderBtvPresenceMonitor();
-          btnRef.disabled = false;
-          btnRef.textContent = "🔄 Cập nhật danh sách";
         };
       }
     }
@@ -2808,71 +2825,32 @@
     const pct = totalCells > 0 ? Math.round((submittedCells / totalCells) * 100) : 0;
     const totalPoints = Object.values(critPointCounts).reduce((a, b) => a + b, 0);
     const missingCells = Math.max(0, totalCells - submittedCells);
+    const btvOnlineList = (btvPresenceRecords || []).filter(isViewerOnline);
 
     kpiBar.innerHTML = `
-      <div class="kpi-card c-green">
-        <div class="kpi-top-row">
-          <span class="kpi-label">Tiến độ nộp bài</span>
-          <span class="kpi-icon">📈</span>
-        </div>
-        <div class="kpi-number-row">
-          <span class="kpi-main-number">${submittedCells}/${totalCells}</span>
-          <span class="kpi-sub-text">(${pct}% đã nộp · ${draftCells} đang soạn)</span>
-        </div>
-        <div class="kpi-progress-bar">
-          <div class="kpi-progress-fill" style="width: ${pct}%;"></div>
-        </div>
+      <div class="kpi-strip-metrics">
+        <span class="kpi-pill-item">📈 Đã nộp: <strong>${submittedCells}/${totalCells}</strong> (${pct}% · ${draftCells} nháp)</span>
+        <span class="kpi-pill-item">📚 Đủ ${teachers.length} GV: <strong>${completedLessonsCount}/${lessons.length} bài</strong></span>
+        <span class="kpi-pill-item">💬 Tổng: <strong>${totalPoints} ý kiến</strong></span>
       </div>
-
-      <div class="kpi-card c-blue">
-        <div class="kpi-top-row">
-          <span class="kpi-label">Bài hoàn tất 100%</span>
-          <span class="kpi-icon">📚</span>
-        </div>
-        <div class="kpi-number-row">
-          <span class="kpi-main-number">${completedLessonsCount}/${lessons.length}</span>
-          <span class="kpi-sub-text">bài đủ ${teachers.length}/${teachers.length} GV nộp</span>
-        </div>
-        <div class="kpi-sub-text" style="margin-top: 4px;">
-          ${lessons.length - completedLessonsCount > 0
-            ? `Còn ${lessons.length - completedLessonsCount} bài đang thu thập ý kiến`
-            : "Tất cả bài giảng đã thu thập đủ!"}
-        </div>
-      </div>
-
-      <div class="kpi-card c-amber">
-        <div class="kpi-top-row">
-          <span class="kpi-label">Tổng ý kiến đóng góp</span>
-          <span class="kpi-icon">💬</span>
-        </div>
-        <div class="kpi-number-row">
-          <span class="kpi-main-number">${totalPoints}</span>
-          <span class="kpi-sub-text">ý kiến chi tiết</span>
-        </div>
-        <div class="kpi-chips-row">
-          <span class="kpi-mini-chip c1" title="Ưng ý">🟢 ${critPointCounts.ung_y}</span>
-          <span class="kpi-mini-chip c2" title="Chưa hiểu">🟡 ${critPointCounts.chua_hieu}</span>
-          <span class="kpi-mini-chip c3" title="Đề xuất cải tiến">🔵 ${critPointCounts.cai_tien}</span>
-          <span class="kpi-mini-chip c4" title="Khó khăn thực tế">🔴 ${critPointCounts.kho_khan}</span>
-        </div>
-      </div>
-
-      <div class="kpi-card c-rose">
-        <div class="kpi-top-row">
-          <span class="kpi-label">Theo dõi &amp; Nhắc việc</span>
-          <span class="kpi-icon">🔔</span>
-        </div>
-        <div class="kpi-number-row">
-          <span class="kpi-main-number">${missingCells}</span>
-          <span class="kpi-sub-text">lượt chưa nộp bài</span>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
-          <button type="button" class="kpi-action-btn" id="btnKpiCopyMissing" title="Chép danh sách các cô chưa nộp bài để gửi nhắc nhở Zalo/nhóm">
-            📋 Chép DS chưa nộp
-          </button>
-        </div>
+      <div class="kpi-strip-actions">
+        ${missingCells > 0
+          ? `<button type="button" class="kpi-strip-btn" id="btnKpiCopyMissing" title="Chép danh sách các cô chưa nộp để gửi nhắc nhở">📋 Chép DS thiếu (${missingCells})</button>`
+          : `<span style="font-size:12px;color:#059669;font-weight:700;">✅ Đủ 100%</span>`}
+        <button type="button" class="kpi-strip-btn${btvOnlineList.length > 0 ? " live" : ""}" id="btnKpiBtvLive" title="Bấm để xem ai đang mở trang BTV">
+          ${btvOnlineList.length > 0 ? `🟢 BTV đang xem: ${btvOnlineList.length} người` : `👁️ Người xem BTV: ${(btvPresenceRecords || []).length}`}
+        </button>
       </div>
     `;
+
+    const btnBtvLive = document.getElementById("btnKpiBtvLive");
+    if (btnBtvLive) {
+      btnBtvLive.addEventListener("click", () => {
+        activeAdminTab = "synthesis";
+        isBtvPresenceExpanded = true;
+        renderAdminDashboard();
+      });
+    }
 
     const btnCopyMissing = document.getElementById("btnKpiCopyMissing");
     if (btnCopyMissing) {
@@ -3557,20 +3535,9 @@
   }
 
   function renderAdminDashboard() {
-    // 0. Render Overview KPI Summary Bar & BTV Presence Strip
+    // 0. Render Compact KPI Strip & BTV Presence Monitor
     renderAdminKpiBar();
     renderBtvPresenceMonitor();
-
-    // 0b. Wire Prominent Admin Synthesis Button
-    const btnAdminSynth = document.getElementById("btnAdminOpenSynthesis");
-    if (btnAdminSynth) {
-      btnAdminSynth.onclick = () => {
-        activeAdminTab = "synthesis";
-        renderAdminDashboard();
-        const pSynth = document.getElementById("adminPanelSynthesis");
-        if (pSynth) pSynth.scrollIntoView({ behavior: "smooth", block: "start" });
-      };
-    }
 
     // Normalize legacy teacher-id tab state
     const isTeacherTabId = (db.teachers || []).some(t => t.id === activeAdminTab);
@@ -3579,68 +3546,71 @@
       activeAdminTab = "dossier";
     }
 
-    // 1. Render Streamlined 3-Tab Bar
+    const onlineCount = (btvPresenceRecords || []).filter(isViewerOnline).length;
+
+    // 1. Render 4 Focused Sidebar Menu Items (Option B)
     const tabBar = document.getElementById("adminDossierTabBar");
     if (tabBar) {
       tabBar.innerHTML = "";
-
-      // Tab 1: Progress Matrix & Slide/Teacher Comparison
-      const matrixBtn = document.createElement("button");
-      matrixBtn.type = "button";
-      matrixBtn.className = "admin-sheet-tab" + (activeAdminTab === "matrix" ? " active" : "");
-      matrixBtn.innerHTML = `📊 Tổng hợp Tiến độ & Nhận xét`;
-      matrixBtn.addEventListener("click", () => {
-        activeAdminTab = "matrix";
-        renderAdminDashboard();
-      });
-      tabBar.appendChild(matrixBtn);
-
-      // Tab 2: Synthesis Editor for BTV
-      const synthBtn = document.createElement("button");
-      synthBtn.type = "button";
-      synthBtn.className = "admin-sheet-tab tab-btv-synthesis" + (activeAdminTab === "synthesis" ? " active" : "");
-      synthBtn.innerHTML = `📋 Báo cáo BTV (Bản tổng hợp)`;
-      synthBtn.title = "Biên tập báo cáo nhận xét tổng hợp dành cho Biên tập viên";
-      synthBtn.addEventListener("click", () => {
-        activeAdminTab = "synthesis";
-        renderAdminDashboard();
-      });
-      tabBar.appendChild(synthBtn);
-
-      // Tab 3: Individual Teacher Dossiers (with inner 6-teacher switcher)
-      const dossierBtn = document.createElement("button");
-      dossierBtn.type = "button";
-      dossierBtn.className = "admin-sheet-tab" + (activeAdminTab === "dossier" ? " active" : "");
-      dossierBtn.innerHTML = `👩‍🏫 Hồ sơ từng Giáo viên <span class="admin-tab-pill">${(db.teachers || []).length} GV</span>`;
-      dossierBtn.title = "Xem toàn bộ hồ sơ nhận xét chi tiết của từng cô giáo";
-      dossierBtn.addEventListener("click", () => {
-        activeAdminTab = "dossier";
-        if (!activeDossierTeacherId && db.teachers && db.teachers.length > 0) {
-          activeDossierTeacherId = db.teachers[0].id;
+      const navItems = [
+        {
+          id: "matrix",
+          label: "📊 Tiến độ nộp bài",
+          badge: `${(db.lessons || []).length} bài`,
+          live: false
+        },
+        {
+          id: "comparison",
+          label: "📌 Nhận xét theo Bài",
+          badge: "GV / Slide",
+          live: false
+        },
+        {
+          id: "dossier",
+          label: "👩‍🏫 Hồ sơ từng Giáo viên",
+          badge: `${(db.teachers || []).length} GV`,
+          live: false
+        },
+        {
+          id: "synthesis",
+          label: "📋 Báo cáo BTV",
+          badge: onlineCount > 0 ? `🟢 ${onlineCount}` : `${(db.synthesis_reports || []).length} bài`,
+          live: onlineCount > 0
         }
-        renderAdminDashboard();
+      ];
+
+      navItems.forEach(item => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "admin-nav-btn" + (activeAdminTab === item.id ? " active" : "");
+        btn.innerHTML = `<span>${item.label}</span><span class="admin-nav-badge${item.live ? " live" : ""}">${item.badge}</span>`;
+        btn.addEventListener("click", () => {
+          activeAdminTab = item.id;
+          if (item.id === "dossier" && !activeDossierTeacherId && db.teachers && db.teachers.length > 0) {
+            activeDossierTeacherId = db.teachers[0].id;
+          }
+          renderAdminDashboard();
+        });
+        tabBar.appendChild(btn);
       });
-      tabBar.appendChild(dossierBtn);
     }
 
     const panelMatrix = document.getElementById("adminPanelMatrix");
+    const panelComparison = document.getElementById("adminPanelComparison");
     const panelDossier = document.getElementById("adminPanelTeacherDossier");
     const panelSynthesis = document.getElementById("adminPanelSynthesis");
 
+    if (panelMatrix) panelMatrix.classList.toggle("hidden", activeAdminTab !== "matrix");
+    if (panelComparison) panelComparison.classList.toggle("hidden", activeAdminTab !== "comparison");
+    if (panelDossier) panelDossier.classList.toggle("hidden", activeAdminTab !== "dossier");
+    if (panelSynthesis) panelSynthesis.classList.toggle("hidden", activeAdminTab !== "synthesis");
+
     if (activeAdminTab === "synthesis") {
-      if (panelMatrix) panelMatrix.classList.add("hidden");
-      if (panelDossier) panelDossier.classList.add("hidden");
-      if (panelSynthesis) panelSynthesis.classList.remove("hidden");
       renderAdminSynthesisEditor();
       return;
-    } else {
-      if (panelSynthesis) panelSynthesis.classList.add("hidden");
     }
 
     if (activeAdminTab === "matrix") {
-      if (panelMatrix) panelMatrix.classList.remove("hidden");
-      if (panelDossier) panelDossier.classList.add("hidden");
-
       const matrixTable = document.getElementById("progressMatrixTable");
       let thead = `<thead><tr><th>Giáo viên</th><th>PIN</th>`;
       db.lessons.forEach(l => {
@@ -3679,8 +3649,8 @@
           openQuickInspectModal(btn.dataset.inspectGv, btn.dataset.inspectLesson);
         });
       });
-
-      // Populate Lesson Switcher for Section 2 Comparison
+    } else if (activeAdminTab === "comparison") {
+      // Populate Lesson Switcher for Comparison View
       const lessonSel = document.getElementById("adminLessonSelect");
       if (!adminSelectedLessonId || !(db.lessons || []).some(l => l.id === adminSelectedLessonId)) {
         adminSelectedLessonId = currentLessonId || (db.lessons[0] && db.lessons[0].id);
@@ -3703,7 +3673,7 @@
       const lesson = (db.lessons || []).find(l => l.id === adminSelectedLessonId) || getCurrentLesson();
       const titleEl = document.getElementById("adminComparisonTitle");
       if (titleEl) {
-        titleEl.textContent = `2. Chi tiết nhận xét — Bài ${lesson.code}: ${lesson.title}`;
+        titleEl.textContent = `📌 Nhận xét — Bài ${lesson.code}: ${lesson.title}`;
       }
 
       const filterSel = document.getElementById("adminTeacherFilter");
@@ -4771,10 +4741,12 @@
 
     if (currentUser.role === "admin") {
       if (isAdminView) {
+        if (lessonSidebar) lessonSidebar.classList.add("hidden");
         if (teacherWorkspace) teacherWorkspace.classList.add("hidden");
         if (adminWorkspace) adminWorkspace.classList.remove("hidden");
         renderAdminDashboard();
       } else {
+        if (lessonSidebar) lessonSidebar.classList.remove("hidden");
         if (teacherWorkspace) teacherWorkspace.classList.remove("hidden");
         if (adminWorkspace) adminWorkspace.classList.add("hidden");
         renderQuickSlideStrip();
