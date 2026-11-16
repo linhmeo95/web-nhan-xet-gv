@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=24">
+  <link rel="stylesheet" href="styles.css?v=25">
 </head>
 <body>
   <!-- AUTHENTICATION SCREEN (LOGIN PORTAL) -->
@@ -231,6 +231,9 @@
           <!-- ADMIN KPI SUMMARY BAR (OVERVIEW STATS) -->
           <div class="admin-kpi-bar" id="adminKpiBar"></div>
 
+          <!-- BTV LIVE VIEWER PRESENCE STRIP (CHỈ QUẢN LÝ NHÌN THẤY) -->
+          <div class="admin-btv-presence-strip hidden" id="adminBtvPresenceStrip"></div>
+
           <!-- ADMIN DOSSIER TABS: MATRIX TAB + TEACHER TABS -->
           <div class="admin-dossier-tab-bar" id="adminDossierTabBar" role="tablist" aria-label="Hồ sơ nhận xét từng giáo viên"></div>
 
@@ -320,6 +323,9 @@
                 </div>
               </div>
 
+              <!-- ADMIN BTV PRESENCE MONITOR (CHỈ QUẢN LÝ NHÌN THẤY) -->
+              <div class="btv-presence-panel" id="btvPresencePanel"></div>
+
               <!-- ADMIN SYNTHESIS SHEET SELECTOR & ADD LESSON BUTTON -->
               <div class="synthesis-sheet-bar-wrap">
                 <div class="synthesis-sheet-pills" id="adminSynthesisSheetPills"></div>
@@ -390,6 +396,31 @@
       </section>
     </div>
   </div>
+
+  <!-- BTV FIRST-TIME NAME DIALOG (PHƯƠNG ÁN 2: HỎI TÊN 1 LẦN DUY NHẤT KHI MỞ LINK BTV) -->
+  <dialog class="btv-name-dialog" id="btvNameDialog" aria-labelledby="btvNameDialogTitle">
+    <div class="dialog-inner btv-name-dialog-inner">
+      <div class="btv-name-head">
+        <div class="btv-name-icon">📋</div>
+        <div>
+          <h2 id="btvNameDialogTitle">Chào mừng bạn xem Báo cáo Tổng hợp</h2>
+          <p>Vui lòng nhập Tên (hoặc Vai trò) của bạn để vào xem. Hệ thống chỉ hỏi <strong>1 lần duy nhất</strong> trên trình duyệt này.</p>
+        </div>
+      </div>
+      <form id="btvNameForm">
+        <div class="form-group">
+          <label for="btvViewerNameInput">Họ và tên / Bộ phận của bạn:</label>
+          <input type="text" id="btvViewerNameInput" class="input-control" maxlength="60" placeholder="VD: Nguyễn Minh Hiền / BTV Tổ AI..." required autofocus>
+        </div>
+        <p class="form-error" id="btvNameErrorMsg" style="display:none;">Vui lòng nhập tên của bạn để tiếp tục.</p>
+        <div class="dialog-footer" style="margin-top: 14px;">
+          <button type="submit" class="btn-primary" style="width:100%;padding:11px 18px;font-size:14px;">
+            Vào xem Báo cáo Tổng hợp ➔
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
 
   <!-- IMAGE LIGHTBOX DIALOG -->
   <dialog class="image-lightbox-dialog" id="imageLightboxDialog" closedby="any" aria-label="Phóng to ảnh slide dẫn chứng">
@@ -580,7 +611,7 @@
     </div>
   </dialog>
 
-  <script src="data/initial_data.js?v=33"></script>
-  <script src="app.js?v=33"></script>
+  <script src="data/initial_data.js?v=34"></script>
+  <script src="app.js?v=34"></script>
 </body>
 </html>

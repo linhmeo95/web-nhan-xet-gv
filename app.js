@@ -3,6 +3,10 @@
 
   const STORAGE_KEY = "NOVASTARS_REVIEW_APP_DB_V12";
   const SESSION_KEY = "NOVASTARS_CURRENT_USER_V12";
+  const BTV_VIEWER_STORAGE_KEY = "NOVASTARS_BTV_VIEWER_PROFILE_V1";
+  const BTV_PRESENCE_PREFIX = "btv_presence__";
+  const BTV_HEARTBEAT_INTERVAL_MS = 15000;
+  const BTV_ONLINE_TTL_MS = 45000;
   const SUPABASE_URL = "https://altabwyuskgvxtcnzlbw.supabase.co";
   const SUPABASE_KEY = "sb_publishable_LxTa5ODn1kObt_BBAwvLxw_2E3OXZUd";
   const SUPABASE_TABLE = "novastars_app_state";
@@ -47,6 +51,9 @@
   let isSidebarCollapsed = localStorage.getItem("novastars_sidebar_collapsed") === "true";
   let activeBtvSheetIdx = 0;
   let adminSynthesisSheetIdx = 0;
+  let btvPresenceRecords = [];
+  let btvHeartbeatTimer = null;
+  let isBtvVisitCountedThisLoad = false;
 
   // SMART SLIDE FLOW STATE (v15 OPT-IN UPDATE)
   let currentViewMode = localStorage.getItem("novastars_ui_view_mode") || "classic";
@@ -396,14 +403,22 @@
 
       let cloudConfig = null;
       const cloudReviews = [];
+      const cloudPresence = [];
 
       rows.forEach(row => {
         if (row.id === "config" && row.payload) {
           cloudConfig = row.payload;
         } else if (row.id && row.id.startsWith("rev__") && row.payload) {
           cloudReviews.push(row.payload);
+        } else if (row.id && row.id.startsWith(BTV_PRESENCE_PREFIX) && row.payload) {
+          cloudPresence.push({
+            ...row.payload,
+            updatedAt: row.updated_at || row.payload.lastSeenAt
+          });
         }
       });
+
+      btvPresenceRecords = cloudPresence;
 
       if (cloudConfig) {
         if (Array.isArray(cloudConfig.teachers) && cloudConfig.teachers.length > 0) {
@@ -490,7 +505,9 @@
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
 
-      if (forceRender || isAdminView || !isUserTyping()) {
+      if (isAdminView && isUserTyping()) {
+        renderBtvPresenceMonitor();
+      } else if (forceRender || isAdminView || !isUserTyping()) {
         renderAll();
       } else {
         renderTopBar();
@@ -1060,7 +1077,10 @@
         };
       }
     } else if (currentUser.role === "btv") {
-      nameEl.textContent = "👁️ Biên tập viên (Chỉ xem)";
+      const btvProfile = getBtvViewerProfile();
+      nameEl.textContent = btvProfile.name
+        ? `👁️ ${btvProfile.name} (BTV · Chỉ xem)`
+        : "👁️ Biên tập viên (Chỉ xem)";
       if (dotEl) dotEl.style.background = "#0284C7";
       // STRICT ROLE ISOLATION: Hide all admin & teacher tools for BTV
       btnToggleAdmin.classList.add("hidden");
@@ -2316,6 +2336,264 @@
     } catch (e) {}
   }
 
+  function getBtvViewerProfile() {
+    let profile = null;
+    try {
+      const raw = localStorage.getItem(BTV_VIEWER_STORAGE_KEY);
+      if (raw) profile = JSON.parse(raw);
+    } catch (e) {}
+    if (!profile || typeof profile !== "object") profile = {};
+    if (!profile.viewerId) {
+      profile.viewerId = "v_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7);
+    }
+    if (!Array.isArray(profile.viewedSheets)) profile.viewedSheets = [];
+    if (typeof profile.visitCount !== "number") profile.visitCount = 0;
+    if (!profile.firstSeenAt) profile.firstSeenAt = new Date().toISOString();
+    try {
+      localStorage.setItem(BTV_VIEWER_STORAGE_KEY, JSON.stringify(profile));
+    } catch (e) {}
+    return profile;
+  }
+
+  function saveBtvViewerProfile(profile) {
+    try {
+      localStorage.setItem(BTV_VIEWER_STORAGE_KEY, JSON.stringify(profile));
+    } catch (e) {}
+  }
+
+  function sendBtvHeartbeat(isOnline = true, useKeepalive = false) {
+    if (!currentUser || currentUser.role !== "btv") return;
+    const profile = getBtvViewerProfile();
+    if (!profile.name || !profile.name.trim()) return;
+
+    const reports = db.synthesis_reports || [];
+    const currentSheet = reports[activeBtvSheetIdx];
+    const currentSheetName = currentSheet ? (currentSheet.sheet_name || currentSheet.lessonCode || "") : "";
+    if (currentSheetName && !profile.viewedSheets.includes(currentSheetName)) {
+      profile.viewedSheets.push(currentSheetName);
+    }
+    const nowIso = new Date().toISOString();
+    profile.lastSeenAt = nowIso;
+    saveBtvViewerProfile(profile);
+
+    const rowPayload = [{
+      id: `${BTV_PRESENCE_PREFIX}${profile.viewerId}`,
+      payload: {
+        type: "btv_presence",
+        viewerId: profile.viewerId,
+        name: profile.name.trim(),
+        currentSheet: currentSheetName,
+        viewedSheets: profile.viewedSheets,
+        visitCount: profile.visitCount || 1,
+        firstSeenAt: profile.firstSeenAt || nowIso,
+        lastSeenAt: nowIso,
+        isOnline: Boolean(isOnline)
+      }
+    }];
+
+    try {
+      fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?on_conflict=id`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "resolution=merge-duplicates,return=minimal"
+        },
+        body: JSON.stringify(rowPayload),
+        keepalive: Boolean(useKeepalive)
+      }).catch(() => {});
+    } catch (e) {}
+  }
+
+  function ensureBtvViewerIdentifiedAndStartHeartbeat() {
+    if (!currentUser || currentUser.role !== "btv") return;
+    const profile = getBtvViewerProfile();
+
+    const startTracking = () => {
+      if (!isBtvVisitCountedThisLoad) {
+        profile.visitCount = (profile.visitCount || 0) + 1;
+        saveBtvViewerProfile(profile);
+        isBtvVisitCountedThisLoad = true;
+      }
+      renderTopBar();
+      sendBtvHeartbeat(true);
+      if (!btvHeartbeatTimer) {
+        btvHeartbeatTimer = setInterval(() => {
+          if (currentUser && currentUser.role === "btv" && document.visibilityState === "visible") {
+            sendBtvHeartbeat(true);
+          }
+        }, BTV_HEARTBEAT_INTERVAL_MS);
+      }
+    };
+
+    if (profile.name && profile.name.trim()) {
+      startTracking();
+      return;
+    }
+
+    const dlg = document.getElementById("btvNameDialog");
+    const form = document.getElementById("btvNameForm");
+    const inp = document.getElementById("btvViewerNameInput");
+    const err = document.getElementById("btvNameErrorMsg");
+    if (!dlg || !form || !inp) return;
+
+    if (!dlg.dataset.bound) {
+      dlg.dataset.bound = "1";
+      dlg.addEventListener("cancel", (e) => {
+        const cur = getBtvViewerProfile();
+        if (!cur.name || !cur.name.trim()) {
+          e.preventDefault();
+        }
+      });
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const entered = inp.value.trim();
+        if (!entered) {
+          if (err) err.style.display = "block";
+          inp.focus();
+          return;
+        }
+        if (err) err.style.display = "none";
+        const cur = getBtvViewerProfile();
+        cur.name = entered;
+        saveBtvViewerProfile(cur);
+        dlg.close();
+        ensureBtvViewerIdentifiedAndStartHeartbeat();
+      });
+    }
+
+    if (!dlg.open) {
+      inp.value = "";
+      dlg.showModal();
+      setTimeout(() => inp.focus(), 50);
+    }
+  }
+
+  function isViewerOnline(rec) {
+    if (!rec || rec.isOnline === false) return false;
+    const ts = new Date(rec.lastSeenAt || rec.updatedAt || 0).getTime();
+    if (!ts || Number.isNaN(ts)) return false;
+    return (Date.now() - ts) <= BTV_ONLINE_TTL_MS;
+  }
+
+  function formatPresenceTime(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "—";
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(d.getHours())}:${pad(d.getMinutes())} · ${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
+  }
+
+  function renderBtvPresenceMonitor() {
+    if (!currentUser || currentUser.role !== "admin") return;
+    const strip = document.getElementById("adminBtvPresenceStrip");
+    const panel = document.getElementById("btvPresencePanel");
+
+    const sorted = [...(btvPresenceRecords || [])].sort((a, b) => {
+      const aOn = isViewerOnline(a) ? 1 : 0;
+      const bOn = isViewerOnline(b) ? 1 : 0;
+      if (bOn !== aOn) return bOn - aOn;
+      return new Date(b.lastSeenAt || b.updatedAt || 0).getTime() - new Date(a.lastSeenAt || a.updatedAt || 0).getTime();
+    });
+
+    const onlineList = sorted.filter(isViewerOnline);
+
+    if (strip) {
+      strip.classList.remove("hidden");
+      strip.classList.toggle("idle", onlineList.length === 0);
+      const onlineChips = onlineList.length > 0
+        ? onlineList.map(v => `<span class="btv-strip-chip">🟢 ${escapeHtml(v.name)}${v.currentSheet ? ` (${escapeHtml(v.currentSheet)})` : ""}</span>`).join("")
+        : `<span style="color:#64748B;font-size:12.5px;">Hiện chưa có ai đang mở trang BTV · Tổng <strong>${sorted.length}</strong> người đã từng xem</span>`;
+
+      strip.innerHTML = `
+        <div class="btv-strip-left">
+          <span class="btv-live-dot${onlineList.length === 0 ? " idle" : ""}"></span>
+          <strong>Đang xem trang BTV: ${onlineList.length} người</strong>
+          ${onlineChips}
+        </div>
+        <button type="button" class="btv-strip-btn" id="btnJumpBtvPresence">
+          👁️ Xem lịch sử truy cập (${sorted.length}) ➔
+        </button>
+      `;
+
+      const btnJump = document.getElementById("btnJumpBtvPresence");
+      if (btnJump) {
+        btnJump.onclick = () => {
+          activeAdminTab = "synthesis";
+          renderAdminDashboard();
+          const p = document.getElementById("btvPresencePanel");
+          if (p) p.scrollIntoView({ behavior: "smooth", block: "start" });
+        };
+      }
+    }
+
+    if (panel) {
+      const rowsHtml = sorted.length === 0
+        ? `<tr><td colspan="6" style="text-align:center;color:#64748B;padding:14px;">Chưa có Biên tập viên nào mở link BTV. Khi BTV mở link <code>?role=btv</code> và nhập tên, thông tin sẽ hiển thị trực tiếp tại đây.</td></tr>`
+        : sorted.map((v, idx) => {
+          const online = isViewerOnline(v);
+          const statusHtml = online
+            ? `<span class="btv-status-badge online">🟢 Đang xem</span>`
+            : `<span class="btv-status-badge offline">⚪ Đã thoát</span>`;
+          const historyTags = (Array.isArray(v.viewedSheets) ? v.viewedSheets : [])
+            .map(s => `<span class="btv-sheet-history-tag">${escapeHtml(s)}</span>`)
+            .join("") || `<span style="color:#94A3B8;">—</span>`;
+          return `
+            <tr>
+              <td style="text-align:center;font-weight:700;color:#64748B;">${idx + 1}</td>
+              <td><strong>${escapeHtml(v.name || "Ẩn danh")}</strong></td>
+              <td>${statusHtml}</td>
+              <td>${v.currentSheet ? `<strong>${escapeHtml(v.currentSheet)}</strong>` : "—"}</td>
+              <td>${historyTags}</td>
+              <td style="white-space:nowrap;">${v.visitCount || 1} lượt · <span style="color:#64748B;">${formatPresenceTime(v.lastSeenAt || v.updatedAt)}</span></td>
+            </tr>
+          `;
+        }).join("");
+
+      panel.innerHTML = `
+        <div class="btv-presence-head">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="btv-live-dot${onlineList.length === 0 ? " idle" : ""}"></span>
+            <strong style="font-size:13.5px;color:#0F172A;">Theo dõi người xem trang BTV (chỉ Quản lý thấy):</strong>
+            <span style="font-size:12.5px;color:#065F46;font-weight:700;">${onlineList.length} đang online</span>
+            <span style="font-size:12.5px;color:#475569;">· ${sorted.length} người đã từng mở</span>
+          </div>
+          <button type="button" class="btn-secondary" id="btnRefreshBtvPresence" style="padding:5px 10px;font-size:12px;">
+            🔄 Cập nhật danh sách
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="btv-presence-table">
+            <thead>
+              <tr>
+                <th style="width:42px;text-align:center;">#</th>
+                <th>Tên người xem</th>
+                <th style="width:118px;">Trạng thái</th>
+                <th>Đang mở bài</th>
+                <th>Các bài đã xem</th>
+                <th style="width:165px;">Lượt &amp; Lần cuối</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+      `;
+
+      const btnRef = document.getElementById("btnRefreshBtvPresence");
+      if (btnRef) {
+        btnRef.onclick = async () => {
+          btnRef.disabled = true;
+          btnRef.textContent = "⏳ Đang tải...";
+          await fetchCloudDb(false);
+          renderBtvPresenceMonitor();
+          btnRef.disabled = false;
+          btnRef.textContent = "🔄 Cập nhật danh sách";
+        };
+      }
+    }
+  }
+
   function renderBtvSpreadsheet() {
     const btnBackAdmin = document.getElementById("btnBackToAdminFromBtv");
     if (btnBackAdmin) {
@@ -2355,6 +2633,7 @@
         btn.addEventListener("click", () => {
           activeBtvSheetIdx = idx;
           renderBtvSpreadsheet();
+          sendBtvHeartbeat(true);
         });
         tabsBar.appendChild(btn);
       });
@@ -3278,8 +3557,9 @@
   }
 
   function renderAdminDashboard() {
-    // 0. Render Overview KPI Summary Bar
+    // 0. Render Overview KPI Summary Bar & BTV Presence Strip
     renderAdminKpiBar();
+    renderBtvPresenceMonitor();
 
     // 0b. Wire Prominent Admin Synthesis Button
     const btnAdminSynth = document.getElementById("btnAdminOpenSynthesis");
@@ -4040,6 +4320,13 @@
     if (btnSignOut) {
       btnSignOut.addEventListener("click", () => {
         if (confirm("Bạn có muốn đăng xuất khỏi hệ thống?")) {
+          if (currentUser && currentUser.role === "btv") {
+            sendBtvHeartbeat(false, true);
+          }
+          if (btvHeartbeatTimer) {
+            clearInterval(btvHeartbeatTimer);
+            btvHeartbeatTimer = null;
+          }
           localStorage.removeItem(SESSION_KEY);
           currentUser = null;
           isAdminView = false;
@@ -4473,6 +4760,9 @@
       if (lessonSidebar) lessonSidebar.classList.add("hidden");
       if (btvWorkspace) btvWorkspace.classList.remove("hidden");
       renderBtvSpreadsheet();
+      if (currentUser.role === "btv") {
+        ensureBtvViewerIdentifiedAndStartHeartbeat();
+      }
       return;
     } else {
       if (btvWorkspace) btvWorkspace.classList.add("hidden");
@@ -4520,6 +4810,21 @@
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
       fetchCloudDb(false);
+      if (currentUser && currentUser.role === "btv") {
+        sendBtvHeartbeat(true);
+      }
+    } else if (currentUser && currentUser.role === "btv") {
+      sendBtvHeartbeat(false, true);
+    }
+  });
+  window.addEventListener("pagehide", () => {
+    if (currentUser && currentUser.role === "btv") {
+      sendBtvHeartbeat(false, true);
+    }
+  });
+  window.addEventListener("beforeunload", () => {
+    if (currentUser && currentUser.role === "btv") {
+      sendBtvHeartbeat(false, true);
     }
   });
   setInterval(() => {
