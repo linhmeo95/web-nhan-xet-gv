@@ -2369,34 +2369,63 @@
         const critClass = `c${row.stt}`;
         tr.className = `btv-row-${critClass}`;
 
-        const formatBullets = (txt) => {
+        const hasPerPointImgs = Array.isArray(row.imgs) && row.imgs.length > 0;
+
+        const formatBullets = (txt, showPointIdx = false) => {
           if (!txt) return "";
           const lines = txt.split("\n").filter(l => l.trim().length > 0);
-          return `<ul class="btv-text-bullet">${lines.map(l => {
+          return `<ul class="btv-text-bullet">${lines.map((l, idx) => {
             const clean = l.replace(/^[•\-\*]\s*/, "");
-            return `<li>${escapeHtml(clean)}</li>`;
+            const badgeHtml = showPointIdx
+              ? `<span class="btv-point-badge ${critClass}">Ý ${idx + 1}</span> `
+              : "";
+            return `<li>${badgeHtml}${escapeHtml(clean)}</li>`;
           }).join("")}</ul>`;
         };
 
-        const rawImg = String(row.img || "").trim();
-        const imgSrc = !rawImg
-          ? ""
-          : (/^(data:|https?:|\/|data\/)/i.test(rawImg) ? rawImg : `data/slide_imgs/${escapeHtml(rawImg)}`);
+        const resolveImgUrl = (raw) => {
+          const v = String(raw || "").trim();
+          if (!v) return "";
+          return /^(data:|https?:|\/|data\/)/i.test(v) ? v : `data/slide_imgs/${escapeHtml(v)}`;
+        };
 
-        const imgCellHtml = imgSrc
-          ? `<div class="btv-thumb-wrap">
-              <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(row.tieu_chi)}" class="btv-slide-thumb" data-full-src="${escapeHtml(imgSrc)}" data-title="${escapeHtml(currentSheet.sheet_name)} — ${escapeHtml(row.tieu_chi)}">
-              <span class="btv-thumb-hint">🔍 Bấm ảnh để phóng to</span>
-            </div>`
-          : `<div style="padding:18px 10px;border:1.5px dashed #CBD5E1;border-radius:8px;color:#64748B;font-size:12px;background:#F8FAFC;">🖼️ Chưa gắn ảnh dẫn chứng</div>`;
+        let imgCellHtml = "";
+        if (hasPerPointImgs) {
+          const cardsHtml = row.imgs.map((item, i) => {
+            const src = resolveImgUrl(item.src || item.img || "");
+            if (!src) return "";
+            const tag = item.tag || `Ý ${i + 1}`;
+            const cap = item.caption || "";
+            const fullTitle = `${currentSheet.sheet_name} — ${tag}${cap ? ": " + cap : ""}`;
+            return `
+              <div class="btv-point-img-card">
+                <div class="btv-point-img-head">
+                  <span class="btv-point-badge ${critClass}">${escapeHtml(tag)}</span>
+                  <span class="btv-thumb-hint">🔍 Phóng to</span>
+                </div>
+                <img src="${escapeHtml(src)}" alt="${escapeHtml(tag)}" class="btv-slide-thumb btv-point-thumb" data-full-src="${escapeHtml(src)}" data-title="${escapeHtml(fullTitle)}">
+                ${cap ? `<div class="btv-point-img-cap">${escapeHtml(cap)}</div>` : ""}
+              </div>
+            `;
+          }).join("");
+          imgCellHtml = `<div class="btv-point-gallery">${cardsHtml}</div>`;
+        } else {
+          const imgSrc = resolveImgUrl(row.img);
+          imgCellHtml = imgSrc
+            ? `<div class="btv-thumb-wrap">
+                <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(row.tieu_chi)}" class="btv-slide-thumb" data-full-src="${escapeHtml(imgSrc)}" data-title="${escapeHtml(currentSheet.sheet_name)} — ${escapeHtml(row.tieu_chi)}">
+                <span class="btv-thumb-hint">🔍 Bấm ảnh để phóng to</span>
+              </div>`
+            : `<div style="padding:18px 10px;border:1.5px dashed #CBD5E1;border-radius:8px;color:#64748B;font-size:12px;background:#F8FAFC;">🖼️ Chưa gắn ảnh dẫn chứng</div>`;
+        }
 
         tr.innerHTML = `
           <td style="text-align: center; font-weight: 800; font-family: var(--font-mono); font-size: 14px;">${escapeHtml(row.stt)}</td>
           <td class="cell-crit">
             <span class="btv-crit-badge ${critClass}">${escapeHtml(row.tieu_chi)}</span>
           </td>
-          <td>${formatBullets(row.nhan_xet)}</td>
-          <td>${formatBullets(row.dan_chung)}</td>
+          <td>${formatBullets(row.nhan_xet, hasPerPointImgs)}</td>
+          <td>${formatBullets(row.dan_chung, false)}</td>
           <td style="text-align: center;">
             ${imgCellHtml}
           </td>
@@ -2701,7 +2730,7 @@
         card.innerHTML = `
           <div class="synthesis-crit-title">
             <span class="btv-crit-badge ${critClass}">${escapeHtml(row.tieu_chi)}</span>
-            <span style="font-size: 12px; color: var(--ink-muted); font-weight: 600;">Ảnh: ${escapeHtml(row.img || "Chưa gán")}</span>
+            <span style="font-size: 12px; color: var(--ink-muted); font-weight: 600;">Ảnh: ${escapeHtml((Array.isArray(row.imgs) && row.imgs.length) ? `${row.imgs.length} ảnh tương ứng từng ý` : (row.img || "Chưa gán"))}</span>
           </div>
 
           <div class="synthesis-input-group">
