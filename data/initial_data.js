@@ -1865,21 +1865,24 @@ window.INITIAL_APP_DATA = {
           "nhan_xet": "• Hình ảnh tươi sáng, nhân vật gần gũi Lớp 1: Tranh mở đầu robot cười sinh động; câu chuyện bạn Nam, bạn Mai đối chiếu với tranh robot và loa AI biến khái niệm trừu tượng thành tình huống đời thường dễ hiểu.\n• Tương tác âm thanh & phân vai theo cặp phù hợp: Hai nút loa Nghe Nam – Nghe robot hỗ trợ HS chưa đọc thạo; cách chia cặp A–B chọn, đặt nét mặt, nối tranh và đổi lượt giúp rèn kỹ năng hợp tác và giải thích lý do.\n• Mạch chốt kiến thức ngắn gọn, đúng trọng tâm: Khẳng định rõ AI chỉ mô phỏng biểu cảm theo lập trình/thiết kế của con người, không trải nghiệm cảm xúc thật.",
           "dan_chung": "• Slide 1: Tranh hai bạn nhỏ cầm bức vẽ robot cười tươi sáng.\n• Slide 4 (HĐ 1): Bối cảnh lớp học, nút loa Nghe Nam – Nghe robot và lời thoại đối chiếu.\n• Slide 6, 10, 18–19 (HĐ 1–3): Tổ chức cặp A–B với mẫu câu \"Em chọn... vì...\" và phiếu nối cá nhân.\n• Slide 8, 15, 25: Các slide Điều cần nhớ cô đọng.",
           "img": "b102_r1_y1.png",
-          "imgs": [
+          "items": [
             {
-              "tag": "Ý 1 · Slide 1 & 4",
-              "src": "b102_r1_y1.png",
-              "caption": "Tranh mở đầu robot cười & câu chuyện lớp học gần gũi Lớp 1"
+              "nhan_xet": "• Hình ảnh tươi sáng, nhân vật gần gũi Lớp 1: Tranh mở đầu robot cười sinh động; câu chuyện bạn Nam, bạn Mai đối chiếu với tranh robot và loa AI biến khái niệm trừu tượng thành tình huống đời thường dễ hiểu.",
+              "dan_chung": "• Slide 1: Tranh hai bạn nhỏ cầm bức vẽ robot cười tươi sáng.\n• Slide 4 (HĐ 1): Bối cảnh lớp học, lời thoại đối chiếu Nam – Tranh robot.\n• Slide 17 (HĐ 3): Tình huống bạn Mai ở công viên và chiếc loa thông minh.",
+              "img": "b102_r1_y1.png",
+              "caption": "Slide 1 & Slide 4"
             },
             {
-              "tag": "Ý 2 · Slide 4 & 10",
-              "src": "b102_r1_y2.png",
-              "caption": "Nút loa Nghe Nam – Nghe robot & chia cặp A–B chọn đặt nét mặt"
+              "nhan_xet": "• Tương tác âm thanh & phân vai theo cặp phù hợp: Hai nút loa Nghe Nam – Nghe robot hỗ trợ HS chưa đọc thạo; cách chia cặp A–B chọn, đặt nét mặt, nối tranh và đổi lượt giúp rèn kỹ năng hợp tác và giải thích lý do.",
+              "dan_chung": "• Slide 4 (HĐ 1): Hai nút loa Nghe Nam – Nghe robot hỗ trợ HS chưa đọc thạo.\n• Slide 6, 10, 18–19 (HĐ 1–3): Tổ chức cặp A–B với mẫu câu \"Em chọn... vì...\" và phiếu nối cá nhân.",
+              "img": "b102_r1_y2.png",
+              "caption": "Slide 4 & Slide 10"
             },
             {
-              "tag": "Ý 3 · Slide 8 & 25",
-              "src": "b102_r1_y3.png",
-              "caption": "Slide Điều cần nhớ & Ghi nhớ cuối bài phân biệt AI mô phỏng – cảm xúc thật"
+              "nhan_xet": "• Mạch chốt kiến thức ngắn gọn, đúng trọng tâm: Khẳng định rõ AI chỉ mô phỏng biểu cảm theo lập trình/thiết kế của con người, không trải nghiệm cảm xúc thật.",
+              "dan_chung": "• Slide 8 (HĐ 1): Điều cần nhớ phân biệt mô phỏng nét cười vs cảm xúc thật.\n• Slide 15 (HĐ 2) & Slide 25 (Cuối bài): Chốt vai trò con người thiết kế/lập trình AI.",
+              "img": "b102_r1_y3.png",
+              "caption": "Slide 8 & Slide 25"
             }
           ]
         },
@@ -1890,36 +1893,42 @@ window.INITIAL_APP_DATA = {
           "nhan_xet": "• Bìa bài học chứa khung tiêu chí GV dày chữ & tên hoạt động chưa thống nhất: Góc dưới phải Slide 1 đặt toàn bộ tiêu chí đánh giá của GV với từ ngữ trừu tượng; cùng 1 hoạt động nhưng các slide con đặt tiêu đề khác nhau khiến khó hình dung mạch chơi.\n• Lẫn ghi chú kỹ thuật của GV vào khung hiển thị cho HS: Trộn ghi chú thời lượng, quy trình dạy (\"Làm hai lượt...\", \"Cả hoạt động: 6–8 phút\") và lưu ý kỹ thuật (\"Đây là tranh minh họa robot dùng AI; tranh không chạy AI\") ngay trên màn hình HS; giọng \"con người\" trong audio vẫn nghe giống giọng AI.\n• Chưa rõ việc của bạn A–B và thiếu hình đồ dùng (Slide 2): Slide ghi \"Ngồi theo cặp A và B\" và \"Đổi vai → đổi việc với bạn\" nhưng không nêu bạn A làm gì, bạn B làm gì; tranh minh họa mới có thẻ Robot, thiếu thẻ Nam và bút chì như lời hướng dẫn.\n• Câu hỏi trên Slide 3 chưa khớp với thẻ chọn trên bàn (Nam / Robot): Cột 1 hỏi dạng Có/Không (\"Cả hai đều thấy vui?\") nhưng lại yêu cầu chọn tranh trên bàn (tranh Nam / Robot), khiến HS lớp 1 khó biết phải giơ tranh nào để trả lời; chưa rõ bước này làm cá nhân hay theo cặp và cách xử lý khi hai bạn chọn khác nhau.\n• Hai thẻ chờ mở đáp án thiếu ảnh minh họa nhân vật (Slide 5): Khi chưa mở đáp án, mặt thẻ chỉ hiện chữ \"Nam\" và \"Tranh robot\" trên nền vàng – xanh lá, khiến HS lớp 1 mới tập đọc khó nhận diện và dễ hiểu nhầm phải tìm thẻ màu vàng/xanh lá thay vì bộ tranh giấy trắng.\n• Một số điểm cần làm rõ thêm ở phần thực hành & slide ẩn: Cần xác định rõ mục đích đặt nét mặt (Slide 10), mạch liên kết lên thông điệp chốt (Slide 15), tiêu chí trả lời \"Loa có vui như Mai không?\" (Slide 16, 20), cách xử lý tự đối chiếu hay GV chốt (Slide 22), mục đích thu phiếu cuối giờ (Slide 24) và các slide đang ẩn (#7, #9, #10, #23, #25–#27 bản gốc) có chiếu khi dạy hay không.",
           "dan_chung": "• Slide 1 & Slide 2: Khung tiêu chí đánh giá góc dưới phải quá dày; Slide 2 chưa phân việc rõ cho A–B và tranh thiếu thẻ Nam, bút chì.\n• Slide 3 & Slide 16: Lẫn ghi chú thời gian GV; Slide 3 hỏi \"Cả hai đều thấy vui?\" (Có/Không) nhưng đồ dùng chọn lại là thẻ Nam/Robot.\n• Slide 4 & Slide 5: Slide 4 đặt 3 dòng ghi chú kỹ thuật ở đầu khung thoại; Slide 5 thẻ úp chỉ có chữ trên nền màu vàng – xanh lá.\n• Slide 10, 22, 24 & Slide ẩn: Chưa rõ mục đích đặt mẫu/chấm phiếu và trạng thái sử dụng các slide ẩn.",
           "img": "b102_r2_y1.png",
-          "imgs": [
+          "items": [
             {
-              "tag": "Ý 1 · Slide 1, 3 & 9",
-              "src": "b102_r2_y1.png",
-              "caption": "Khung tiêu chí GV dày chữ trên Bìa & lệch tiêu đề trong cùng hoạt động"
+              "nhan_xet": "• Bìa bài học chứa khung tiêu chí GV dày chữ & tên hoạt động chưa thống nhất: Góc dưới phải Slide 1 đặt toàn bộ tiêu chí đánh giá của GV với từ ngữ trừu tượng; cùng 1 hoạt động nhưng các slide con đặt tiêu đề khác nhau khiến khó hình dung mạch chơi.",
+              "dan_chung": "• Slide 1: Khung tiêu chí đánh giá góc dưới phải dày chữ, từ ngữ trừu tượng với Lớp 1.\n• Slide 3 & Slide 9: Tên trong danh sách và tiêu đề trên slide chưa đồng nhất.",
+              "img": "b102_r2_y1.png",
+              "caption": "Slide 1, Slide 3 & Slide 9"
             },
             {
-              "tag": "Ý 2 · Slide 4 & 16",
-              "src": "b102_r2_y2.png",
-              "caption": "Ghi chú kỹ thuật & thời lượng của GV đặt lẫn trên màn hình HS"
+              "nhan_xet": "• Lẫn ghi chú kỹ thuật của GV vào khung hiển thị cho HS: Trộn ghi chú thời lượng, quy trình dạy (\"Làm hai lượt...\", \"Cả hoạt động: 6–8 phút\") và lưu ý kỹ thuật (\"Đây là tranh minh họa robot dùng AI; tranh không chạy AI\") ngay trên màn hình HS; giọng \"con người\" trong audio vẫn nghe giống giọng AI.",
+              "dan_chung": "• Slide 4: 3 dòng giải thích kỹ thuật (\"Đây là tranh minh họa...\") đặt lẫn vào khung thoại HS; giọng \"con người\" vẫn nghe giống AI.\n• Slide 3 & Slide 16: Ghi chú thời lượng 6–8 phút và lời nhắc GV đặt chung với phần HS đọc.",
+              "img": "b102_r2_y2.png",
+              "caption": "Slide 4 & Slide 16"
             },
             {
-              "tag": "Ý 3 · Slide 2",
-              "src": "b102_r2_y3.png",
-              "caption": "Chưa phân việc riêng cho A–B và tranh minh họa thiếu thẻ Nam, bút chì"
+              "nhan_xet": "• Chưa rõ việc của bạn A–B và thiếu hình đồ dùng (Slide 2): Slide ghi \"Ngồi theo cặp A và B\" và \"Đổi vai → đổi việc với bạn\" nhưng không nêu bạn A làm gì, bạn B làm gì; tranh minh họa mới có thẻ Robot, thiếu thẻ Nam và bút chì như lời hướng dẫn.",
+              "dan_chung": "• Slide 2: Ghi \"Ngồi theo cặp A và B\" và \"Đổi vai → đổi việc với bạn\" nhưng không nêu việc của A và B; tranh bên phải thiếu thẻ Nam và bút chì.",
+              "img": "b102_r2_y3.png",
+              "caption": "Slide 2"
             },
             {
-              "tag": "Ý 4 · Slide 3",
-              "src": "b102_r2_y4.png",
-              "caption": "Câu hỏi Có/Không (Cả hai đều thấy vui?) chưa khớp với thẻ chọn Nam/Robot"
+              "nhan_xet": "• Câu hỏi trên Slide 3 chưa khớp với thẻ chọn trên bàn (Nam / Robot): Cột 1 hỏi dạng Có/Không (\"Cả hai đều thấy vui?\") nhưng lại yêu cầu chọn tranh trên bàn (tranh Nam / Robot), khiến HS lớp 1 khó biết phải giơ tranh nào để trả lời; chưa rõ bước này làm cá nhân hay theo cặp và cách xử lý khi hai bạn chọn khác nhau.",
+              "dan_chung": "• Slide 3 (Cột 1): Câu hỏi Có/Không (\"Cả hai đều thấy vui?\") nhưng đồ dùng lại là tranh Nam / Robot; chưa rõ làm cá nhân hay cặp và cách xử lý khi chọn khác nhau.",
+              "img": "b102_r2_y4.png",
+              "caption": "Slide 3"
             },
             {
-              "tag": "Ý 5 · Slide 5",
-              "src": "b102_r2_y5.png",
-              "caption": "Thẻ chờ mở chỉ có chữ trên nền vàng–xanh lá, thiếu hình ảnh nhân vật"
+              "nhan_xet": "• Hai thẻ chờ mở đáp án thiếu ảnh minh họa nhân vật (Slide 5): Khi chưa mở đáp án, mặt thẻ chỉ hiện chữ \"Nam\" và \"Tranh robot\" trên nền vàng – xanh lá, khiến HS lớp 1 mới tập đọc khó nhận diện và dễ hiểu nhầm phải tìm thẻ màu vàng/xanh lá thay vì bộ tranh giấy trắng.",
+              "dan_chung": "• Slide 5: Khi chưa bấm \"CÙNG MỞ\", mặt thẻ mới hiện chữ \"Nam\" và \"Tranh robot\" trên nền vàng – xanh lá, thiếu ảnh nhân vật.",
+              "img": "b102_r2_y5.png",
+              "caption": "Slide 5"
             },
             {
-              "tag": "Ý 6 · Slide 22 & 24",
-              "src": "b102_r2_y6.png",
-              "caption": "Cần làm rõ cách đối chiếu sửa phiếu (Slide 22) & mục đích thu phiếu (Slide 24)"
+              "nhan_xet": "• Một số điểm cần làm rõ thêm ở phần thực hành & slide ẩn: Cần xác định rõ mục đích đặt nét mặt (Slide 10), mạch liên kết lên thông điệp chốt (Slide 15), tiêu chí trả lời \"Loa có vui như Mai không?\" (Slide 16, 20), cách xử lý tự đối chiếu hay GV chốt (Slide 22), mục đích thu phiếu cuối giờ (Slide 24) và các slide đang ẩn (#7, #9, #10, #23, #25–#27 bản gốc) có chiếu khi dạy hay không.",
+              "dan_chung": "• Slide 10, 15 & 16: Chưa rõ mục đích đặt nét mặt và mạch nối lên thông điệp chốt; cần rõ tiêu chí câu \"Loa có vui như Mai không?\".\n• Slide 22, 24 & Slide ẩn (#7, 9, 10, 23, 25–27 bản gốc): Chưa rõ HS tự sửa hay GV chốt, mục đích thu phiếu và việc dùng các slide ẩn.",
+              "img": "b102_r2_y6.png",
+              "caption": "Slide 22 & Slide 24"
             }
           ]
         },
@@ -1930,26 +1939,30 @@ window.INITIAL_APP_DATA = {
           "nhan_xet": "• Tách phần của GV ra Giáo án/Popup & phóng to tranh mở đầu: Xóa khung tiêu chí GV ở Slide 1 để phóng to tranh; đưa toàn bộ lưu ý kỹ thuật, thời lượng sang Popup GV hoặc giáo án; giữ tên hoạt động thống nhất ở các slide cùng nhóm.\n• Tăng biểu tượng trực quan, bóng thoại & sửa vị trí nút loa: Thay chữ dài ở Slide 2–3 bằng icon thao tác (tai nghe, thẻ úp, bàn tay giơ thẻ, sơ đồ A–B), chèn ảnh mặt Nam – Robot ở Slide 5; chuyển thoại Slide 4 thành bóng thoại chỉ nhân vật và đẩy 2 nút loa lên cao tránh bị thanh công cụ che ở Slide 4, 22.\n• Bổ sung làm mẫu, câu mẫu, phản hồi tức thì & đồng hồ: Thêm 1 lượt GV làm mẫu + đồng hồ đếm ngược 2 phút (Slide 3); hiện phản hồi đúng/chưa đúng ngay khi chọn (Slide 5–6, 13); bổ sung khung câu mẫu và câu hỏi chốt \"Ai quyết định nét mặt/tiếng cười của robot?\" ở HĐ 2–3.\n• Điều chỉnh nền vàng, diễn đạt thuật ngữ & âm thanh Game: Giảm độ chói nền vàng từ Slide 9–15 sang tông dịu nhẹ hơn; dùng cách nói gần gũi thay cho \"thiết kế/lập trình\" (\"Con người tạo ra và hướng dẫn robot...\"); tăng cỡ ảnh và kiểm tra nút loa trong Game (Slide 21 & Game ẩn).",
           "dan_chung": "• Slide 1, 2, 3: Tinh giản chữ thành icon trực quan + bổ sung đồng hồ đếm ngược 2 phút.\n• Slide 4, 5–6, 22: Đổi thành bóng thoại, thêm ảnh thẻ bí mật, nâng vị trí 2 nút loa khỏi thanh trình chiếu.\n• Slide 9–15: Đổi nền vàng chói sang tông màu dịu nhẹ.\n• Slide 16–22: Thêm câu mẫu và câu hỏi chốt vai trò người lập trình; kiểm tra audio trong Game.",
           "img": "b102_r3_y1.png",
-          "imgs": [
+          "items": [
             {
-              "tag": "Ý 1 · Slide 1 & 4",
-              "src": "b102_r3_y1.png",
-              "caption": "Bỏ khung tiêu chí GV trên Bìa & tách ghi chú kỹ thuật sang Giáo án/Popup"
+              "nhan_xet": "• Tách phần của GV ra Giáo án/Popup & phóng to tranh mở đầu: Xóa khung tiêu chí GV ở Slide 1 để phóng to tranh; đưa toàn bộ lưu ý kỹ thuật, thời lượng sang Popup GV hoặc giáo án; giữ tên hoạt động thống nhất ở các slide cùng nhóm.",
+              "dan_chung": "• Slide 1: Bỏ khung tiêu chí GV góc phải để phóng to tranh mở đầu.\n• Slide 3, 4 & 9: Chuyển lưu ý kỹ thuật, thời lượng sang Popup GV/giáo án; thống nhất tên hoạt động.",
+              "img": "b102_r3_y1.png",
+              "caption": "Slide 1 & Slide 4"
             },
             {
-              "tag": "Ý 2 · Slide 2 & 22",
-              "src": "b102_r3_y2.png",
-              "caption": "Bổ sung icon cặp A–B & nâng nút Nghe loa/Nghe Mai khỏi thanh công cụ"
+              "nhan_xet": "• Tăng biểu tượng trực quan, bóng thoại & sửa vị trí nút loa: Thay chữ dài ở Slide 2–3 bằng icon thao tác (tai nghe, thẻ úp, bàn tay giơ thẻ, sơ đồ A–B), chèn ảnh mặt Nam – Robot ở Slide 5; chuyển thoại Slide 4 thành bóng thoại chỉ nhân vật và đẩy 2 nút loa lên cao tránh bị thanh công cụ che ở Slide 4, 22.",
+              "dan_chung": "• Slide 2 & Slide 3: Thay chữ dài bằng biểu tượng thao tác (tai nghe, thẻ úp, sơ đồ A–B, thẻ Nam + bút chì).\n• Slide 4, 5 & 22: Thêm ảnh mặt Nam – Robot; chuyển thành bóng thoại và đẩy nút loa lên cao tránh bị thanh trình chiếu che.",
+              "img": "b102_r3_y2.png",
+              "caption": "Slide 2 & Slide 22"
             },
             {
-              "tag": "Ý 3 · Slide 3 & 6",
-              "src": "b102_r3_y3.png",
-              "caption": "Thêm đồng hồ 2 phút, lượt GV làm mẫu & phản hồi tức thì khi mở thẻ"
+              "nhan_xet": "• Bổ sung làm mẫu, câu mẫu, phản hồi tức thì & đồng hồ: Thêm 1 lượt GV làm mẫu + đồng hồ đếm ngược 2 phút (Slide 3); hiện phản hồi đúng/chưa đúng ngay khi chọn (Slide 5–6, 13); bổ sung khung câu mẫu và câu hỏi chốt \"Ai quyết định nét mặt/tiếng cười của robot?\" ở HĐ 2–3.",
+              "dan_chung": "• Slide 3 & Slide 6: Bổ sung 1 lượt GV làm mẫu, đồng hồ 2 phút và phản hồi tức thì khi bấm mở.\n• Slide 5, 10, 13 & 18: Bổ sung câu mẫu (\"Em chọn... vì...\") và câu hỏi chốt ai quyết định biểu cảm.",
+              "img": "b102_r3_y3.png",
+              "caption": "Slide 3 & Slide 6"
             },
             {
-              "tag": "Ý 4 · Slide 10 & 21",
-              "src": "b102_r3_y4.png",
-              "caption": "Làm dịu nền vàng Slide 9–15 & kiểm tra âm thanh, cỡ ảnh trong Game"
+              "nhan_xet": "• Điều chỉnh nền vàng, diễn đạt thuật ngữ & âm thanh Game: Giảm độ chói nền vàng từ Slide 9–15 sang tông dịu nhẹ hơn; dùng cách nói gần gũi thay cho \"thiết kế/lập trình\" (\"Con người tạo ra và hướng dẫn robot...\"); tăng cỡ ảnh và kiểm tra nút loa trong Game (Slide 21 & Game ẩn).",
+              "dan_chung": "• Slide 9–15: Đổi nền vàng chói sang tông dịu nhẹ; diễn đạt gần gũi hơn cụm \"thiết kế/lập trình\".\n• Slide 21 (và Game ẩn): Tăng kích thước hình minh họa và kiểm tra nút loa trong Game.",
+              "img": "b102_r3_y4.png",
+              "caption": "Slide 10 & Slide 21"
             }
           ]
         },
@@ -1960,21 +1973,24 @@ window.INITIAL_APP_DATA = {
           "nhan_xet": "• Tốc độ đọc hiểu và thao tác của HS Lớp 1 còn chậm: Trẻ 6 tuổi mới tập đọc trơn nên khó tự đọc khung nhiều chữ; vừa nghe thoại, nhớ câu hỏi, nối phiếu vừa đổi lượt trong thời gian ngắn rất dễ cháy giáo án.\n• Khó giữ nề nếp khi chờ \"Cùng mở\" & chia sẻ theo cặp: Trẻ dễ phấn khích giơ tranh sớm hoặc nhìn bài bạn khi úp thẻ; nếu chưa quy định rõ chia sẻ sau từng câu và thứ tự A nói – B nghe, lớp dễ nói đồng thanh gây ồn.\n• Khái niệm cảm xúc thật vs mô phỏng trừu tượng với Lớp 1: HS dễ bị thu hút bởi tiếng cười hoặc học vẹt câu ghi nhớ và đáp án nối tranh nếu thiếu ví dụ gần gũi giải thích bản chất vì sao máy không thấy vui.",
           "dan_chung": "• Slide 2, 3, 6 (HĐ 1): Lệnh chọn – úp thẻ chờ \"Cùng mở\" và đọc hiểu 3 cột trong thời gian ngắn.\n• Slide 6, 8, 25: Thuật ngữ \"cảm xúc\" vs \"mô phỏng biểu cảm\" khá trừu tượng với HS lớp 1.\n• Slide 16, 20, 22, 24: Thời lượng 8 phút cho tự nối, đổi lượt nói 2 ý và sửa/nộp phiếu khá gấp.",
           "img": "b102_r4_y1.png",
-          "imgs": [
+          "items": [
             {
-              "tag": "Ý 1 · Slide 3 & 16",
-              "src": "b102_r4_y1.png",
-              "caption": "HS lớp 1 đọc chậm, vừa nghe vừa thao tác trong 6–8 phút dễ cháy giờ"
+              "nhan_xet": "• Tốc độ đọc hiểu và thao tác của HS Lớp 1 còn chậm: Trẻ 6 tuổi mới tập đọc trơn nên khó tự đọc khung nhiều chữ; vừa nghe thoại, nhớ câu hỏi, nối phiếu vừa đổi lượt trong thời gian ngắn rất dễ cháy giáo án.",
+              "dan_chung": "• Slide 3 (HĐ 1): 3 cột nhiều chữ trong 6 phút với trẻ lớp 1 mới tập đọc trơn.\n• Slide 16, 18, 20, 24: Tự nối tranh, đổi lượt nói 2 ý và nộp phiếu trong 8 phút khá gấp.",
+              "img": "b102_r4_y1.png",
+              "caption": "Slide 3 & Slide 16"
             },
             {
-              "tag": "Ý 2 · Slide 2 & 6",
-              "src": "b102_r4_y2.png",
-              "caption": "Dễ giơ thẻ sớm khi chờ \"Cùng mở\" & dễ ồn đồng thanh khi đổi lượt nói"
+              "nhan_xet": "• Khó giữ nề nếp khi chờ \"Cùng mở\" & chia sẻ theo cặp: Trẻ dễ phấn khích giơ tranh sớm hoặc nhìn bài bạn khi úp thẻ; nếu chưa quy định rõ chia sẻ sau từng câu và thứ tự A nói – B nghe, lớp dễ nói đồng thanh gây ồn.",
+              "dan_chung": "• Slide 2 & Slide 6: Trẻ dễ phấn khích giơ tranh trước hiệu lệnh \"Cùng mở\" hoặc nhìn bài bạn.\n• Slide 3 & Slide 6: Cần chốt rõ chia sẻ sau từng câu hay sau cả 2 lượt và quy định lượt A nói – B nghe.",
+              "img": "b102_r4_y2.png",
+              "caption": "Slide 2 & Slide 6"
             },
             {
-              "tag": "Ý 3 · Slide 8 & 25",
-              "src": "b102_r4_y3.png",
-              "caption": "Thuật ngữ \"mô phỏng biểu cảm\", \"lập trình\" trừu tượng với trẻ 6 tuổi"
+              "nhan_xet": "• Khái niệm cảm xúc thật vs mô phỏng trừu tượng với Lớp 1: HS dễ bị thu hút bởi tiếng cười hoặc học vẹt câu ghi nhớ và đáp án nối tranh nếu thiếu ví dụ gần gũi giải thích bản chất vì sao máy không thấy vui.",
+              "dan_chung": "• Slide 1, 6, 8 & 25: Trẻ dễ bị cuốn theo tiếng cười hoặc học thuộc lòng câu chốt và đáp án nối tranh nếu thiếu ví dụ đời thường dễ hiểu.",
+              "img": "b102_r4_y3.png",
+              "caption": "Slide 8 & Slide 25"
             }
           ]
         }
@@ -2037,16 +2053,18 @@ window.INITIAL_APP_DATA = {
           "nhan_xet": "• Chủ đề trực diện, bối cảnh cửa hàng thú bông hấp dẫn: Tên bài theo mạch nguyên nhân – kết quả dễ hiểu; cách nhập vai cửa hàng, chia nhóm 5 bạn phát bộ 5 thẻ (có 2 thẻ gài bẫy #03 sai nhãn, #04 ảnh mờ) và tách 2 bước chỉ Ảnh – Nhãn trên thẻ mẫu #01 rất sinh động với HS lớp 3.\n• Game kéo thả & sơ đồ chuỗi 3 bước trực quan: Game tương tác tạo hứng thú (Slide 8); phần chốt cô đọng thành 2 từ khóa \"Đúng nhãn – Ảnh rõ\" (Slide 16); sơ đồ 3 bước gắn thẻ #03 · CHÓ giúp HS nhìn rõ chuỗi nạp dữ liệu sai đến dự đoán nhầm (Slide 19–20).",
           "dan_chung": "• Slide 1, 2, 4, 5: Nhập vai cửa hàng thú bông với 5 thẻ (#01–#05) và 2 thẻ gài bẫy #03, #04.\n• Slide 8: Game kéo thả phân loại 5 thẻ.\n• Slide 16 & 19–20: Chốt 2 từ khóa \"Đúng nhãn – Ảnh rõ\" và sơ đồ 3 bước từ dữ liệu đến dự đoán.",
           "img": "b328_r1_y1.png",
-          "imgs": [
+          "items": [
             {
-              "tag": "Ý 1 · Slide 1, 2 & 5",
-              "src": "b328_r1_y1.png",
-              "caption": "Tên bài trực diện, nhập vai cửa hàng & 5 thẻ thú bông gài bẫy #03, #04"
+              "nhan_xet": "• Chủ đề trực diện, bối cảnh cửa hàng thú bông hấp dẫn: Tên bài theo mạch nguyên nhân – kết quả dễ hiểu; cách nhập vai cửa hàng, chia nhóm 5 bạn phát bộ 5 thẻ (có 2 thẻ gài bẫy #03 sai nhãn, #04 ảnh mờ) và tách 2 bước chỉ Ảnh – Nhãn trên thẻ mẫu #01 rất sinh động với HS lớp 3.",
+              "dan_chung": "• Slide 1 & Slide 2: Tên bài theo mạch nguyên nhân – kết quả; bối cảnh cửa hàng thú bông chia nhóm 5 bạn.\n• Slide 4 & Slide 5: Tách chỉ Ảnh – Nhãn trên #01 và 5 thẻ thú bông (#01–#05) có 2 thẻ gài bẫy #03, #04.",
+              "img": "b328_r1_y1.png",
+              "caption": "Slide 1, Slide 2 & Slide 5"
             },
             {
-              "tag": "Ý 2 · Slide 16 & 19",
-              "src": "b328_r1_y2.png",
-              "caption": "Chốt 2 từ khóa \"Đúng nhãn – Ảnh rõ\" & sơ đồ 3 bước đặt thẻ #03 · CHÓ"
+              "nhan_xet": "• Game kéo thả & sơ đồ chuỗi 3 bước trực quan: Game tương tác tạo hứng thú (Slide 8); phần chốt cô đọng thành 2 từ khóa \"Đúng nhãn – Ảnh rõ\" (Slide 16); sơ đồ 3 bước gắn thẻ #03 · CHÓ giúp HS nhìn rõ chuỗi nạp dữ liệu sai đến dự đoán nhầm (Slide 19–20).",
+              "dan_chung": "• Slide 8: Game kéo thả phân loại 5 thẻ.\n• Slide 16 & Slide 19–20: Chốt 2 từ khóa \"Đúng nhãn – Ảnh rõ\" và sơ đồ 3 bước gắn thẻ #03 · CHÓ từ dữ liệu đến dự đoán.",
+              "img": "b328_r1_y2.png",
+              "caption": "Slide 16 & Slide 19"
             }
           ]
         },
@@ -2057,26 +2075,30 @@ window.INITIAL_APP_DATA = {
           "nhan_xet": "• Ký hiệu mã hóa nội bộ (RO1, RO2, AE1, AE2) gây rối cho HS: Các mã soạn giáo án in đậm trên phiếu khiến HS lớp 3 đọc bị khựng và khó nhớ; cụm từ \"dùng B1 nguyên trạng\" mang tính hành chính, khó hiểu với trẻ.\n• Thiếu chỉ dẫn rõ trên Slide 5 & Game kéo thả: Phát đủ 5 thẻ (#01–#05) và 3 vùng A/B/C nhưng Slide 5 chỉ lệnh \"Ghi nhóm cho #03, #04\" nên chưa rõ 3 thẻ còn lại làm gì; Game (Slide 8) chưa có ảnh thú bông trên thẻ kéo và hiện sẵn cảnh báo đỏ \"✕ Chưa đúng\" trước khi HS thao tác.\n• Bìa chứa tiêu chí GV, lệnh phát đồ dùng ngược trình tự & chưa rõ ý đồ chuyển bước: Slide 1 đặt khung tiêu chí GV thay vì dẫn nhập HS; Slide 2 lúc ghi \"Mỗi bạn nhận một thẻ\", lúc ghi \"Nhận bộ thẻ và phiếu\", chưa rõ mạch chuyển sang Slide 3; Slide 4 yêu cầu quan sát thẻ #01 trước khi phát bộ thẻ/3 vùng A/B/C; Slide 9, 17 chưa rõ làm cá nhân hay nhóm.\n• Lộ đáp án trước lúc tự chốt, tràn chữ & thiếu khung đáp án tự sửa: Slide 21 hiển thị sẵn đáp án tổng kết ngay trên lệnh yêu cầu HS \"tự nhắc lại\" và nêu 3 ý nhưng bắt ghi \"hai cụm từ\"; Slide 20 lẫn ghi chú kỹ thuật; Slide 22 thiếu câu hỏi nhiệm vụ và tràn chữ lề dưới; Slide 27 cho tự sửa phiếu nhưng chưa rõ đáp án chuẩn để đối chiếu; Slide 29 cần xác nhận rõ vai trò thông điệp chốt cuối bài.",
           "dan_chung": "• Slide 1, 2, 4, 5: Khung tiêu chí GV trên Bìa; lệnh phát thẻ Slide 2–4 chưa khớp; Slide 5 bỏ ngỏ thẻ #01, #02, #05.\n• Slide 8: Game thiếu ảnh con vật trên thẻ và báo đỏ sẵn khi mới mở (0/5).\n• Slide 10, 23, 27: Mã RO1/RO2, AE1/AE2, \"nguyên trạng\" gây rối và thiếu đáp án đối chiếu khi tự sửa.\n• Slide 20, 21, 22, 29: Lẫn ghi chú kỹ thuật, lộ đáp án tự chốt, tràn chữ lề dưới khung hồng.",
           "img": "b328_r2_y1.png",
-          "imgs": [
+          "items": [
             {
-              "tag": "Ý 1 · Slide 23 & 27",
-              "src": "b328_r2_y1.png",
-              "caption": "Mã giáo án AE1/AE2 (cùng RO2a/RO2b) & từ \"nguyên trạng\" gây rối cho HS"
+              "nhan_xet": "• Ký hiệu mã hóa nội bộ (RO1, RO2, AE1, AE2) gây rối cho HS: Các mã soạn giáo án in đậm trên phiếu khiến HS lớp 3 đọc bị khựng và khó nhớ; cụm từ \"dùng B1 nguyên trạng\" mang tính hành chính, khó hiểu với trẻ.",
+              "dan_chung": "• Slide 10: Đặt mã RO2a, RO2b (hoặc RO1, RO2) ở đầu câu hỏi.\n• Slide 23 & Slide 27: Lặp mã AE1, AE2 và cụm từ hành chính \"dùng B1 nguyên trạng\".",
+              "img": "b328_r2_y1.png",
+              "caption": "Slide 23 & Slide 27"
             },
             {
-              "tag": "Ý 2 · Slide 5 & 8",
-              "src": "b328_r2_y2.png",
-              "caption": "Slide 5 bỏ ngỏ 3 thẻ #01,#02,#05; Game Slide 8 thiếu ảnh & báo đỏ sẵn (0/5)"
+              "nhan_xet": "• Thiếu chỉ dẫn rõ trên Slide 5 & Game kéo thả: Phát đủ 5 thẻ (#01–#05) và 3 vùng A/B/C nhưng Slide 5 chỉ lệnh \"Ghi nhóm cho #03, #04\" nên chưa rõ 3 thẻ còn lại làm gì; Game (Slide 8) chưa có ảnh thú bông trên thẻ kéo và hiện sẵn cảnh báo đỏ \"✕ Chưa đúng\" trước khi HS thao tác.",
+              "dan_chung": "• Slide 5: Bày đủ 5 thẻ (#01–#05) và 3 vùng A/B/C nhưng chỉ lệnh \"Ghi nhóm cho #03, #04\".\n• Slide 8: Thẻ Game thiếu ảnh thú bông và hiện viền/cảnh báo đỏ \"✕ Chưa đúng\" ngay khi mới mở (0/5).",
+              "img": "b328_r2_y2.png",
+              "caption": "Slide 5 & Slide 8"
             },
             {
-              "tag": "Ý 3 · Slide 1, 2 & 4",
-              "src": "b328_r2_y3.png",
-              "caption": "Tiêu chí GV trên Bìa, lệch số thẻ phát ở Slide 2 & ngược lệnh ở Slide 4"
+              "nhan_xet": "• Bìa chứa tiêu chí GV, lệnh phát đồ dùng ngược trình tự & chưa rõ ý đồ chuyển bước: Slide 1 đặt khung tiêu chí GV thay vì dẫn nhập HS; Slide 2 lúc ghi \"Mỗi bạn nhận một thẻ\", lúc ghi \"Nhận bộ thẻ và phiếu\", chưa rõ mạch chuyển sang Slide 3; Slide 4 yêu cầu quan sát thẻ #01 trước khi phát bộ thẻ/3 vùng A/B/C; Slide 9, 17 chưa rõ làm cá nhân hay nhóm.",
+              "dan_chung": "• Slide 1 & Slide 2: Bìa đặt tiêu chí GV; Slide 2 ghi chưa khớp số thẻ phát (mỗi bạn 1 thẻ ↔ nhận bộ thẻ).\n• Slide 4 & Slide 9: Slide 4 lệnh quan sát #01 trước khi phát bộ thẻ; Slide 9 chưa nêu rõ viết phiếu hay nghĩ nhẩm.",
+              "img": "b328_r2_y3.png",
+              "caption": "Slide 1, Slide 2 & Slide 4"
             },
             {
-              "tag": "Ý 4 · Slide 21 & 22",
-              "src": "b328_r2_y4.png",
-              "caption": "Slide 21 lộ đáp án trước lúc tự chốt; Slide 22 tràn chữ khung hồng"
+              "nhan_xet": "• Lộ đáp án trước lúc tự chốt, tràn chữ & thiếu khung đáp án tự sửa: Slide 21 hiển thị sẵn đáp án tổng kết ngay trên lệnh yêu cầu HS \"tự nhắc lại\" và nêu 3 ý nhưng bắt ghi \"hai cụm từ\"; Slide 20 lẫn ghi chú kỹ thuật; Slide 22 thiếu câu hỏi nhiệm vụ và tràn chữ lề dưới; Slide 27 cho tự sửa phiếu nhưng chưa rõ đáp án chuẩn để đối chiếu; Slide 29 cần xác nhận rõ vai trò thông điệp chốt cuối bài.",
+              "dan_chung": "• Slide 20 & Slide 21: Lẫn ghi chú kỹ thuật; Slide 21 lộ sẵn câu tổng kết trên lệnh \"tự nhắc lại\" và nêu 3 ý nhưng bắt ghi \"hai cụm từ\".\n• Slide 22, 27 & 29: Slide 22 thiếu câu hỏi kiểm và tràn lề dưới; Slide 27 thiếu đáp án đối chiếu; Slide 29 cần chốt rõ vai trò thông điệp.",
+              "img": "b328_r2_y4.png",
+              "caption": "Slide 21 & Slide 22"
             }
           ]
         },
@@ -2087,26 +2109,30 @@ window.INITIAL_APP_DATA = {
           "nhan_xet": "• Thay mã RO1/RO2, AE1/AE2 bằng ký hiệu gần gũi & thêm ảnh đối chiếu: Đổi thành Câu 1 (Thẻ #03), Câu 2 (Thẻ #04) kèm ảnh thu nhỏ thẻ #03, #04, B1 ngay cạnh câu hỏi; thay \"dùng B1 nguyên trạng\" bằng \"giữ nguyên thẻ B1 như cũ (không sửa nhãn)\".\n• Bổ sung ảnh con vật vào Game & tăng tính trực quan nhập vai: Đính kèm hình thú bông lên cả 5 thẻ kéo thả ở Slide 8, xếp gọn 1 hàng ngang và chỉ hiện trạng thái \"✕ Chưa đúng\" sau khi bấm kiểm tra; thay khung chữ Bìa (Slide 1) bằng ảnh minh họa sai nhãn hài hước + câu hỏi gợi tò mò; giữ mạch nhập vai sinh động xuyên suốt.\n• Sửa lỗi bố cục đồng hồ, tràn chữ & trình tự lệnh: Chỉnh đồng hồ đếm ngược 01:30 / 05:00 để chữ \"SẴN SÀNG\" và nút \"BẮT ĐẦU\" không bị chạm/sát viền (Slide 5, 23); đảo lệnh phát đồ dùng lên đầu Slide 4; tách 2 nhiệm vụ Slide 13–14 và tăng cỡ chữ; nới khung hồng Slide 22 chống tràn chữ, thêm câu hỏi định hướng và đồng bộ màu nhãn thẻ thỏ.\n• Ẩn đáp án khi tự chốt & tạo khẩu hiệu ngắn gọn: Ẩn câu tổng kết ở Slide 21 đến bước đối chiếu và ghi rõ vị trí ghi chép; lược ghi chú kỹ thuật ở Slide 20 để thêm sơ đồ minh họa Mèo + Nhãn CHÓ → Đoán nhầm; rút gọn Slide 16 thành khẩu hiệu dễ nhớ (\"Ảnh phải RÕ ẢNH và ĐÚNG NHÃN thì máy mới học giỏi\").",
           "dan_chung": "• Slide 1, 2, 4: Bổ sung ảnh minh họa đồ dùng, thẻ #01, sơ đồ A/B/C và đảo lệnh phát thẻ lên đầu.\n• Slide 5 & 23: Sửa bố cục đồng hồ đếm ngược và đổi mã RO/AE thành Câu 1, Câu 2.\n• Slide 8 (Game): Thêm ảnh thú bông lên 5 thẻ và chỉ chấm sai sau khi bấm kiểm tra.\n• Slide 13–14, 16, 20–22: Tách khung, tăng cỡ chữ, ẩn đáp án ở Slide 21, chỉnh tràn khung hồng Slide 22.",
           "img": "b328_r3_y1.png",
-          "imgs": [
+          "items": [
             {
-              "tag": "Ý 1 · Slide 10 & 23",
-              "src": "b328_r3_y1.png",
-              "caption": "Đổi mã RO/AE thành Câu 1, Câu 2 kèm ảnh thu nhỏ thẻ #03, #04, B1"
+              "nhan_xet": "• Thay mã RO1/RO2, AE1/AE2 bằng ký hiệu gần gũi & thêm ảnh đối chiếu: Đổi thành Câu 1 (Thẻ #03), Câu 2 (Thẻ #04) kèm ảnh thu nhỏ thẻ #03, #04, B1 ngay cạnh câu hỏi; thay \"dùng B1 nguyên trạng\" bằng \"giữ nguyên thẻ B1 như cũ (không sửa nhãn)\".",
+              "dan_chung": "• Slide 10 & Slide 23: Đổi RO2a/b, AE1/2 sang Câu 1 (Thẻ #03), Câu 2 (Thẻ #04) kèm ảnh thu nhỏ thẻ #03, #04, B1; đổi \"nguyên trạng\" thành \"giữ nguyên thẻ B1 như cũ\".",
+              "img": "b328_r3_y1.png",
+              "caption": "Slide 10 & Slide 23"
             },
             {
-              "tag": "Ý 2 · Slide 1 & 8",
-              "src": "b328_r3_y2.png",
-              "caption": "Thêm ảnh sai nhãn hài hước trên Bìa & ảnh thú bông trên 5 thẻ Game"
+              "nhan_xet": "• Bổ sung ảnh con vật vào Game & tăng tính trực quan nhập vai: Đính kèm hình thú bông lên cả 5 thẻ kéo thả ở Slide 8, xếp gọn 1 hàng ngang và chỉ hiện trạng thái \"✕ Chưa đúng\" sau khi bấm kiểm tra; thay khung chữ Bìa (Slide 1) bằng ảnh minh họa sai nhãn hài hước + câu hỏi gợi tò mò; giữ mạch nhập vai sinh động xuyên suốt.",
+              "dan_chung": "• Slide 1: Thay khung chữ Bìa bằng ảnh minh họa sai nhãn hài hước + câu hỏi gợi tò mò.\n• Slide 8 (Game): Gắn ảnh thu nhỏ 5 thú bông lên thẻ kéo thả, xếp 1 hàng ngang và chỉ chấm sai sau khi bấm Kiểm tra.",
+              "img": "b328_r3_y2.png",
+              "caption": "Slide 1 & Slide 8"
             },
             {
-              "tag": "Ý 3 · Slide 5, 22 & 23",
-              "src": "b328_r3_y3.png",
-              "caption": "Sửa bố cục đồng hồ (\"SẴN SÀNG\") & nới khung hồng Slide 22 chống tràn chữ"
+              "nhan_xet": "• Sửa lỗi bố cục đồng hồ, tràn chữ & trình tự lệnh: Chỉnh đồng hồ đếm ngược 01:30 / 05:00 để chữ \"SẴN SÀNG\" và nút \"BẮT ĐẦU\" không bị chạm/sát viền (Slide 5, 23); đảo lệnh phát đồ dùng lên đầu Slide 4; tách 2 nhiệm vụ Slide 13–14 và tăng cỡ chữ; nới khung hồng Slide 22 chống tràn chữ, thêm câu hỏi định hướng và đồng bộ màu nhãn thẻ thỏ.",
+              "dan_chung": "• Slide 5 & Slide 23: Chỉnh khung đồng hồ 01:30 / 05:00 để chữ \"SẴN SÀNG\" và nút \"BẮT ĐẦU\" không chạm viền.\n• Slide 4, 13–14 & 22: Đảo lệnh phát thẻ lên đầu Slide 4; tách 2 khung và tăng cỡ chữ Slide 13–14; nới khung hồng chống tràn ở Slide 22.",
+              "img": "b328_r3_y3.png",
+              "caption": "Slide 5, Slide 22 & Slide 23"
             },
             {
-              "tag": "Ý 4 · Slide 16, 20 & 21",
-              "src": "b328_r3_y4.png",
-              "caption": "Bỏ ghi chú kỹ thuật, thêm sơ đồ chuỗi (Slide 20) & ẩn đáp án (Slide 21)"
+              "nhan_xet": "• Ẩn đáp án khi tự chốt & tạo khẩu hiệu ngắn gọn: Ẩn câu tổng kết ở Slide 21 đến bước đối chiếu và ghi rõ vị trí ghi chép; lược ghi chú kỹ thuật ở Slide 20 để thêm sơ đồ minh họa Mèo + Nhãn CHÓ → Đoán nhầm; rút gọn Slide 16 thành khẩu hiệu dễ nhớ (\"Ảnh phải RÕ ẢNH và ĐÚNG NHÃN thì máy mới học giỏi\").",
+              "dan_chung": "• Slide 20: Bỏ ghi chú kỹ thuật, thêm chuỗi minh họa Ảnh mèo + Nhãn CHÓ → Đoán nhầm.\n• Slide 16 & Slide 21: Rút gọn khẩu hiệu ở Slide 16; ẩn đáp án tổng kết ở Slide 21 đến bước đối chiếu và ghi rõ nơi viết.",
+              "img": "b328_r3_y4.png",
+              "caption": "Slide 16, Slide 20 & Slide 21"
             }
           ]
         },
@@ -2117,26 +2143,30 @@ window.INITIAL_APP_DATA = {
           "nhan_xet": "• Mạch liên kết & các bước thực hiện giữa các hoạt động chưa tường minh: Một số slide còn cảm giác tách rời nhiệm vụ riêng lẻ; nếu thiếu quy trình từng bước rõ ràng, cả GV và HS dễ lúng túng khi kết nối từ quan sát thẻ sang giải thích cơ chế máy học.\n• Áp lực thời gian ở các bước thảo luận nhóm & viết phiếu Lớp 3: Nhóm 5 bạn chỉ có 90 giây (chưa tới 20 giây/em) dễ khiến HS xếp vội thẻ bỏ qua giải thích; thời gian 1 phút để viết câu giải thích (Slide 13–14) hoặc tự chốt 2 cụm từ (Slide 21) và 2 phút tự sửa thiếu đáp án chuẩn (Slide 27) khá gấp.\n• HS dễ trả lời cụt lủn hoặc chép nguyên văn đáp án: Tiêu đề Slide 1 tiết lộ sẵn \"máy dễ đoán nhầm\" nên câu hỏi Slide 3 dễ bị trả lời ngắn; đáp án hiện to đậm trên Slide 21 khiến trẻ có xu hướng chép lại.\n• Quản lý lớp khi phát thẻ sớm & giải thích vùng A/B/C: Phát thẻ thú bông sớm dễ gây xôn xao; việc thiếu hình minh họa 3 vùng A/B/C khiến GV phải đi từng bàn giải thích nhiều lần.",
           "dan_chung": "• Slide 2–5, 9: Quy trình liên kết giữa các hoạt động và 3 vùng A/B/C chưa thể hiện trực quan.\n• Slide 6, 13–14, 21: Quỹ thời gian 90 giây (nhóm 5) và 1 phút (viết tự chốt) khá ngắn với HS lớp 3.\n• Slide 23, 27: Thiếu đáp án chuẩn để đối chiếu khi tự sửa phiếu trong 2 phút.",
           "img": "b328_r4_y1.png",
-          "imgs": [
+          "items": [
             {
-              "tag": "Ý 1 · Slide 5 & 9",
-              "src": "b328_r4_y1.png",
-              "caption": "Các bước chuyển hoạt động & hình thức viết/nhẩm ở Slide 9 chưa tường minh"
+              "nhan_xet": "• Mạch liên kết & các bước thực hiện giữa các hoạt động chưa tường minh: Một số slide còn cảm giác tách rời nhiệm vụ riêng lẻ; nếu thiếu quy trình từng bước rõ ràng, cả GV và HS dễ lúng túng khi kết nối từ quan sát thẻ sang giải thích cơ chế máy học.",
+              "dan_chung": "• Slide 2–5 & Slide 9: Các bước hoạt động còn cảm giác tách rời; Slide 9 chưa nêu rõ hình thức viết hay nhẩm và thời gian trước khi trao đổi.",
+              "img": "b328_r4_y1.png",
+              "caption": "Slide 5 & Slide 9"
             },
             {
-              "tag": "Ý 2 · Slide 6, 13 & 27",
-              "src": "b328_r4_y2.png",
-              "caption": "Quỹ 90 giây nhóm 5 bạn, 1 phút viết (Slide 13) & 2 phút tự sửa thiếu đáp án (Slide 27)"
+              "nhan_xet": "• Áp lực thời gian ở các bước thảo luận nhóm & viết phiếu Lớp 3: Nhóm 5 bạn chỉ có 90 giây (chưa tới 20 giây/em) dễ khiến HS xếp vội thẻ bỏ qua giải thích; thời gian 1 phút để viết câu giải thích (Slide 13–14) hoặc tự chốt 2 cụm từ (Slide 21) và 2 phút tự sửa thiếu đáp án chuẩn (Slide 27) khá gấp.",
+              "dan_chung": "• Slide 6 (90 giây / nhóm 5): Chưa tới 20 giây/em, dễ xếp vội bỏ qua giải thích.\n• Slide 13–14, 21 & 27: Thời gian 1 phút viết giải thích/tự chốt khá gấp với Lớp 3; 2 phút tự sửa thiếu đáp án chuẩn để đối chiếu.",
+              "img": "b328_r4_y2.png",
+              "caption": "Slide 6, Slide 13 & Slide 27"
             },
             {
-              "tag": "Ý 3 · Slide 3 & 21",
-              "src": "b328_r4_y3.png",
-              "caption": "Slide 3 dễ trả lời cụt lủn; Slide 21 hiện sẵn câu chốt nên HS dễ chép nguyên văn"
+              "nhan_xet": "• HS dễ trả lời cụt lủn hoặc chép nguyên văn đáp án: Tiêu đề Slide 1 tiết lộ sẵn \"máy dễ đoán nhầm\" nên câu hỏi Slide 3 dễ bị trả lời ngắn; đáp án hiện to đậm trên Slide 21 khiến trẻ có xu hướng chép lại.",
+              "dan_chung": "• Slide 1 & Slide 3: Tiêu đề Bìa lộ cụm \"máy dễ đoán nhầm\" khiến câu hỏi Slide 3 dễ bị trả lời ngắn.\n• Slide 21: Chiếu sẵn câu chốt to đậm làm HS có xu hướng chép lại thay vì tự diễn đạt.",
+              "img": "b328_r4_y3.png",
+              "caption": "Slide 3 & Slide 21"
             },
             {
-              "tag": "Ý 4 · Slide 2 & 4",
-              "src": "b328_r4_y4.png",
-              "caption": "Phát thẻ thú bông sớm dễ xôn xao & thiếu sơ đồ minh họa 3 vùng A/B/C"
+              "nhan_xet": "• Quản lý lớp khi phát thẻ sớm & giải thích vùng A/B/C: Phát thẻ thú bông sớm dễ gây xôn xao; việc thiếu hình minh họa 3 vùng A/B/C khiến GV phải đi từng bàn giải thích nhiều lần.",
+              "dan_chung": "• Slide 2 & Slide 4: Phát thẻ thú bông sớm dễ làm lớp mất tập trung; thiếu sơ đồ minh họa 3 vùng A/B/C khiến GV phải đi từng bàn giải thích.",
+              "img": "b328_r4_y4.png",
+              "caption": "Slide 2 & Slide 4"
             }
           ]
         }

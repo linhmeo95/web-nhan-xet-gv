@@ -2364,22 +2364,15 @@
     const tbody = document.getElementById("btvExcelTableBody");
     if (tbody) {
       tbody.innerHTML = "";
-      (currentSheet.rows || []).forEach(row => {
-        const tr = document.createElement("tr");
+      (currentSheet.rows || []).forEach((row, rowIdx) => {
         const critClass = `c${row.stt}`;
-        tr.className = `btv-row-${critClass}`;
 
-        const hasPerPointImgs = Array.isArray(row.imgs) && row.imgs.length > 0;
-
-        const formatBullets = (txt, showPointIdx = false) => {
+        const formatBullets = (txt) => {
           if (!txt) return "";
           const lines = txt.split("\n").filter(l => l.trim().length > 0);
-          return `<ul class="btv-text-bullet">${lines.map((l, idx) => {
+          return `<ul class="btv-text-bullet">${lines.map(l => {
             const clean = l.replace(/^[•\-\*]\s*/, "");
-            const badgeHtml = showPointIdx
-              ? `<span class="btv-point-badge ${critClass}">Ý ${idx + 1}</span> `
-              : "";
-            return `<li>${badgeHtml}${escapeHtml(clean)}</li>`;
+            return `<li>${escapeHtml(clean)}</li>`;
           }).join("")}</ul>`;
         };
 
@@ -2389,49 +2382,63 @@
           return /^(data:|https?:|\/|data\/)/i.test(v) ? v : `data/slide_imgs/${escapeHtml(v)}`;
         };
 
-        let imgCellHtml = "";
-        if (hasPerPointImgs) {
-          const cardsHtml = row.imgs.map((item, i) => {
-            const src = resolveImgUrl(item.src || item.img || "");
-            if (!src) return "";
-            const tag = item.tag || `Ý ${i + 1}`;
-            const cap = item.caption || "";
-            const fullTitle = `${currentSheet.sheet_name} — ${tag}${cap ? ": " + cap : ""}`;
-            return `
-              <div class="btv-point-img-card">
-                <div class="btv-point-img-head">
-                  <span class="btv-point-badge ${critClass}">${escapeHtml(tag)}</span>
-                  <span class="btv-thumb-hint">🔍 Phóng to</span>
-                </div>
-                <img src="${escapeHtml(src)}" alt="${escapeHtml(tag)}" class="btv-slide-thumb btv-point-thumb" data-full-src="${escapeHtml(src)}" data-title="${escapeHtml(fullTitle)}">
-                ${cap ? `<div class="btv-point-img-cap">${escapeHtml(cap)}</div>` : ""}
-              </div>
+        const renderImgCell = (rawImg, subCaption, lightboxTitle) => {
+          const imgSrc = resolveImgUrl(rawImg);
+          if (!imgSrc) {
+            return `<div style="padding:18px 10px;border:1.5px dashed #CBD5E1;border-radius:8px;color:#64748B;font-size:12px;background:#F8FAFC;">🖼️ Chưa gắn ảnh dẫn chứng</div>`;
+          }
+          return `
+            <div class="btv-thumb-wrap">
+              <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(subCaption || row.tieu_chi)}" class="btv-slide-thumb" data-full-src="${escapeHtml(imgSrc)}" data-title="${escapeHtml(lightboxTitle)}">
+              ${subCaption ? `<span class="btv-slide-cap">${escapeHtml(subCaption)}</span>` : ""}
+              <span class="btv-thumb-hint">🔍 Bấm ảnh để phóng to</span>
+            </div>
+          `;
+        };
+
+        const items = (Array.isArray(row.items) && row.items.length > 0) ? row.items : null;
+        if (items) {
+          const span = items.length;
+          items.forEach((item, idx) => {
+            const tr = document.createElement("tr");
+            const isFirst = idx === 0;
+            const isLast = idx === span - 1;
+            tr.className = `btv-row-${critClass} ${isFirst ? "btv-group-first" : "btv-group-sub"}${isLast ? " btv-group-last" : ""}`;
+
+            const mergedCols = isFirst
+              ? `<td rowspan="${span}" class="btv-merged-stt">${escapeHtml(row.stt)}</td>
+                 <td rowspan="${span}" class="cell-crit btv-merged-crit">
+                   <span class="btv-crit-badge ${critClass}">${escapeHtml(row.tieu_chi)}</span>
+                 </td>`
+              : "";
+
+            const lbTitle = `${currentSheet.sheet_name} — ${row.tieu_chi}${item.caption ? " (" + item.caption + ")" : ""}`;
+            tr.innerHTML = `
+              ${mergedCols}
+              <td>${formatBullets(item.nhan_xet)}</td>
+              <td>${formatBullets(item.dan_chung)}</td>
+              <td style="text-align: center;">
+                ${renderImgCell(item.img, item.caption || "", lbTitle)}
+              </td>
             `;
-          }).join("");
-          imgCellHtml = `<div class="btv-point-gallery">${cardsHtml}</div>`;
+            tbody.appendChild(tr);
+          });
         } else {
-          const imgSrc = resolveImgUrl(row.img);
-          imgCellHtml = imgSrc
-            ? `<div class="btv-thumb-wrap">
-                <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(row.tieu_chi)}" class="btv-slide-thumb" data-full-src="${escapeHtml(imgSrc)}" data-title="${escapeHtml(currentSheet.sheet_name)} — ${escapeHtml(row.tieu_chi)}">
-                <span class="btv-thumb-hint">🔍 Bấm ảnh để phóng to</span>
-              </div>`
-            : `<div style="padding:18px 10px;border:1.5px dashed #CBD5E1;border-radius:8px;color:#64748B;font-size:12px;background:#F8FAFC;">🖼️ Chưa gắn ảnh dẫn chứng</div>`;
+          const tr = document.createElement("tr");
+          tr.className = `btv-row-${critClass} btv-group-first btv-group-last${rowIdx === 0 ? "" : ""}`;
+          tr.innerHTML = `
+            <td style="text-align: center; font-weight: 800; font-family: var(--font-mono); font-size: 14px;">${escapeHtml(row.stt)}</td>
+            <td class="cell-crit">
+              <span class="btv-crit-badge ${critClass}">${escapeHtml(row.tieu_chi)}</span>
+            </td>
+            <td>${formatBullets(row.nhan_xet)}</td>
+            <td>${formatBullets(row.dan_chung)}</td>
+            <td style="text-align: center;">
+              ${renderImgCell(row.img, "", `${currentSheet.sheet_name} — ${row.tieu_chi}`)}
+            </td>
+          `;
+          tbody.appendChild(tr);
         }
-
-        tr.innerHTML = `
-          <td style="text-align: center; font-weight: 800; font-family: var(--font-mono); font-size: 14px;">${escapeHtml(row.stt)}</td>
-          <td class="cell-crit">
-            <span class="btv-crit-badge ${critClass}">${escapeHtml(row.tieu_chi)}</span>
-          </td>
-          <td>${formatBullets(row.nhan_xet, hasPerPointImgs)}</td>
-          <td>${formatBullets(row.dan_chung, false)}</td>
-          <td style="text-align: center;">
-            ${imgCellHtml}
-          </td>
-        `;
-
-        tbody.appendChild(tr);
       });
 
       tbody.querySelectorAll(".btv-slide-thumb").forEach(img => {
@@ -2730,7 +2737,7 @@
         card.innerHTML = `
           <div class="synthesis-crit-title">
             <span class="btv-crit-badge ${critClass}">${escapeHtml(row.tieu_chi)}</span>
-            <span style="font-size: 12px; color: var(--ink-muted); font-weight: 600;">Ảnh: ${escapeHtml((Array.isArray(row.imgs) && row.imgs.length) ? `${row.imgs.length} ảnh tương ứng từng ý` : (row.img || "Chưa gán"))}</span>
+            <span style="font-size: 12px; color: var(--ink-muted); font-weight: 600;">Ảnh: ${escapeHtml((Array.isArray(row.items) && row.items.length) ? `${row.items.length} hàng dẫn chứng` : (row.img || "Chưa gán"))}</span>
           </div>
 
           <div class="synthesis-input-group">
@@ -3018,7 +3025,15 @@
         (currentSheet.rows || []).forEach((row, rIdx) => {
           const nxEl = document.getElementById(`synthNhanXet_${rIdx}`);
           const dcEl = document.getElementById(`synthDanChung_${rIdx}`);
-          if (nxEl) row.nhan_xet = nxEl.value;
+          if (nxEl) {
+            row.nhan_xet = nxEl.value;
+            if (Array.isArray(row.items) && row.items.length > 0) {
+              const lines = nxEl.value.split("\n").map(l => l.trim()).filter(Boolean);
+              if (lines.length === row.items.length) {
+                lines.forEach((ln, idx) => { row.items[idx].nhan_xet = ln; });
+              }
+            }
+          }
           if (dcEl) row.dan_chung = dcEl.value;
         });
 
