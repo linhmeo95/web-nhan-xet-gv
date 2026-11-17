@@ -227,15 +227,22 @@
         if (!existing) {
           targetDb.lessons.push(sl);
         } else {
-          // ALWAYS sync exact totalSlides and slides metadata from canonical source
-          if (sl.totalSlides && sl.totalSlides !== existing.totalSlides) {
-            existing.totalSlides = sl.totalSlides;
-          }
-          if (sl.slides && Array.isArray(sl.slides)) {
+          // Sync totalSlides & slides ONLY when canonical bundle is at least as new as existing/cloud version
+          const canonVer = Number(sl.version || 0);
+          const curVer = Number(existing.version || 0);
+          if (canonVer >= curVer) {
+            if (canonVer > curVer) existing.version = canonVer;
+            if (sl.totalSlides && sl.totalSlides !== existing.totalSlides) {
+              existing.totalSlides = sl.totalSlides;
+            }
+            if (sl.slides && Array.isArray(sl.slides)) {
+              existing.slides = JSON.parse(JSON.stringify(sl.slides));
+            }
+            if (sl.slide_titles && Array.isArray(sl.slide_titles)) {
+              existing.slide_titles = [...sl.slide_titles];
+            }
+          } else if ((!existing.slides || existing.slides.length === 0) && sl.slides && Array.isArray(sl.slides)) {
             existing.slides = JSON.parse(JSON.stringify(sl.slides));
-          }
-          if (sl.slide_titles && Array.isArray(sl.slide_titles)) {
-            existing.slide_titles = [...sl.slide_titles];
           }
           if (sl.url && !existing.url) {
             existing.url = sl.url;
@@ -461,13 +468,13 @@
           });
           const mergedLessons = Array.from(lessonMap.values());
           const hasNewLocalLessons = mergedLessons.length > cloudConfig.lessons.length;
-          const hasStaleCloudSlides = cloudConfig.lessons.some(cl => {
+          const hasNewerLocalCanonicalSlides = cloudConfig.lessons.some(cl => {
             const canon = (window.INITIAL_APP_DATA && window.INITIAL_APP_DATA.lessons || []).find(sl => sl.id === cl.id || sl.code === cl.code);
-            return canon && canon.totalSlides && cl.totalSlides !== canon.totalSlides;
+            return canon && Number(canon.version || 0) > Number(cl.version || 0);
           });
           db.lessons = mergedLessons;
           syncLatestLessons(db);
-          if (hasNewLocalLessons || hasStaleCloudSlides) {
+          if (hasNewLocalLessons || hasNewerLocalCanonicalSlides) {
             triggerAutoSave(true, true);
           }
         }
@@ -586,7 +593,8 @@
           version: l.version,
           title: l.title,
           editorUrl: l.editorUrl,
-          totalSlides: l.totalSlides || 18
+          totalSlides: l.totalSlides || 18,
+          slides: Array.isArray(l.slides) ? l.slides : []
         }));
         rows.push({
           id: "config",
