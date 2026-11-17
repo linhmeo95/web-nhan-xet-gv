@@ -192,6 +192,10 @@ def check_cloud_supabase(errors):
         for canon_code, canon in CANONICAL_LESSONS.items():
             if canon_code not in l_map:
                 errors.append(f"[Cloud Supabase] Missing lesson '{canon_code}' ({canon['title']}) in cloud config")
+            elif "totalSlides" in canon and l_map[canon_code].get("totalSlides") != canon["totalSlides"]:
+                errors.append(
+                    f"[Cloud Supabase] Lesson '{canon_code}' totalSlides mismatch in cloud: expected {canon['totalSlides']}, found {l_map[canon_code].get('totalSlides')}"
+                )
                 
         print(f"    - Cloud config verified: {len(teachers)} teachers and {len(lessons)} lessons in Supabase.")
         
@@ -223,11 +227,33 @@ def main():
         check_dataset(db_json, "data/reviews_db.json", errors)
         
     # 2. Check data/initial_data.js
+    db_json = None
+    db_js = None
+    if os.path.exists(json_path):
+        with open(json_path, "r", encoding="utf-8") as f:
+            db_json = json.load(f)
     if not os.path.exists(js_path):
         errors.append(f"File not found: {js_path}")
     else:
         db_js = parse_initial_data_js(js_path)
         check_dataset(db_js, "data/initial_data.js", errors)
+
+    # 2b. Cross-check 1-1 slide count & titles parity between reviews_db.json and initial_data.js
+    if db_json and db_js:
+        j_lessons = {l.get("code"): l for l in db_json.get("lessons", [])}
+        js_lessons = {l.get("code"): l for l in db_js.get("lessons", [])}
+        for code, jl in j_lessons.items():
+            sl = js_lessons.get(code)
+            if not sl:
+                errors.append(f"[Cross-check] Lesson '{code}' missing in data/initial_data.js")
+                continue
+            j_slides = jl.get("slides", [])
+            s_slides = sl.get("slides", [])
+            if j_slides != s_slides:
+                errors.append(f"[Cross-check] Slide titles/numbers mismatch for '{code}' between reviews_db.json and initial_data.js")
+            for idx, item in enumerate(j_slides):
+                if item.get("so") != idx + 1 or not str(item.get("tieuDe", "")).strip():
+                    errors.append(f"[data/reviews_db.json] Lesson '{code}' invalid slide numbering/title at index {idx}: {item}")
         
     # 3. Check app.js safeguards
     check_app_js(app_js_path, errors)
