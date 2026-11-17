@@ -42,7 +42,7 @@ CANONICAL_LESSONS = {
         "id": "ai-3-28-cl",
         "title": "Ảnh sai nhãn khiến máy dễ đoán nhầm",
         "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-3-anh-sai-nhan",
-        "totalSlides": 30,
+        "totalSlides": 23,
     },
     "4.23.CL": {
         "id": "ai-4-23-cl",
@@ -54,7 +54,7 @@ CANONICAL_LESSONS = {
         "id": "ai-5-24-cl",
         "title": "Thêm ảnh mẫu và so sánh kết quả",
         "editorUrl": "https://hd-tuongtac-editor.pages.dev/#/slides-editor/edit/ai-5-24-cl",
-        "totalSlides": 18,
+        "totalSlides": 16,
     },
 }
 
